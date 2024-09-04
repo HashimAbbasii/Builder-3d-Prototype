@@ -16,6 +16,7 @@ public class testFloor : MonoBehaviour
     private GameObject currentFloor;
     private GameObject currentWall;
     private GameObject previewObject;
+    private Material originalMaterial; // To store the original material of the model
     private bool isCreatingFloor = false;
     private bool isCreatingWall = false;
     private int selectedObjectIndex = -1;
@@ -129,7 +130,7 @@ public class testFloor : MonoBehaviour
         }
 
         // Object placement logic
-        if (Input.GetMouseButtonDown(0) && selectedObjectIndex != -1 && previewObject != null) // Place object on left click
+        if (Input.GetMouseButtonUp(0) && selectedObjectIndex != -1 && previewObject != null) // Place object on mouse button release
         {
             PlaceObjectOnFloor();
         }
@@ -162,6 +163,7 @@ public class testFloor : MonoBehaviour
                 Destroy(previewObject);
             }
             previewObject = Instantiate(modelPrefabs[objectIndex]);
+            originalMaterial = previewObject.GetComponent<Renderer>().material; // Store the original material
             ApplyMaterial(previewObject, previewMaterial);
         }
         else
@@ -201,7 +203,14 @@ public class testFloor : MonoBehaviour
                 GameObject prefab = modelPrefabs[selectedObjectIndex];
                 if (prefab != null)
                 {
-                    Instantiate(prefab, placePosition, Quaternion.identity);
+                    GameObject placedObject = Instantiate(prefab, placePosition, Quaternion.identity);
+
+                    // Reset the material of the placed object to the original material
+                    Renderer[] renderers = placedObject.GetComponentsInChildren<Renderer>();
+                    foreach (Renderer renderer in renderers)
+                    {
+                        renderer.material = originalMaterial;
+                    }
 
                     // Destroy the preview object after placing the actual object
                     Destroy(previewObject);
