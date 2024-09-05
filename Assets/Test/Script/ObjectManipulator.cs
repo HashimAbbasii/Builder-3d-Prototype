@@ -8,6 +8,7 @@ public class ObjectManipulator : MonoBehaviour
     private Material originalMaterial;
     public Material selectedMaterial;
     private bool isDragging = false;
+    public Slider ScaleSlider;
 
     void Update()
     {
@@ -28,11 +29,15 @@ public class ObjectManipulator : MonoBehaviour
                 }
             }
 
-            // Stop dragging when the left mouse button is released
-            if (Input.GetMouseButtonUp(0) && isDragging)
-            {
-                isDragging = false;
-            }
+            // Stop dragging and revert material when the left mouse button is released
+            //if (Input.GetMouseButtonUp(0) && isDragging)
+            //{
+            //    isDragging = false;
+
+            //    // Revert the material to the original and deselect the object
+            //    RevertMaterial();
+            //    selectedObject = null; // Deselect the object after placing it
+            //}
         }
     }
 
@@ -42,11 +47,7 @@ public class ObjectManipulator : MonoBehaviour
         // Revert the material of the previously selected object, if any
         if (selectedObject != null)
         {
-            MeshRenderer meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-            if (meshRenderer != null && originalMaterial != null)
-            {
-                meshRenderer.material = originalMaterial;
-            }
+            RevertMaterial();
         }
 
         // Set the new selected object
@@ -72,19 +73,39 @@ public class ObjectManipulator : MonoBehaviour
             selectedObject.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
         }
     }
-    public Slider ScaleSlider;
+
     // Scale the selected object based on slider value
     public void ScaleObject(float scaleValue)
     {
-        float valueIncreasedDecreased=ScaleSlider.value;
+        float valueIncreasedDecreased = ScaleSlider.value;
         Debug.Log("Value" + valueIncreasedDecreased);
-        
+
         if (selectedObject != null)
         {
-        //    // Scale only on X and Z axes, keeping Y axis scale unchanged
-        //    Debug.Log("Scaling object with value: " + scaleValue); // Debug line
+            // Scale only on X and Z axes, keeping Y axis scale unchanged
             Vector3 newScale = new Vector3(valueIncreasedDecreased, selectedObject.localScale.y, valueIncreasedDecreased);
             selectedObject.localScale = newScale;
         }
+    }
+
+    // Method to revert the material to the original material
+    private void RevertMaterial()
+    {
+        if (selectedObject != null)
+        {
+            MeshRenderer meshRenderer = selectedObject.GetComponent<MeshRenderer>();
+            if (meshRenderer != null && originalMaterial != null)
+            {
+                meshRenderer.material = originalMaterial;
+            }
+            originalMaterial = null; // Clear the original material to avoid unintended reuse
+        }
+    }
+
+    // Method to deselect the currently selected object
+    public void DeselectObject()
+    {
+        RevertMaterial();
+        selectedObject = null; // Deselect the object
     }
 }

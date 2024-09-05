@@ -20,6 +20,7 @@ public class ObjectSelector : MonoBehaviour
             {
                 if (hit.collider.GetComponent<SelectableObject>() != null)
                 {
+                    Debug.Log("Select Object");
                     manipulator.SetSelectedObject(hit.collider.transform);
                 }
                 else
