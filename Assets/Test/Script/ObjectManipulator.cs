@@ -3,18 +3,19 @@ using UnityEngine.UI;
 
 public class ObjectManipulator : MonoBehaviour
 {
-    public float rotationSpeed = 100f;
-    private Transform selectedObject;
-    private Material originalMaterial;
-    public Material selectedMaterial;
-    private bool isDragging = false;
-    public Slider ScaleSlider;
+    public float rotationSpeed = 100f; // Speed for rotating the object
+    private Transform selectedObject;  // The currently selected object
+    private Material originalMaterial; // To store the original material of the object
+    public Material selectedMaterial;  // Material to apply when the object is selected
+    private bool isDragging = false;   // To track if the object is being dragged
+    public Slider scaleSlider;         // Slider to control the object's scale
+    public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
 
     void Update()
     {
         if (selectedObject != null)
         {
-            // Move the object with the mouse if the left mouse button is held down
+            // Move the object with the mouse when the left mouse button is held down
             if (Input.GetMouseButton(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -22,29 +23,36 @@ public class ObjectManipulator : MonoBehaviour
 
                 if (Physics.Raycast(ray, out hit))
                 {
-                    // Assuming you want to move the object on the XZ plane
+                    // Move object on the XZ plane (ignoring Y-axis)
                     Vector3 newPosition = hit.point;
                     selectedObject.position = new Vector3(newPosition.x, selectedObject.position.y, newPosition.z);
+
                     isDragging = true;
+
+                    // Update the distance calculation and line renderer
+                    if (distanceCalculator != null)
+                    {
+                        distanceCalculator.CalculateDistances(selectedObject.gameObject);
+                    }
                 }
             }
 
-            // Stop dragging and revert material when the left mouse button is released
-            //if (Input.GetMouseButtonUp(0) && isDragging)
-            //{
-            //    isDragging = false;
-
-            //    // Revert the material to the original and deselect the object
-            //    RevertMaterial();
-            //    selectedObject = null; // Deselect the object after placing it
-            //}
+            // Rotate the object using arrow keys
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                RotateObject(-rotationSpeed * Time.deltaTime); // Rotate left
+            }
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                RotateObject(rotationSpeed * Time.deltaTime); // Rotate right
+            }
         }
     }
 
     // Set the object to be manipulated
     public void SetSelectedObject(Transform obj)
     {
-        // Revert the material of the previously selected object, if any
+        // Revert the material of the previously selected object
         if (selectedObject != null)
         {
             RevertMaterial();
@@ -74,16 +82,13 @@ public class ObjectManipulator : MonoBehaviour
         }
     }
 
-    // Scale the selected object based on slider value
+    // Scale the selected object based on the slider value
     public void ScaleObject(float scaleValue)
     {
-        float valueIncreasedDecreased = ScaleSlider.value;
-        Debug.Log("Value" + valueIncreasedDecreased);
-
         if (selectedObject != null)
         {
-            // Scale only on X and Z axes, keeping Y axis scale unchanged
-            Vector3 newScale = new Vector3(valueIncreasedDecreased, selectedObject.localScale.y, valueIncreasedDecreased);
+            // Scale only on X and Z axes, keeping the Y axis scale unchanged
+            Vector3 newScale = new Vector3(scaleValue, selectedObject.localScale.y, scaleValue);
             selectedObject.localScale = newScale;
         }
     }
@@ -96,16 +101,16 @@ public class ObjectManipulator : MonoBehaviour
             MeshRenderer meshRenderer = selectedObject.GetComponent<MeshRenderer>();
             if (meshRenderer != null && originalMaterial != null)
             {
-                meshRenderer.material = originalMaterial;
+                meshRenderer.material = originalMaterial; // Restore the original material
             }
-            originalMaterial = null; // Clear the original material to avoid unintended reuse
+            originalMaterial = null; // Clear the stored material
         }
     }
 
     // Method to deselect the currently selected object
     public void DeselectObject()
     {
-        RevertMaterial();
+        RevertMaterial(); // Revert the material
         selectedObject = null; // Deselect the object
     }
 }
