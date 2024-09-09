@@ -95,9 +95,18 @@ public class CalculateDistance : MonoBehaviour
         Debug.Log("Distance: " + distance.ToString("F2") + " units");
     }
 
+    //private void DrawLine(Vector3 startPosition, Vector3 endPosition)
+    //{
+    //    lineRenderer.positionCount = 2;
+    //    lineRenderer.SetPosition(0, startPosition);
+    //    lineRenderer.SetPosition(1, endPosition);
+    //}
+
     private void DrawLine(Vector3 startPosition, Vector3 endPosition)
     {
         lineRenderer.positionCount = 2;
+        startPosition.y = 1.0f;
+        endPosition.y = 1.0f;
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
     }
