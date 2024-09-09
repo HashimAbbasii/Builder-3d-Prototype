@@ -9,17 +9,28 @@ public class CalculateDistance : MonoBehaviour
     public LayerMask wallLayer;
     public LayerMask floorLayer;
     public LayerMask grassGroundLayer;
-    public LineRenderer lineRenderer;
     public TextMeshProUGUI distanceText; // UI element to show distance (optional)
-
-    private GameObject placedObject;
+    private List<GameObject> placedObjects = new List<GameObject>();
 
     void Start()
     {
-        // Initialize the LineRenderer component
+        // No need to set up the line renderer here since each object will have its own
+    }
+
+    // Call this method after placing the object
+    public void CalculateDistances(GameObject placedObject)
+    {
+        if (placedObject == null)
+        {
+            Debug.LogError("Placed object is null.");
+            return;
+        }
+
+        LineRenderer lineRenderer = placedObject.GetComponent<LineRenderer>();
+
         if (lineRenderer == null)
         {
-            lineRenderer = gameObject.AddComponent<LineRenderer>();
+            lineRenderer = placedObject.AddComponent<LineRenderer>();
         }
 
         // Set up the line renderer's appearance
@@ -28,13 +39,6 @@ public class CalculateDistance : MonoBehaviour
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.startColor = Color.green;
         lineRenderer.endColor = Color.red;
-    }
-
-    // Call this method after placing the object
-    public void CalculateDistances(GameObject placedObject)
-    {
-        this.placedObject = placedObject;
-        Debug.Log("Object Place" + placedObject.gameObject.name);
 
         Vector3 objectPosition = placedObject.transform.position;
         Vector3 closestPoint = Vector3.zero;
@@ -45,12 +49,10 @@ public class CalculateDistance : MonoBehaviour
         {
             Debug.Log("Nearest object is the wall.");
         }
-        // If no wall, check distance from floor
         else if (CheckDistanceToLayer(objectPosition, floorLayer, out closestPoint, out shortestDistance))
         {
             Debug.Log("Nearest object is the floor.");
         }
-        // If no wall or floor, check distance from grass ground
         else if (CheckDistanceToLayer(objectPosition, grassGroundLayer, out closestPoint, out shortestDistance))
         {
             Debug.Log("Nearest object is the grass ground.");
@@ -60,9 +62,11 @@ public class CalculateDistance : MonoBehaviour
         DisplayDistance(shortestDistance);
 
         // Draw a line between the placed object and the closest point (wall, floor, or ground)
-        DrawLine(objectPosition, closestPoint);
-    }
+        DrawLine(lineRenderer, objectPosition, closestPoint);
 
+        // Add the object to the list of placed objects
+        placedObjects.Add(placedObject);
+    }
     private bool CheckDistanceToLayer(Vector3 objectPosition, LayerMask layerMask, out Vector3 closestPoint, out float distance)
     {
         Collider[] colliders = Physics.OverlapSphere(objectPosition, 100f, layerMask); // Adjust the radius as needed
@@ -95,19 +99,44 @@ public class CalculateDistance : MonoBehaviour
         Debug.Log("Distance: " + distance.ToString("F2") + " units");
     }
 
-    //private void DrawLine(Vector3 startPosition, Vector3 endPosition)
-    //{
-    //    lineRenderer.positionCount = 2;
-    //    lineRenderer.SetPosition(0, startPosition);
-    //    lineRenderer.SetPosition(1, endPosition);
-    //}
-
-    private void DrawLine(Vector3 startPosition, Vector3 endPosition)
+    private void DrawLine(LineRenderer lineRenderer, Vector3 startPosition, Vector3 endPosition)
     {
         lineRenderer.positionCount = 2;
         startPosition.y = 1.0f;
         endPosition.y = 1.0f;
         lineRenderer.SetPosition(0, startPosition);
         lineRenderer.SetPosition(1, endPosition);
+    }
+
+    // Method to recalculate the distance and update the LineRenderer when selecting an object
+    public void RecalculateDistanceForSelectedObject(GameObject selectedObject)
+    {
+        Vector3 objectPosition = selectedObject.transform.position;
+        Vector3 closestPoint = Vector3.zero;
+        float shortestDistance = float.MaxValue;
+
+        LineRenderer lineRenderer = selectedObject.GetComponent<LineRenderer>();
+
+        // Check distance from wall first
+        if (CheckDistanceToLayer(objectPosition, wallLayer, out closestPoint, out shortestDistance))
+        {
+            Debug.Log("Nearest object is the wall.");
+        }
+        // If no wall, check distance from floor
+        else if (CheckDistanceToLayer(objectPosition, floorLayer, out closestPoint, out shortestDistance))
+        {
+            Debug.Log("Nearest object is the floor.");
+        }
+        // If no wall or floor, check distance from grass ground
+        else if (CheckDistanceToLayer(objectPosition, grassGroundLayer, out closestPoint, out shortestDistance))
+        {
+            Debug.Log("Nearest object is the grass ground.");
+        }
+
+        // Display the distance in Unity
+        DisplayDistance(shortestDistance);
+
+        // Update the line renderer with the new closest point
+        DrawLine(lineRenderer, objectPosition, closestPoint);
     }
 }

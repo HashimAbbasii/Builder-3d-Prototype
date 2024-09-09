@@ -4,12 +4,9 @@ using UnityEngine.UI;
 public class ObjectManipulator : MonoBehaviour
 {
     public float rotationSpeed = 100f; // Speed for rotating the object
-    [Space(2)]
     public Transform selectedObject;  // The currently selected object
-    [Space(2)]
     private Material originalMaterial; // To store the original material of the object
     public Material selectedMaterial;  // Material to apply when the object is selected
-    private bool isDragging = false;   // To track if the object is being dragged
     public Slider scaleSlider;         // Slider to control the object's scale
     public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
 
@@ -28,8 +25,6 @@ public class ObjectManipulator : MonoBehaviour
                     // Move object on the XZ plane (ignoring Y-axis)
                     Vector3 newPosition = hit.point;
                     selectedObject.position = new Vector3(newPosition.x, selectedObject.position.y, newPosition.z);
-
-                    isDragging = true;
 
                     // Update the distance calculation and line renderer
                     if (distanceCalculator != null)
@@ -89,8 +84,6 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject != null)
         {
-            // Scale only on X and Z axes, keeping the Y axis scale unchanged
-            //Vector3 newScale = new(scaleValue, selectedObject.localScale.y, scaleValue);
             Vector3 newScale = new Vector3(scaleValue, scaleValue, scaleValue);
             selectedObject.localScale = newScale;
         }
