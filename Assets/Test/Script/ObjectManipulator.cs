@@ -7,6 +7,7 @@ public class ObjectManipulator : MonoBehaviour
     public Transform selectedObject;  // The currently selected object
     private Material originalMaterial; // To store the original material of the object
     public Material selectedMaterial;  // Material to apply when the object is selected
+    private bool isDragging = false;   // To track if the object is being dragged
     public Slider scaleSlider;         // Slider to control the object's scale
     public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
 
@@ -26,12 +27,20 @@ public class ObjectManipulator : MonoBehaviour
                     Vector3 newPosition = hit.point;
                     selectedObject.position = new Vector3(newPosition.x, selectedObject.position.y, newPosition.z);
 
+                    isDragging = true;
+
                     // Update the distance calculation and line renderer
                     if (distanceCalculator != null)
                     {
                         distanceCalculator.CalculateDistances(selectedObject.gameObject);
                     }
                 }
+            }
+            // Detect mouse button release
+            if (Input.GetMouseButtonUp(0) && isDragging)
+            {
+                OnMouseRelease();
+                isDragging = false;
             }
 
             // Rotate the object using arrow keys
@@ -67,6 +76,12 @@ public class ObjectManipulator : MonoBehaviour
                 originalMaterial = meshRenderer.material; // Store the original material
                 meshRenderer.material = selectedMaterial; // Apply the selected material
             }
+
+            // Recalculate distance for the selected object
+            if (distanceCalculator != null)
+            {
+                distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
+            }
         }
     }
 
@@ -84,6 +99,7 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject != null)
         {
+            // Scale on all axes
             Vector3 newScale = new Vector3(scaleValue, scaleValue, scaleValue);
             selectedObject.localScale = newScale;
         }
@@ -108,5 +124,16 @@ public class ObjectManipulator : MonoBehaviour
     {
         RevertMaterial(); // Revert the material
         selectedObject = null; // Deselect the object
+    }
+
+    // Method called when the mouse button is released
+    private void OnMouseRelease()
+    {
+        Debug.Log("Mouse released. Object manipulation finished.");
+        // Implement any additional logic you want to occur when the mouse is released
+        // For example, you could deselect the object or trigger other events
+
+        // Optional: Deselect the object when the mouse is released
+        DeselectObject();
     }
 }

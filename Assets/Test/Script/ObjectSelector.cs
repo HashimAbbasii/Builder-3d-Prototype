@@ -6,7 +6,14 @@ public class ObjectSelector : MonoBehaviour
 
     void Start()
     {
-        manipulator = FindObjectOfType<ObjectManipulator>();
+        if (manipulator == null)
+        {
+            manipulator = FindObjectOfType<ObjectManipulator>();
+            if (manipulator == null)
+            {
+                Debug.LogError("ObjectManipulator script not found in the scene.");
+            }
+        }
     }
 
     void Update()
@@ -18,13 +25,16 @@ public class ObjectSelector : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.GetComponent<SelectableObject>() != null)
+                SelectableObject selectable = hit.collider.GetComponent<SelectableObject>();
+
+                if (selectable != null)
                 {
-                    Debug.Log("Select Object");
+                    Debug.Log("Object selected: " + hit.collider.name);
                     manipulator.SetSelectedObject(hit.collider.transform);
                 }
                 else
                 {
+                    Debug.Log("Object deselected");
                     manipulator.SetSelectedObject(null); // Deselect if not a selectable object
                 }
             }

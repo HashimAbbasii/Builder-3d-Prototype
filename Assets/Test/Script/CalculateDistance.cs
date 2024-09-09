@@ -12,11 +12,6 @@ public class CalculateDistance : MonoBehaviour
     public TextMeshProUGUI distanceText; // UI element to show distance (optional)
     private List<GameObject> placedObjects = new List<GameObject>();
 
-    void Start()
-    {
-        // No need to set up the line renderer here since each object will have its own
-    }
-
     // Call this method after placing the object
     public void CalculateDistances(GameObject placedObject)
     {
@@ -67,6 +62,7 @@ public class CalculateDistance : MonoBehaviour
         // Add the object to the list of placed objects
         placedObjects.Add(placedObject);
     }
+
     private bool CheckDistanceToLayer(Vector3 objectPosition, LayerMask layerMask, out Vector3 closestPoint, out float distance)
     {
         Collider[] colliders = Physics.OverlapSphere(objectPosition, 100f, layerMask); // Adjust the radius as needed
@@ -117,17 +113,21 @@ public class CalculateDistance : MonoBehaviour
 
         LineRenderer lineRenderer = selectedObject.GetComponent<LineRenderer>();
 
+        if (lineRenderer == null)
+        {
+            lineRenderer = selectedObject.AddComponent<LineRenderer>();
+        }
+
+
         // Check distance from wall first
         if (CheckDistanceToLayer(objectPosition, wallLayer, out closestPoint, out shortestDistance))
         {
             Debug.Log("Nearest object is the wall.");
         }
-        // If no wall, check distance from floor
         else if (CheckDistanceToLayer(objectPosition, floorLayer, out closestPoint, out shortestDistance))
         {
             Debug.Log("Nearest object is the floor.");
         }
-        // If no wall or floor, check distance from grass ground
         else if (CheckDistanceToLayer(objectPosition, grassGroundLayer, out closestPoint, out shortestDistance))
         {
             Debug.Log("Nearest object is the grass ground.");
@@ -136,7 +136,7 @@ public class CalculateDistance : MonoBehaviour
         // Display the distance in Unity
         DisplayDistance(shortestDistance);
 
-        // Update the line renderer with the new closest point
+        // Draw a line between the placed object and the closest point (wall, floor, or ground)
         DrawLine(lineRenderer, objectPosition, closestPoint);
     }
 }
