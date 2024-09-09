@@ -4642,7 +4642,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1344682279}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fee8bcbda75004848ae24a1cc758cbe2, type: 3}
   m_Name: 
@@ -4650,8 +4650,8 @@ MonoBehaviour:
   mainCamera: {fileID: 1344682281}
   zoomInSpeed: 0.05
   zoomOutSpeed: 0.2
-  minZoom: 2
-  maxZoom: 15
+  minZoom: 30
+  maxZoom: 90
 --- !u!1 &1356757721
 GameObject:
   m_ObjectHideFlags: 0
