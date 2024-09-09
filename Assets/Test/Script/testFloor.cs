@@ -14,13 +14,15 @@ public class testFloor : MonoBehaviour
 
     private Vector3 initialMousePos;
     private Vector3 finalMousePos;
-    private GameObject currentFloor;
+    public GameObject currentFloor;
     private GameObject currentWall;
     private GameObject previewObject;
     private Material originalMaterial; // To store the original material of the model
     private bool isCreatingFloor = false;
     private bool isCreatingWall = false;
     private int selectedObjectIndex = -1;
+
+    public GameObject FloorMaterialChanged;
     public LayerMask layerMask;
 
     void Update()
@@ -34,6 +36,7 @@ public class testFloor : MonoBehaviour
                 initialMousePos = hit.point;
                 initialMousePos.y = 0f; // Ensure the y-axis is set to 0
                 currentFloor = Instantiate(floorPrefab, initialMousePos, Quaternion.identity);
+                FloorMaterialChanged=currentFloor;
             }
         }
 
@@ -229,13 +232,37 @@ public class testFloor : MonoBehaviour
     // Method to change the floor's texture/material
     public void ChangeFloorTexture(int materialIndex)
     {
-        if (currentFloor != null && materialIndex >= 0 && materialIndex < floorMaterials.Length)
+        if (FloorMaterialChanged != null && materialIndex >= 0 && materialIndex < floorMaterials.Length)
         {
-            Renderer floorRenderer = currentFloor.GetComponent<Renderer>();
-            if (floorRenderer != null)
+            Debug.Log("Renderer");
+
+            // Check if the currentFloor object has children
+            if (FloorMaterialChanged.transform.childCount > 0)
             {
-                floorRenderer.material = floorMaterials[materialIndex];
+                // Get the first child of the currentFloor
+                Transform firstChild = FloorMaterialChanged.transform.GetChild(0);
+
+                // Access the Renderer component of the first child
+                Renderer floorRenderer = firstChild.GetComponent<Renderer>();
+
+                if (floorRenderer != null)
+                {
+                    // Apply the selected material
+                    floorRenderer.material = floorMaterials[materialIndex];
+                }
+                else
+                {
+                    Debug.LogWarning("Renderer component not found on the first child.");
+                }
             }
+            else
+            {
+                Debug.LogWarning("No children found on the FloorTextureMaterial object.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("FloorTextureMaterial is null or the materialIndex is out of range.");
         }
     }
 }
