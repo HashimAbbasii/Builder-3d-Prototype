@@ -5,13 +5,45 @@ using UnityEngine;
 public class PinchZoom : MonoBehaviour
 {
     public Camera mainCamera;  // Assign the camera in the inspector
-    public float zoomSpeed = 0.1f;  // Speed of zoom
-    public float minZoom = 8.0f;    // Minimum zoom level
+    public float zoomInSpeed = 0.05f;   // Speed of zooming in
+    public float zoomOutSpeed = 0.2f;   // Speed of zooming out
+    public float minZoom = 2.0f;    // Minimum zoom level
     public float maxZoom = 15.0f;   // Maximum zoom level
+
+    private Vector3 lastMousePosition;
 
     void Update()
     {
-        // Check if there are two touches on the screen
+#if UNITY_EDITOR
+        // Simulate touch input using the mouse in the editor
+        if (Input.GetMouseButton(0))  // Left mouse button is held down
+        {
+            // Simulate the movement of two touches
+            if (Input.GetMouseButtonDown(0))
+            {
+                lastMousePosition = Input.mousePosition;
+            }
+            else
+            {
+                Vector3 deltaMousePosition = Input.mousePosition - lastMousePosition;
+
+                // Use the vertical mouse movement to simulate pinch zoom
+                float deltaMagnitudeDiff = deltaMousePosition.y;
+
+                // Determine the zoom speed based on whether we're zooming in or out
+                float speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
+
+                // Zoom the camera's field of view based on the simulated pinch
+                float newFOV = GetComponent<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
+
+                // Clamp the field of view to the min and max values
+                GetComponent<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
+
+                lastMousePosition = Input.mousePosition;
+            }
+        }
+#else
+        // Touch input on mobile devices
         if (Input.touchCount == 2)
         {
             // Get the first and second touches
@@ -29,14 +61,15 @@ public class PinchZoom : MonoBehaviour
             // Find the difference in the distances between each frame
             float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
+            // Determine the zoom speed based on whether we're zooming in or out
+            float speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
+
             // Zoom the camera's field of view based on the difference in distance between the touches
-            float newFOV = GetComponent<Camera>().fieldOfView + deltaMagnitudeDiff * zoomSpeed;
+            float newFOV = GetComponent<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
 
             // Clamp the field of view to the min and max values
             GetComponent<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
         }
+#endif
     }
 }
-
-
-

@@ -13,10 +13,11 @@ public class ObjectManipulator : MonoBehaviour
 
     void Update()
     {
+        // Only process if an object is selected
         if (selectedObject != null)
         {
             // Move the object with the mouse when the left mouse button is held down
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0) && isDragging)
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
@@ -27,20 +28,12 @@ public class ObjectManipulator : MonoBehaviour
                     Vector3 newPosition = hit.point;
                     selectedObject.position = new Vector3(newPosition.x, selectedObject.position.y, newPosition.z);
 
-                    isDragging = true;
-
                     // Update the distance calculation and line renderer
                     if (distanceCalculator != null)
                     {
                         distanceCalculator.CalculateDistances(selectedObject.gameObject);
                     }
                 }
-            }
-            // Detect mouse button release
-            if (Input.GetMouseButtonUp(0) && isDragging)
-            {
-                OnMouseRelease();
-                isDragging = false;
             }
 
             // Rotate the object using arrow keys
@@ -52,12 +45,25 @@ public class ObjectManipulator : MonoBehaviour
             {
                 RotateObject(rotationSpeed * Time.deltaTime); // Rotate right
             }
+
+            // Stop dragging when the mouse button is released
+            if (Input.GetMouseButtonUp(0))
+            {
+                isDragging = false;
+            }
         }
     }
 
     // Set the object to be manipulated
     public void SetSelectedObject(Transform obj)
     {
+        // Check if the same object is clicked again to toggle selection
+        if (selectedObject == obj)
+        {
+            DeselectObject();
+            return;
+        }
+
         // Revert the material of the previously selected object
         if (selectedObject != null)
         {
@@ -82,6 +88,8 @@ public class ObjectManipulator : MonoBehaviour
             {
                 distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
             }
+
+            isDragging = true; // Enable dragging when a new object is selected
         }
     }
 
@@ -124,16 +132,12 @@ public class ObjectManipulator : MonoBehaviour
     {
         RevertMaterial(); // Revert the material
         selectedObject = null; // Deselect the object
+        isDragging = false; // Stop dragging when deselected
     }
 
-    // Method called when the mouse button is released
-    private void OnMouseRelease()
+    // Method to deselect the currently selected object via button click
+    public void DeselectButton()
     {
-        Debug.Log("Mouse released. Object manipulation finished.");
-        // Implement any additional logic you want to occur when the mouse is released
-        // For example, you could deselect the object or trigger other events
-
-        // Optional: Deselect the object when the mouse is released
-        DeselectObject();
+        DeselectObject(); // Call the method to deselect the object
     }
 }
