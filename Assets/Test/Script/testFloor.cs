@@ -10,6 +10,7 @@ public class testFloor : MonoBehaviour
     public Material previewMaterial;
     public Material validPlacementMaterial;
     public Material invalidPlacementMaterial;
+    public Material[] floorMaterials; // Array to hold different materials for the floor
 
     private Vector3 initialMousePos;
     private Vector3 finalMousePos;
@@ -221,6 +222,19 @@ public class testFloor : MonoBehaviour
             else
             {
                 Debug.Log("Cannot place object, target is not a floor.");
+            }
+        }
+    }
+
+    // Method to change the floor's texture/material
+    public void ChangeFloorTexture(int materialIndex)
+    {
+        if (currentFloor != null && materialIndex >= 0 && materialIndex < floorMaterials.Length)
+        {
+            Renderer floorRenderer = currentFloor.GetComponent<Renderer>();
+            if (floorRenderer != null)
+            {
+                floorRenderer.material = floorMaterials[materialIndex];
             }
         }
     }

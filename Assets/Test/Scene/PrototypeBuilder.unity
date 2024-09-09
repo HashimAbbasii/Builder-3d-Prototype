@@ -2656,6 +2656,11 @@ MonoBehaviour:
   previewMaterial: {fileID: 2100000, guid: ac381361250d3a74f805a4b54ee6a9c9, type: 2}
   validPlacementMaterial: {fileID: 0}
   invalidPlacementMaterial: {fileID: 0}
+  floorMaterials:
+  - {fileID: 2100000, guid: b5198f8af2f2fb74d81edc8ca9d255ce, type: 2}
+  - {fileID: 2100000, guid: 1915ad50456855041a24dd2f99ea40b6, type: 2}
+  - {fileID: 2100000, guid: 585b99b5dc612124e94345db68b4544a, type: 2}
+  - {fileID: 2100000, guid: 7e181fd161a9d4c41a7d09c87806d01d, type: 2}
   layerMask:
     serializedVersion: 2
     m_Bits: 8
