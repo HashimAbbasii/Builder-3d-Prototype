@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.90235883, g: 0.88876736, b: 0.88472474, a: 1}
+  m_IndirectSpecularColor: {r: 0.9048618, g: 0.8922876, b: 0.8872974, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2906,6 +2906,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: b5198f8af2f2fb74d81edc8ca9d255ce, type: 2}
   - {fileID: 2100000, guid: 1915ad50456855041a24dd2f99ea40b6, type: 2}
   - {fileID: 2100000, guid: 585b99b5dc612124e94345db68b4544a, type: 2}
+  currentFloor: {fileID: 0}
+  FloorMaterialChanged: {fileID: 0}
   layerMask:
     serializedVersion: 2
     m_Bits: 8
@@ -4394,8 +4396,8 @@ Transform:
   m_GameObject: {fileID: 1104909313}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -4547,6 +4549,7 @@ GameObject:
   - component: {fileID: 1344682281}
   - component: {fileID: 1344682280}
   - component: {fileID: 1344682283}
+  - component: {fileID: 1344682284}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4589,7 +4592,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -4633,6 +4636,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   manipulator: {fileID: 0}
+--- !u!114 &1344682284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1344682279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fee8bcbda75004848ae24a1cc758cbe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 1344682281}
+  zoomSpeed: 0.1
+  minZoom: 2
+  maxZoom: 15
 --- !u!1 &1356757721
 GameObject:
   m_ObjectHideFlags: 0
