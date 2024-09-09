@@ -6,7 +6,7 @@ public class PinchZoom : MonoBehaviour
 {
     public Camera mainCamera;  // Assign the camera in the inspector
     public float zoomSpeed = 0.1f;  // Speed of zoom
-    public float minZoom = 2.0f;    // Minimum zoom level
+    public float minZoom = 8.0f;    // Minimum zoom level
     public float maxZoom = 15.0f;   // Maximum zoom level
 
     void Update()

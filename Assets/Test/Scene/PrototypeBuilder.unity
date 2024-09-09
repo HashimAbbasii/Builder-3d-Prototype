@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.9048618, g: 0.8922876, b: 0.8872974, a: 1}
+  m_IndirectSpecularColor: {r: 0.90235883, g: 0.88876736, b: 0.88472474, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -596,11 +596,11 @@ RectTransform:
   m_Father: {fileID: 1500616558}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -493}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 54}
   m_SizeDelta: {x: 300, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &101837281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2196,7 +2196,6 @@ MonoBehaviour:
   grassGroundLayer:
     serializedVersion: 2
     m_Bits: 64
-  lineRenderer: {fileID: 28181888}
   distanceText: {fileID: 1846661021}
 --- !u!1 &606508948
 GameObject:
@@ -4804,7 +4803,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1500616558
 RectTransform:
   m_ObjectHideFlags: 0
