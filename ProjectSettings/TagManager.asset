@@ -8,6 +8,7 @@ TagManager:
   - Selectable
   - PlacedObject
   - Model
+  - Evidence
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - UI
   - GroundGrass
   - Wall
-  - 
+  - Evidence
   - 
   - 
   - 
