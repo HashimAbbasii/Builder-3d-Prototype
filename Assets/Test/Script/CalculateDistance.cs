@@ -42,15 +42,15 @@ public class CalculateDistance : MonoBehaviour
         // Check distance from wall first
         if (CheckDistanceToLayer(objectPosition, wallLayer, out closestPoint, out shortestDistance))
         {
-            Debug.Log("Nearest object is the wall.");
+            //Debug.Log("Nearest object is the wall.");
         }
         else if (CheckDistanceToLayer(objectPosition, floorLayer, out closestPoint, out shortestDistance))
         {
-            Debug.Log("Nearest object is the floor.");
+            //Debug.Log("Nearest object is the floor.");
         }
         else if (CheckDistanceToLayer(objectPosition, grassGroundLayer, out closestPoint, out shortestDistance))
         {
-            Debug.Log("Nearest object is the grass ground.");
+           // Debug.Log("Nearest object is the grass ground.");
         }
 
         // Display the distance in Unity
@@ -92,7 +92,7 @@ public class CalculateDistance : MonoBehaviour
         {
             distanceText.text = "Distance: " + distance.ToString("F2") + " units";
         }
-        Debug.Log("Distance: " + distance.ToString("F2") + " units");
+        //Debug.Log("Distance: " + distance.ToString("F2") + " units");
     }
 
     private void DrawLine(LineRenderer lineRenderer, Vector3 startPosition, Vector3 endPosition)
@@ -122,15 +122,15 @@ public class CalculateDistance : MonoBehaviour
         // Check distance from wall first
         if (CheckDistanceToLayer(objectPosition, wallLayer, out closestPoint, out shortestDistance))
         {
-            Debug.Log("Nearest object is the wall.");
+            //Debug.Log("Nearest object is the wall.");
         }
         else if (CheckDistanceToLayer(objectPosition, floorLayer, out closestPoint, out shortestDistance))
         {
-            Debug.Log("Nearest object is the floor.");
+           // Debug.Log("Nearest object is the floor.");
         }
         else if (CheckDistanceToLayer(objectPosition, grassGroundLayer, out closestPoint, out shortestDistance))
         {
-            Debug.Log("Nearest object is the grass ground.");
+           // Debug.Log("Nearest object is the grass ground.");
         }
 
         // Display the distance in Unity

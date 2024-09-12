@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectableObject : ObjectType
+public class WallObject : ObjectType
 {
-    public bool canPlaceObjectsOnIt;
     public float heightOffset = 0.0f; // The height offset to place objects on this surface
 }

@@ -19,6 +19,7 @@ public class ObjectManipulator : MonoBehaviour
             // Move the object with the mouse when the left mouse button is held down
             if (Input.GetMouseButton(0) && isDragging)
             {
+                Debug.Log("Selected");
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit hit;
 

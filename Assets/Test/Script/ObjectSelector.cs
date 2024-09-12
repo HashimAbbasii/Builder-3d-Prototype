@@ -3,6 +3,7 @@ using UnityEngine;
 public class ObjectSelector : MonoBehaviour
 {
     public ObjectManipulator manipulator;
+    public LayerMask surfaceLayer;
 
     void Start()
     {
@@ -23,21 +24,25 @@ public class ObjectSelector : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, surfaceLayer))
             {
+                Debug.Log("Selected");
                 SelectableObject selectable = hit.collider.GetComponent<SelectableObject>();
 
                 if (selectable != null)
                 {
+                    
                     Debug.Log("Object selected: " + hit.collider.name);
                     manipulator.SetSelectedObject(hit.collider.transform);
                 }
                 else
                 {
-                    Debug.Log("Object deselected");
+                    //Debug.Log("Object deselected");
                     manipulator.SetSelectedObject(null); // Deselect if not a selectable object
                 }
             }
         }
     }
+
+   
 }

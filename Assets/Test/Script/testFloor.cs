@@ -23,7 +23,7 @@ public class testFloor : MonoBehaviour
     private int selectedObjectIndex = -1;
 
     public GameObject FloorMaterialChanged;
-    public LayerMask layerMask;
+    public LayerMask surfaceLayerMask;
 
     void Update()
     {
@@ -36,7 +36,7 @@ public class testFloor : MonoBehaviour
                 initialMousePos = hit.point;
                 initialMousePos.y = 0f; // Ensure the y-axis is set to 0
                 currentFloor = Instantiate(floorPrefab, initialMousePos, Quaternion.identity);
-                FloorMaterialChanged=currentFloor;
+                FloorMaterialChanged = currentFloor;
             }
         }
 
@@ -115,20 +115,21 @@ public class testFloor : MonoBehaviour
         if (previewObject != null)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000, layerMask, QueryTriggerInteraction.Collide))
+            if (Physics.Raycast(ray, out RaycastHit hit, 1000, surfaceLayerMask, QueryTriggerInteraction.Collide))
             {
                 Vector3 previewPosition = hit.point;
                 previewPosition.y = 0f; // Ensure the y-axis remains at 0
                 previewObject.transform.position = previewPosition;
 
-                // Check if the object is being placed on a valid surface (i.e., the floor)
-                if (hit.collider.CompareTag("Floor"))
+                // Check if the object is being placed on a valid surface
+                ObjectType surface = hit.collider.GetComponent<ObjectType>();
+                if (surface != null)
                 {
-                    ApplyMaterial(previewObject, validPlacementMaterial);
+                    ApplyMaterial(previewObject, validPlacementMaterial); // Valid surface
                 }
                 else
                 {
-                    ApplyMaterial(previewObject, invalidPlacementMaterial);
+                    ApplyMaterial(previewObject, invalidPlacementMaterial); // Invalid surface
                 }
             }
         }
@@ -136,7 +137,7 @@ public class testFloor : MonoBehaviour
         // Object placement logic
         if (Input.GetMouseButtonUp(0) && selectedObjectIndex != -1 && previewObject != null) // Place object on mouse button release
         {
-            PlaceObjectOnFloor();
+            PlaceObjectOnSurface();
         }
     }
 
@@ -192,39 +193,114 @@ public class testFloor : MonoBehaviour
         }
     }
 
-    // Place the selected object on the floor
-    private void PlaceObjectOnFloor()
+    // Place the selected object on a valid surface
+    private void PlaceObjectOnSurface()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        
+        if (Physics.SphereCast(ray, 0.1f, out RaycastHit hit))
         {
-            // Check if the ray hit an object with the "Floor" tag
-            if (hit.collider.CompareTag("Floor"))
+            // Check if the ray hit a valid surface with the Surface component
+            ObjectType surface = hit.collider.GetComponent<ObjectType>();
+            
+            
+            if (surface != null)
             {
-                Vector3 placePosition = hit.point;
-                placePosition.y = 0f; // Ensure the y-axis remains at 0
-
-                GameObject prefab = modelPrefabs[selectedObjectIndex];
-                if (prefab != null)
+                switch (surface.surfaceType)
                 {
-                    GameObject placedObject = Instantiate(prefab, placePosition, Quaternion.identity);
+                    case SurfaceType.Grass:
+                        var grass = (GrassObject)surface;
 
-                    // Reset the material of the placed object to the original material
-                    Renderer[] renderers = placedObject.GetComponentsInChildren<Renderer>();
-                    foreach (Renderer renderer in renderers)
-                    {
-                        renderer.material = originalMaterial;
-                    }
+                        Vector3 placePosition1 = hit.point;
 
-                    // Destroy the preview object after placing the actual object
-                    Destroy(previewObject);
-                    previewObject = null; // Reset previewObject to avoid repeated placements
-                    selectedObjectIndex = -1; // Reset selection after placement
+                        // Instantiate the object (e.g., knife) at the calculated position
+                        GameObject prefab1 = modelPrefabs[selectedObjectIndex];
+                        if (prefab1 != null)
+                        {
+                            GameObject placedObject = Instantiate(prefab1, placePosition1, Quaternion.identity);
+
+                            // Reset the material of the placed object to the original material
+                            Renderer[] renderers = placedObject.GetComponentsInChildren<Renderer>();
+                            foreach (Renderer renderer in renderers)
+                            {
+                                renderer.material = originalMaterial;
+                            }
+
+                            // Destroy the preview object after placing the actual object
+                            Destroy(previewObject);
+                            previewObject = null; // Reset previewObject to avoid repeated placements
+                            selectedObjectIndex = -1; // Reset selection after placement
+                        }
+
+                        break;
+
+                    case SurfaceType.Floor:
+                        var floor = (FloorObject)surface;
+                        Vector3 placePosition2 = hit.point;
+                      
+                        // Instantiate the object (e.g., knife) at the calculated position
+                        GameObject prefab2 = modelPrefabs[selectedObjectIndex];
+                        if (prefab2 != null)
+                        {
+                            GameObject placedObject = Instantiate(prefab2, placePosition2, Quaternion.identity);
+
+                            // Reset the material of the placed object to the original material
+                            Renderer[] renderers = placedObject.GetComponentsInChildren<Renderer>();
+                            foreach (Renderer renderer in renderers)
+                            {
+                                renderer.material = originalMaterial;
+                            }
+
+                            // Destroy the preview object after placing the actual object
+                            Destroy(previewObject);
+                            previewObject = null; // Reset previewObject to avoid repeated placements
+                            selectedObjectIndex = -1; // Reset selection after placement
+                        }
+
+                        break;
+
+                    case SurfaceType.Wall:
+                        var wall = (WallObject)surface;
+                        break;
+
+                    case SurfaceType.Models:
+                        var model = (SelectableObject)surface;
+
+                        if (!model.canPlaceObjectsOnIt) return;
+
+                        Vector3 placePosition3 = hit.point;
+                        // Adjust the y-position based on the surface's height offset
+                        placePosition3.y += model.heightOffset;
+
+                        Debug.Log("placePosition" + placePosition3.y);
+
+                        // Instantiate the object (e.g., knife) at the calculated position
+                        GameObject prefab3 = modelPrefabs[selectedObjectIndex];
+                        if (prefab3 != null)
+                        {
+                            GameObject placedObject = Instantiate(prefab3, placePosition3, Quaternion.identity);
+
+                            // Reset the material of the placed object to the original material
+                            Renderer[] renderers = placedObject.GetComponentsInChildren<Renderer>();
+                            foreach (Renderer renderer in renderers)
+                            {
+                                renderer.material = originalMaterial;
+                            }
+
+                            // Destroy the preview object after placing the actual object
+                            Destroy(previewObject);
+                            previewObject = null; // Reset previewObject to avoid repeated placements
+                            selectedObjectIndex = -1; // Reset selection after placement
+                        }
+
+                        break;
                 }
+
+                
             }
             else
             {
-                Debug.Log("Cannot place object, target is not a floor.");
+                Debug.Log("Cannot place object, no valid surface detected.");
             }
         }
     }

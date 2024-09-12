@@ -55,3 +55,6 @@ public class GameManager : MonoBehaviour
         }
     }
 }
+
+
+public enum SurfaceType { Grass, Floor, Wall, Models };
