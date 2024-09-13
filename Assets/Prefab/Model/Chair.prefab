@@ -112,5 +112,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   surfaceType: 3
-  canPlaceObjectsOnIt: 0
+  canPlaceObjectsOnIt: 1
   heightOffset: 1
