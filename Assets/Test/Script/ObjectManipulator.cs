@@ -11,11 +11,15 @@ public class ObjectManipulator : MonoBehaviour
     public Slider scaleSlider;         // Slider to control the object's scale
     public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
 
+    [Space(5)]
+    public GameObject removeButton;
+
     void Update()
     {
         // Only process if an object is selected
         if (selectedObject != null)
         {
+            removeButton.SetActive(true);
             // Move the object with the mouse when the left mouse button is held down
             if (Input.GetMouseButton(0) && isDragging)
             {
@@ -53,6 +57,11 @@ public class ObjectManipulator : MonoBehaviour
                 isDragging = false;
             }
         }
+        else
+        { 
+            removeButton.SetActive(false);
+        }
+
     }
 
     // Set the object to be manipulated
@@ -133,6 +142,12 @@ public class ObjectManipulator : MonoBehaviour
     {
         RevertMaterial(); // Revert the material
         selectedObject = null; // Deselect the object
+        isDragging = false; // Stop dragging when deselected
+    }
+
+    public void RemoveObject()
+    {
+        Destroy(selectedObject.gameObject); 
         isDragging = false; // Stop dragging when deselected
     }
 
