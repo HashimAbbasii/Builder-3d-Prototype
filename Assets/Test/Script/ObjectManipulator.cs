@@ -113,12 +113,20 @@ public class ObjectManipulator : MonoBehaviour
     }
 
     // Scale the selected object based on the slider value
+    private Vector3 originalScale;
+
     public void ScaleObject(float scaleValue)
     {
         if (selectedObject != null)
         {
-            // Scale on all axes
-            Vector3 newScale = new Vector3(scaleValue, scaleValue, scaleValue);
+            // If originalScale hasn't been set, initialize it to the current scale
+            if (originalScale == Vector3.zero)
+            {
+                originalScale = selectedObject.localScale;
+            }
+
+            // Scale based on the original scale
+            Vector3 newScale = originalScale * scaleValue;
             selectedObject.localScale = newScale;
         }
     }

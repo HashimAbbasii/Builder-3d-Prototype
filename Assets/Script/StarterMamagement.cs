@@ -9,6 +9,7 @@ public class StarterMamagement : MonoBehaviour
     [SerializeField] private Transform plotSelection;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Animator StartingPanel;
+    [SerializeField] private GameObject StopingPanel;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +32,7 @@ public class StarterMamagement : MonoBehaviour
 
             plotSelection.transform.localScale = new Vector3(1.5f,1.5f,1.5f);
             StartingPanel.enabled = true;
+            StartCoroutine(Endpanel());
         }
         else if(index == 1)
         {
@@ -40,6 +42,7 @@ public class StarterMamagement : MonoBehaviour
 
             plotSelection.transform.localScale = new Vector3(2f, 2f, 2f);
             StartingPanel.enabled = true;
+            StartCoroutine(Endpanel());
         }
         else
         {
@@ -54,6 +57,16 @@ public class StarterMamagement : MonoBehaviour
 
            
             StartingPanel.enabled = true;
+            StartCoroutine(Endpanel());
         }
+    }
+
+    IEnumerator Endpanel ()
+    {
+
+        //StartingPanel
+        yield return new WaitForSecondsRealtime(1.5f);
+        StopingPanel.gameObject.SetActive(false);
+
     }
 }
