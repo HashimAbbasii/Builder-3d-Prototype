@@ -119,6 +119,7 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject != null)
         {
+            
             // If originalScale hasn't been set, initialize it to the current scale
             if (originalScale == Vector3.zero)
             {
