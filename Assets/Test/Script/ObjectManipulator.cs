@@ -78,8 +78,6 @@ public class ObjectManipulator : MonoBehaviour
                     // Move object on the XZ plane (ignoring Y-axis)
                     var newPosition = hit.point;
                     
-                    Debug.Log(hit.transform.name);
-                    
                     selectedObject.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
 
                     // Update the distance calculation and line renderer
