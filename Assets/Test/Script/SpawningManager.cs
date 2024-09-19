@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class testFloor : MonoBehaviour
+public class SpawningManager : MonoBehaviour
 {
     public GameObject[] modelPrefabs;
     public GameObject floorPrefab;

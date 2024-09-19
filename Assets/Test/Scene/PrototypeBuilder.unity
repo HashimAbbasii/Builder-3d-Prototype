@@ -3541,7 +3541,7 @@ GameObject:
   - component: {fileID: 833281650}
   - component: {fileID: 833281651}
   m_Layer: 0
-  m_Name: ParentGameObject
+  m_Name: SpawningManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
