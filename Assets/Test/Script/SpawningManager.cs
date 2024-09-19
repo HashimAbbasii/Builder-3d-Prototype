@@ -25,12 +25,12 @@ public class SpawningManager : MonoBehaviour
     public GameObject FloorMaterialChanged;
     public LayerMask surfaceLayerMask;
 
-    void Update()
+    private void Update()
     {
         // Floor creation logic
         if (isCreatingFloor && Input.GetMouseButtonDown(0)) // Left mouse button pressed
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 initialMousePos = hit.point;
@@ -62,7 +62,7 @@ public class SpawningManager : MonoBehaviour
         // Wall creation logic
         if (isCreatingWall && Input.GetMouseButtonDown(0)) // Left mouse button pressed
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 initialMousePos = hit.point;
@@ -73,19 +73,19 @@ public class SpawningManager : MonoBehaviour
 
         if (isCreatingWall && Input.GetMouseButton(0) && currentWall != null) // Dragging the mouse
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 finalMousePos = hit.point;
                 finalMousePos.y = 0f; // Ensure the y-axis remains at 0
 
-                Vector3 direction = finalMousePos - initialMousePos;
+                var direction = finalMousePos - initialMousePos;
 
                 // Determine whether the drag is more along the x-axis or the z-axis
                 if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
                 {
                     // Dragging along the x-axis
-                    float distanceX = finalMousePos.x - initialMousePos.x;
+                    var distanceX = finalMousePos.x - initialMousePos.x;
                     currentWall.transform.localScale = new Vector3(distanceX, currentWall.transform.localScale.y, currentWall.transform.localScale.z);
                     currentWall.transform.rotation = Quaternion.Euler(0, 0, 0); // Set rotation to 0 degrees on the y-axis
 
@@ -95,7 +95,7 @@ public class SpawningManager : MonoBehaviour
                 else
                 {
                     // Dragging along the z-axis
-                    float distanceZ = finalMousePos.z - initialMousePos.z;
+                    var distanceZ = finalMousePos.z - initialMousePos.z;
                     currentWall.transform.localScale = new Vector3(distanceZ, currentWall.transform.localScale.y, currentWall.transform.localScale.z);
                     currentWall.transform.rotation = Quaternion.Euler(0, 90, 0); // Set rotation to 90 degrees on the y-axis
 
@@ -114,23 +114,17 @@ public class SpawningManager : MonoBehaviour
         // Preview object follows the mouse
         if (previewObject != null)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, 1000, surfaceLayerMask, QueryTriggerInteraction.Collide))
             {
-                Vector3 previewPosition = hit.point;
+                var previewPosition = hit.point;
                 previewPosition.y = 0f; // Ensure the y-axis remains at 0
                 previewObject.transform.position = previewPosition;
 
                 // Check if the object is being placed on a valid surface
-                ObjectType surface = hit.collider.GetComponent<ObjectType>();
-                if (surface != null)
-                {
-                    ApplyMaterial(previewObject, validPlacementMaterial); // Valid surface
-                }
-                else
-                {
-                    ApplyMaterial(previewObject, invalidPlacementMaterial); // Invalid surface
-                }
+                var surface = hit.collider.GetComponent<ObjectType>();
+                ApplyMaterial(previewObject, surface != null ? validPlacementMaterial : invalidPlacementMaterial); // Invalid surface
+                // Valid surface
             }
         }
 
