@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   surfaceType: 3
   canPlaceObjectsOnIt: 0
+  canBePlacedOnObject: 0
   heightOffset: 0
   objectRenderer: {fileID: 7111664384275121473}
 --- !u!1001 &3641505614813427577
@@ -66,15 +67,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 279466200704755704, guid: 0011845fca82ed54e8979032e55feb59, type: 3}
       propertyPath: m_LocalScale.x
-      value: 12
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 279466200704755704, guid: 0011845fca82ed54e8979032e55feb59, type: 3}
       propertyPath: m_LocalScale.y
-      value: 12
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 279466200704755704, guid: 0011845fca82ed54e8979032e55feb59, type: 3}
       propertyPath: m_LocalScale.z
-      value: 12
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 279466200704755704, guid: 0011845fca82ed54e8979032e55feb59, type: 3}
       propertyPath: m_LocalPosition.x
@@ -82,7 +83,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 279466200704755704, guid: 0011845fca82ed54e8979032e55feb59, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.191
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 279466200704755704, guid: 0011845fca82ed54e8979032e55feb59, type: 3}
       propertyPath: m_LocalPosition.z

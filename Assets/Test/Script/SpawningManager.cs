@@ -140,6 +140,12 @@ public class SpawningManager : MonoBehaviour
     {
         isCreatingFloor = true;
         isCreatingWall = false; // Ensure wall creation is not active
+        if (previewObject != null)
+        {
+            Destroy(previewObject);
+        }
+        previewObject = null;
+        selectedObjectIndex = -1;
     }
 
     // Called when the wall button is clicked
@@ -147,11 +153,20 @@ public class SpawningManager : MonoBehaviour
     {
         isCreatingWall = true;
         isCreatingFloor = false; // Ensure floor creation is not active
+        if (previewObject != null)
+        {
+            Destroy(previewObject);
+        }
+        previewObject = null;
+        selectedObjectIndex = -1;
     }
 
     // Called when an object button (like Chair, Table) is clicked
     public void SelectObject(int objectIndex)
     {
+        isCreatingWall = false;
+        isCreatingFloor = false; 
+        // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Length)
         {
             selectedObjectIndex = objectIndex;

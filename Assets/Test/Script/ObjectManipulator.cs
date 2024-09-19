@@ -82,13 +82,13 @@ public class ObjectManipulator : MonoBehaviour
                     //     
                     // }
                     
-                    selectedObject.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
+                    selectedObject.parent.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
                     
                     
                     // Update the distance calculation and line renderer
                     if (distanceCalculator != null)
                     {
-                        distanceCalculator.CalculateDistances(selectedObject.gameObject);
+                        distanceCalculator.CalculateDistances(selectedObject.parent.gameObject);
                     }
                 }
             }
@@ -189,7 +189,7 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject != null)
         {
-            selectedObject.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
+            selectedObject.parent.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
         }
     }
 
@@ -198,7 +198,8 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject != null)
         {
-            selectedObject.localScale = selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
+            //temporary Fix
+            selectedObject.parent.localScale = selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
         }
     }
 
@@ -230,7 +231,7 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject == null) return;
         
-        Destroy(selectedObject.gameObject);
+        Destroy(selectedObject.parent.gameObject);
         isDragging = false; // Stop dragging when deselected
     }
 
