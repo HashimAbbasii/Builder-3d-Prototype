@@ -37,16 +37,15 @@ public class ObjectManipulator : MonoBehaviour
         scaleSlider.onValueChanged.AddListener(ScaleObject);
     }
 
-    void Update()
+    private void Update()
     {
         // Check if the mouse is clicked and it's not over any UI elements (rotation buttons or slider)
         if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider())
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             // Use Raycast with LayerMask to only interact with objects on the selectable layer
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableLayer))
+            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
             {
                 var selectedTransform = hit.transform;
 
@@ -77,9 +76,15 @@ public class ObjectManipulator : MonoBehaviour
                 {
                     // Move object on the XZ plane (ignoring Y-axis)
                     var newPosition = hit.point;
+
+                    // if (hit.transform.GetComponentInParent<SelectableObject>() && hit.transform.GetComponentInParent<SelectableObject>().canBePlacedOnObject)
+                    // {
+                    //     
+                    // }
                     
                     selectedObject.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
-
+                    
+                    
                     // Update the distance calculation and line renderer
                     if (distanceCalculator != null)
                     {
@@ -116,7 +121,7 @@ public class ObjectManipulator : MonoBehaviour
         Vector2 localMousePosition;
 
         // Loop through each rotation button and check if the mouse is over any
-        foreach (RectTransform rectTransform in rotationButtonRects)
+        foreach (var rectTransform in rotationButtonRects)
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out localMousePosition);
             if (rectTransform.rect.Contains(localMousePosition))
@@ -148,7 +153,11 @@ public class ObjectManipulator : MonoBehaviour
         // Revert the material of the previously selected object
         if (selectedObject != null)
         {
-            RevertMaterial();
+            // if (selectedObject)
+            //     selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
+            // RevertMaterial();
+
+            DeselectObject();
         }
 
         // Set the new selected object
