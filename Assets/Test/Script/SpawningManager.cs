@@ -298,37 +298,41 @@ public class SpawningManager : MonoBehaviour
     // Method to change the floor's texture/material
     public void ChangeFloorTexture(int materialIndex)
     {
-        if (FloorMaterialChanged != null && materialIndex >= 0 && materialIndex < floorMaterials.Length)
+        if (materialIndex >= 0 && materialIndex < floorMaterials.Length)
         {
-            Debug.Log("Renderer");
+            // Find all objects in the scene that have the same prefab or a specific tag (e.g., "Floor")
+            GameObject[] allFloors = GameObject.FindGameObjectsWithTag("Floor");
 
-            // Check if the currentFloor object has children
-            if (FloorMaterialChanged.transform.childCount > 0)
+            foreach (var floor in allFloors)
             {
-                // Get the first child of the currentFloor
-                var firstChild = FloorMaterialChanged.transform.GetChild(0);
-
-                // Access the Renderer component of the first child
-                var floorRenderer = firstChild.GetComponent<Renderer>();
-
-                if (floorRenderer != null)
+                // Check if the floor object has children
+                if (floor.transform.childCount > 0)
                 {
-                    // Apply the selected material
-                    floorRenderer.material = floorMaterials[materialIndex];
+                    // Get the first child of the floor object
+                    var firstChild = floor.transform.GetChild(0);
+
+                    // Access the Renderer component of the first child
+                    var floorRenderer = firstChild.GetComponent<Renderer>();
+
+                    if (floorRenderer != null)
+                    {
+                        // Apply the selected material
+                        floorRenderer.material = floorMaterials[materialIndex];
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Renderer component not found on the first child of the floor object.");
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning("Renderer component not found on the first child.");
+                    Debug.LogWarning("No children found on the floor object.");
                 }
-            }
-            else
-            {
-                Debug.LogWarning("No children found on the FloorTextureMaterial object.");
             }
         }
         else
         {
-            Debug.LogWarning("FloorTextureMaterial is null or the materialIndex is out of range.");
+            Debug.LogWarning("Invalid materialIndex or floor materials not set.");
         }
     }
 }
