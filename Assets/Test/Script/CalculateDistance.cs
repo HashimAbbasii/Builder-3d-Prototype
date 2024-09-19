@@ -90,7 +90,7 @@ public class CalculateDistance : MonoBehaviour
     {
         if (distanceText != null)
         {
-            distanceText.text = "Distance: " + distance.ToString("F2") + " units";
+            distanceText.text = "Distance: " + distance.ToString("F2") + " feet";
         }
         //Debug.Log("Distance: " + distance.ToString("F2") + " units");
     }
