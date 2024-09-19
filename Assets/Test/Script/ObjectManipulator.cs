@@ -22,10 +22,10 @@ public class ObjectManipulator : MonoBehaviour
 
     private RectTransform sliderRect;    // RectTransform of the slider
 
-    void Start()
+    private void Start()
     {
         // Get the RectTransform of each rotation button and store it
-        foreach (Button button in rotationButtons)
+        foreach (var button in rotationButtons)
         {
             rotationButtonRects.Add(button.GetComponent<RectTransform>());
         }
@@ -166,23 +166,22 @@ public class ObjectManipulator : MonoBehaviour
         
         
         // Change the material of the new selected object
-        if (selectedObject != null)
+        if (selectedObject == null) return;
+        
+        var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
         {
-            MeshRenderer meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-            if (meshRenderer != null)
-            {
-                originalMaterial = meshRenderer.material; // Store the original material
-                meshRenderer.material = selectedMaterial; // Apply the selected material
-            }
-
-            // Recalculate distance for the selected object
-            if (distanceCalculator != null)
-            {
-                distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
-            }
-
-            isDragging = true; // Enable dragging when a new object is selected
+            originalMaterial = meshRenderer.material; // Store the original material
+            meshRenderer.material = selectedMaterial; // Apply the selected material
         }
+
+        // Recalculate distance for the selected object
+        if (distanceCalculator != null)
+        {
+            distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
+        }
+
+        isDragging = true; // Enable dragging when a new object is selected
     }
 
     // Rotate the selected object by a specific angle
@@ -206,15 +205,15 @@ public class ObjectManipulator : MonoBehaviour
     // Method to revert the material to the original material
     private void RevertMaterial()
     {
-        if (selectedObject != null)
+        if (selectedObject == null) return;
+        
+        var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
+        
+        if (meshRenderer != null && originalMaterial != null)
         {
-            MeshRenderer meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-            if (meshRenderer != null && originalMaterial != null)
-            {
-                meshRenderer.material = originalMaterial; // Restore the original material
-            }
-            originalMaterial = null; // Clear the stored material
+            meshRenderer.material = originalMaterial; // Restore the original material
         }
+        originalMaterial = null; // Clear the stored material
     }
 
     // Method to deselect the currently selected object
@@ -229,11 +228,10 @@ public class ObjectManipulator : MonoBehaviour
 
     public void RemoveObject()
     {
-        if (selectedObject != null)
-        {
-            Destroy(selectedObject.gameObject);
-            isDragging = false; // Stop dragging when deselected
-        }
+        if (selectedObject == null) return;
+        
+        Destroy(selectedObject.gameObject);
+        isDragging = false; // Stop dragging when deselected
     }
 
     // Method to deselect the currently selected object via button click
