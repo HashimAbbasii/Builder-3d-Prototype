@@ -613,7 +613,16 @@ MonoBehaviour:
   selectedMaterial: {fileID: 2100000, guid: 5d0c01fc481cbfc4d9248e7e039169ac, type: 2}
   scaleSlider: {fileID: 759656513}
   distanceCalculator: {fileID: 574101920}
+  selectableLayer:
+    serializedVersion: 2
+    m_Bits: 2048
   removeButton: {fileID: 387258483}
+  rotationButtons:
+  - {fileID: 1638963108}
+  - {fileID: 742779441}
+  - {fileID: 1061141408}
+  - {fileID: 349472435}
+  - {fileID: 1699126759}
 --- !u!1 &125175380
 GameObject:
   m_ObjectHideFlags: 0
@@ -3044,7 +3053,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0.6313726, b: 0.5921569, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
