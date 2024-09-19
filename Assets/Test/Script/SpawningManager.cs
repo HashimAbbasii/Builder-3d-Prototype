@@ -42,8 +42,8 @@ public class SpawningManager : MonoBehaviour
 
         if (isCreatingFloor && Input.GetMouseButton(0) && currentFloor != null) // Dragging the mouse
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit))
             {
                 finalMousePos = hit.point;
                 finalMousePos.y = 0f; // Ensure the y-axis remains at 0

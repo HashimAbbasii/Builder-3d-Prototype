@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 public class ObjectManipulator : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class ObjectManipulator : MonoBehaviour
     public Slider scaleSlider;           // Slider to control the object's scale
     public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
     public LayerMask selectableLayer;    // Layer mask for selectable objects
+    public LayerMask placeableLayer;    // Layer mask for selected objects
     public GameObject removeButton;      // Button for removing the selected object
 
     // Store a list of RectTransforms for the rotation buttons
@@ -46,7 +48,7 @@ public class ObjectManipulator : MonoBehaviour
             // Use Raycast with LayerMask to only interact with objects on the selectable layer
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, selectableLayer))
             {
-                Transform selectedTransform = hit.transform;
+                var selectedTransform = hit.transform;
 
                 // This object is selectable, set it as the selected object
                 SetSelectedObject(selectedTransform);
@@ -69,14 +71,14 @@ public class ObjectManipulator : MonoBehaviour
             // Move the object with the mouse when the left mouse button is held down
             if (Input.GetMouseButton(0) && isDragging)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                if (Physics.Raycast(ray, out hit))
+                if (Physics.Raycast(ray, out var hit, Mathf.Infinity, placeableLayer))
                 {
                     // Move object on the XZ plane (ignoring Y-axis)
-                    Vector3 newPosition = hit.point;
-                    selectedObject.position = new Vector3(newPosition.x, selectedObject.position.y, newPosition.z);
+                    var newPosition = hit.point;
+                    
+                    selectedObject.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
 
                     // Update the distance calculation and line renderer
                     if (distanceCalculator != null)
@@ -151,7 +153,9 @@ public class ObjectManipulator : MonoBehaviour
 
         // Set the new selected object
         selectedObject = obj;
-
+        selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
+        
+        
         // Change the material of the new selected object
         if (selectedObject != null)
         {
@@ -208,6 +212,8 @@ public class ObjectManipulator : MonoBehaviour
     public void DeselectObject()
     {
         RevertMaterial(); // Revert the material
+        if (selectedObject)
+            selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
         selectedObject = null; // Deselect the object
         isDragging = false; // Stop dragging when deselected
     }
