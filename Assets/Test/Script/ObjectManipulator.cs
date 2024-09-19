@@ -186,7 +186,7 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject != null)
         {
-            selectedObject.localScale = selectedObject.GetComponent<SelectableObject>().OriginalScale * scaleValue;
+            selectedObject.localScale = selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
         }
     }
 
