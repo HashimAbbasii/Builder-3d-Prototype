@@ -168,7 +168,7 @@ public class SpawningManager : MonoBehaviour
                 Destroy(previewObject);
             }
             previewObject = Instantiate(modelPrefabs[objectIndex]);
-            originalMaterial = previewObject.GetComponent<Renderer>().material; // Store the original material
+            originalMaterial = previewObject.GetComponentInChildren<SelectableObject>().objectRenderer.material; // Store the original material
             ApplyMaterial(previewObject, previewMaterial);
         }
         else
