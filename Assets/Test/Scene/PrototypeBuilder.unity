@@ -616,6 +616,9 @@ MonoBehaviour:
   selectableLayer:
     serializedVersion: 2
     m_Bits: 2048
+  placeableLayer:
+    serializedVersion: 2
+    m_Bits: 2120
   removeButton: {fileID: 387258483}
   rotationButtons:
   - {fileID: 1638963108}
