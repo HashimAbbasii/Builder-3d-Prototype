@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   surfaceType: 3
   canPlaceObjectsOnIt: 1
+  canBePlacedOnObject: 0
   heightOffset: 0.3
   objectRenderer: {fileID: 3778455762750233351}
 --- !u!1001 &5687651643968093779
@@ -106,6 +107,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6815221176750533288, guid: 5cc00ca742a59624aaff0a452cd6b635, type: 3}
+    - {fileID: -934733918382196169, guid: 5cc00ca742a59624aaff0a452cd6b635, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5cc00ca742a59624aaff0a452cd6b635, type: 3}
 --- !u!23 &3778455762750233351 stripped
 MeshRenderer:

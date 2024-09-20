@@ -1096,6 +1096,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 251721736}
+  - component: {fileID: 251721737}
   m_Layer: 0
   m_Name: .............Managers.............
   m_TagString: Untagged
@@ -1122,6 +1123,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &251721737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 251721735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf64b343d55cc474ba1a76f8a0dd3703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectManipulator: {fileID: 108505156}
+  spawningManager: {fileID: 833281651}
+  calculateDistance: {fileID: 574101920}
+  starterManagement: {fileID: 1350710997}
 --- !u!1 &256271424
 GameObject:
   m_ObjectHideFlags: 0
@@ -3182,6 +3199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcefb4f3a7717f74c916640790c4f2e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  distanceLinePrefab: {fileID: 1821815184114921333, guid: 9adaa3d58fb3fda449c354d5c9226919, type: 3}
   wallLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -4487,6 +4505,9 @@ MonoBehaviour:
   surfaceLayerMask:
     serializedVersion: 2
     m_Bits: 0
+  floorsSpawned: []
+  wallsSpawned: []
+  modelsSpawned: []
 --- !u!1 &855688247
 GameObject:
   m_ObjectHideFlags: 0

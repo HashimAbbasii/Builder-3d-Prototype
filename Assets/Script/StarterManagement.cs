@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StarterMamagement : MonoBehaviour
+public class StarterManagement : MonoBehaviour
 {
 
     [SerializeField] private Transform plotSelection;
