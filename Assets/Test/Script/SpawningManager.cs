@@ -269,6 +269,31 @@ public class SpawningManager : MonoBehaviour
 
                 case SurfaceType.Wall:
                     var wall = (WallObject)surface;
+
+                    var placePositionWall = hit.point;
+
+                    // Instantiate and place the selected object at the hit position
+                    var prefabWall = modelPrefabs[selectedObjectIndex];
+                    if (prefabWall != null)
+                    {
+                        var placedWallObject = Instantiate(prefabWall, placePositionWall, Quaternion.identity);
+
+                        // Reset the material of the placed object to the original material
+                        var wallRenderers = placedWallObject.GetComponentsInChildren<Renderer>();
+                        foreach (var wallRenderer in wallRenderers)
+                        {
+                            wallRenderer.material = originalMaterial;
+                        }
+
+                        // Destroy the preview object after placing the actual object
+                        Destroy(previewObject);
+                        previewObject = null; // Reset previewObject to avoid repeated placements
+                        selectedObjectIndex = -1; // Reset selection after placement
+                    }
+
+
+
+
                     break;
 
                 case SurfaceType.Models:
