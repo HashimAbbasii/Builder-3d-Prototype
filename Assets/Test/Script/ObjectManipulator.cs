@@ -206,4 +206,12 @@ public class ObjectManipulator : MonoBehaviour
         }
         _originalMaterial = null;
     }
+
+    public void RemoveObject()
+    {
+        if (selectedObject == null) return;
+
+        Destroy(selectedObject.parent.gameObject);
+        _isDragging = false; // Stop dragging when deselected
+    }
 }
