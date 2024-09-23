@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
 public class ObjectManipulator : MonoBehaviour
 {
@@ -16,73 +15,79 @@ public class ObjectManipulator : MonoBehaviour
     public LayerMask placeableLayer;    // Layer mask for selected objects
     public GameObject removeButton;      // Button for removing the selected object
 
-    // Store a list of RectTransforms for the rotation buttons
     public List<Button> rotationButtons = new();
     private List<RectTransform> _rotationButtonRects = new();
-    public bool _isObjectSelected; // Track if the object is currently selected
-
+    private bool _isObjectSelected; // Track if the object is currently selected
     private RectTransform _sliderRect;    // RectTransform of the slider
 
     private void Start()
     {
-        // Get the RectTransform of each rotation button and store it
         foreach (var button in rotationButtons)
         {
             _rotationButtonRects.Add(button.GetComponent<RectTransform>());
         }
-
-        // Get the RectTransform of the slider to detect interaction
         _sliderRect = scaleSlider.GetComponent<RectTransform>();
-
-        // Optionally, set up an event listener for the slider
         scaleSlider.onValueChanged.AddListener(ScaleObject);
     }
 
     private void Update()
     {
-        // Check if the mouse is clicked and it's not over any UI elements (rotation buttons or slider)
-        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider())
+        if (selectedObject == null)
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            removeButton.SetActive(false);
 
-            // Use Raycast with LayerMask to only interact with objects on the selectable layer
-            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
-            {
-                var selectedTransform = hit.transform;
-                Debug.Log("selected Transform"+selectedTransform.name); 
-                // If the object is already selected and clicked again, start dragging
-                if (_isObjectSelected && selectedObject == selectedTransform)
-                {
-                    // Enable dragging only if it's already selected
-                    _isDragging = true;
-                }
-                else
-                {
-                    // If another object is clicked, select the new one
-                    SetSelectedObject(selectedTransform);
-                    _isObjectSelected = true; // Mark the object as selected
-                    _isDragging = false; // Don't drag yet, only select
-                }
-            }
-            else
-            {
-               
-                // If click is outside of any object or UI, deselect the object
-                DeselectObject();
-                _isObjectSelected = false; // Reset selection state
-            }
-        }
-
-        // If an object is selected, handle its movement and rotation
-        if (selectedObject != null)
-        {
-            removeButton.SetActive(true);
-
-            // Move the object with the mouse when the left mouse button is held down
-            if (Input.GetMouseButton(0) && _isDragging)
+            // Check if a new object is being clicked to select
+            if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider())
             {
                 var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+                if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
+                {
+                    // New object clicked, select it
+                    SetSelectedObject(hit.transform);
+                    _isObjectSelected = true; // Mark the object as selected
+                }
+                else
+                {
+                    DeselectObject(); // Deselect if clicked elsewhere
+                    _isObjectSelected = false;
+                }
+            }
+        }
+        else
+        {
+            // An object is selected; enable the remove button
+            removeButton.SetActive(true);
+
+            // Check if the object is clicked again to start dragging
+            if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider())
+            {
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
+                {
+                    if (hit.transform == selectedObject)
+                    {
+                        // Object is already selected, start dragging
+                        _isDragging = true;
+                    }
+                    else
+                    {
+                        // New object clicked, select the new object
+                        SetSelectedObject(hit.transform);
+                        _isDragging = false; // Only select, don't drag yet
+                    }
+                }
+                else
+                {
+                    DeselectObject(); // Deselect if clicked elsewhere
+                    _isObjectSelected = false;
+                }
+            }
+
+            // Drag the object if it's selected and the mouse button is held down
+            if (Input.GetMouseButton(0) && _isDragging)
+            {
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out var hit, Mathf.Infinity, placeableLayer))
                 {
                     // Move object on the XZ plane (ignoring Y-axis)
@@ -97,7 +102,13 @@ public class ObjectManipulator : MonoBehaviour
                 }
             }
 
-            // Rotate the object using arrow keys or other methods
+            // Stop dragging when the mouse button is released
+            if (Input.GetMouseButtonUp(0))
+            {
+                _isDragging = false;
+            }
+
+            // Rotate the object using arrow keys
             if (Input.GetKey(KeyCode.LeftArrow))
             {
                 RotateObject(-rotationSpeed * Time.deltaTime); // Rotate left
@@ -106,48 +117,28 @@ public class ObjectManipulator : MonoBehaviour
             {
                 RotateObject(rotationSpeed * Time.deltaTime); // Rotate right
             }
-
-            // Stop dragging when the mouse button is released
-            if (Input.GetMouseButtonUp(0))
-            {
-                _isDragging = false; // Stop dragging
-            }
-        }
-        else
-        {
-            removeButton.SetActive(false);
-            _isObjectSelected = false; // Reset selection state when no object is selected
         }
     }
 
-
-    // Set the object to be manipulated
     public void SetSelectedObject(Transform obj)
     {
-        // Check if the same object is clicked again to toggle selection
-        if (selectedObject == obj)
-        {
-            return; // If it's already selected, don't deselect or reselect
-        }
+        if (selectedObject == obj) return; // If it's already selected, do nothing
 
-        // Revert the material of the previously selected object
+        // Deselect the current object if another object is selected
         if (selectedObject != null)
         {
             DeselectObject();
         }
 
-        // Set the new selected object
         selectedObject = obj;
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
 
         // Change the material of the new selected object
-        if (selectedObject == null) return;
-
         var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
         {
-            _originalMaterial = meshRenderer.material; // Store the original material
-            meshRenderer.material = selectedMaterial; // Apply the selected material
+            _originalMaterial = meshRenderer.material; // Store original material
+            meshRenderer.material = selectedMaterial; // Apply selected material
         }
 
         // Recalculate distance for the selected object
@@ -155,27 +146,49 @@ public class ObjectManipulator : MonoBehaviour
         {
             distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
         }
+
+        _isObjectSelected = true; // Mark as selected
+        _isDragging = false; // Set dragging to false initially
     }
 
-    // Check if the click is on any rotation button by checking mouse position against the RectTransforms
+    public void DeselectObject()
+    {
+        RevertMaterial();
+        if (selectedObject != null)
+        {
+            selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
+        }
+        selectedObject = null;
+        _isDragging = false;
+    }
+
+    public void RotateObject(float angle)
+    {
+        if (selectedObject != null)
+        {
+            selectedObject.parent.Rotate(Vector3.up, angle, Space.Self); // Rotate around Y-axis
+        }
+    }
+
+    public void ScaleObject(float scaleValue)
+    {
+        if (selectedObject != null)
+        {
+            selectedObject.parent.localScale = selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
+        }
+    }
+
     private bool IsClickOnAnyRotationButton()
     {
         Vector2 localMousePosition;
-
-        // Loop through each rotation button and check if the mouse is over any
         foreach (var rectTransform in _rotationButtonRects)
         {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null, out localMousePosition);
-            if (rectTransform.rect.Contains(localMousePosition))
-            {
-                return true; // Mouse is over one of the rotation buttons
-            }
+            if (rectTransform.rect.Contains(localMousePosition)) return true;
         }
-
-        return false; // Mouse is not over any rotation buttons
+        return false;
     }
 
-    // Check if the click is on the slider by checking mouse position against the slider RectTransform
     private bool IsClickOnSlider()
     {
         Vector2 localMousePosition;
@@ -183,109 +196,14 @@ public class ObjectManipulator : MonoBehaviour
         return _sliderRect.rect.Contains(localMousePosition);
     }
 
-    // Set the object to be manipulated
-    //public void SetSelectedObject(Transform obj)
-    //{
-    //    // Check if the same object is clicked again to toggle selection
-    //    if (selectedObject == obj)
-    //    {
-    //        return; // If it's already selected, don't deselect or reselect
-    //    }
-
-    //    // Revert the material of the previously selected object
-    //    if (selectedObject != null)
-    //    {
-    //        // if (selectedObject)
-    //        //     selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
-    //        // RevertMaterial();
-
-    //        DeselectObject();
-    //    }
-
-    //    // Set the new selected object
-    //    selectedObject = obj;
-    //    selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
-        
-        
-    //    // Change the material of the new selected object
-    //    if (selectedObject == null) return;
-        
-    //    var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-    //    if (meshRenderer != null)
-    //    {
-    //        _originalMaterial = meshRenderer.material; // Store the original material
-    //        meshRenderer.material = selectedMaterial; // Apply the selected material
-    //    }
-
-    //    // Recalculate distance for the selected object
-    //    if (distanceCalculator != null)
-    //    {
-    //        distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
-    //    }
-
-    //    _isDragging = true; // Enable dragging when a new object is selected
-    //}
-
-    // Rotate the selected object by a specific angle
-    public void RotateObject(float angle)
-    {
-        if (selectedObject != null)
-        {
-            selectedObject.parent.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
-        }
-    }
-
-    // Scale the selected object based on the slider value
-    public void ScaleObject(float scaleValue)
-    {
-        if (selectedObject != null)
-        {
-            //temporary Fix
-            selectedObject.parent.localScale = selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
-        }
-    }
-
-    // Method to revert the material to the original material
     private void RevertMaterial()
     {
         if (selectedObject == null) return;
-        
         var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-        
         if (meshRenderer != null && _originalMaterial != null)
         {
-            meshRenderer.material = _originalMaterial; // Restore the original material
+            meshRenderer.material = _originalMaterial;
         }
-        _originalMaterial = null; // Clear the stored material
-    }
-
-    // Method to deselect the currently selected object
-    public void DeselectObject()
-    {
-        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
-        {
-            Destroy(line.gameObject);
-        }
-        ManagerHandler.Instance.calculateDistance.lines.Clear();
-        
-        RevertMaterial(); // Revert the material
-        if (selectedObject)
-            selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
-        selectedObject = null; // Deselect the object
-        _isDragging = false; // Stop dragging when deselected
-    }
-
-    public void RemoveObject()
-    {
-        if (selectedObject == null) return;
-        
-        Destroy(selectedObject.parent.gameObject);
-        _isDragging = false; // Stop dragging when deselected
-    }
-
-    // Method to deselect the currently selected object via button click
-    public void DeselectButton()
-    {
-        DeselectObject(); // Call the method to deselect the object
+        _originalMaterial = null;
     }
 }

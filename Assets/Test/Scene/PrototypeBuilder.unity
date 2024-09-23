@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.9048618, g: 0.8922876, b: 0.8872974, a: 1}
+  m_IndirectSpecularColor: {r: 0.90235883, g: 0.88876736, b: 0.88472474, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -615,7 +615,7 @@ MonoBehaviour:
   distanceCalculator: {fileID: 574101920}
   selectableLayer:
     serializedVersion: 2
-    m_Bits: 2048
+    m_Bits: 6144
   placeableLayer:
     serializedVersion: 2
     m_Bits: 2120
@@ -627,6 +627,7 @@ MonoBehaviour:
   - {fileID: 349472435}
   - {fileID: 1699126759}
   - {fileID: 387258485}
+  _isObjectSelected: 0
 --- !u!1 &125175380
 GameObject:
   m_ObjectHideFlags: 0
@@ -3210,6 +3211,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   distanceText: {fileID: 1846661021}
+  lines: []
 --- !u!1 &581064410
 GameObject:
   m_ObjectHideFlags: 0
@@ -4490,16 +4492,16 @@ MonoBehaviour:
   - {fileID: 3641505614789950835, guid: 6c6d8dd417f0d664b916d44e9b679ba5, type: 3}
   - {fileID: 6336651685627368823, guid: 639025c3f8a889448b9d79ba528e6f84, type: 3}
   - {fileID: 5081681931632193069, guid: 49c203557fae4004f84552e6fc867912, type: 3}
-  floorPrefab: {fileID: 4941838938931671173, guid: 10d603ecb1da14245b9ab8e355b12496, type: 3}
-  wallPrefab: {fileID: 3107453569368352630, guid: 3f4c1b40159bcce4a8323de403f07538, type: 3}
-  previewMaterial: {fileID: 2100000, guid: ac381361250d3a74f805a4b54ee6a9c9, type: 2}
-  validPlacementMaterial: {fileID: 0}
-  invalidPlacementMaterial: {fileID: 0}
   floorMaterials:
   - {fileID: 2100000, guid: 7e181fd161a9d4c41a7d09c87806d01d, type: 2}
   - {fileID: 2100000, guid: b5198f8af2f2fb74d81edc8ca9d255ce, type: 2}
   - {fileID: 2100000, guid: 1915ad50456855041a24dd2f99ea40b6, type: 2}
   - {fileID: 2100000, guid: 585b99b5dc612124e94345db68b4544a, type: 2}
+  floorPrefab: {fileID: 4941838938931671173, guid: 10d603ecb1da14245b9ab8e355b12496, type: 3}
+  wallPrefab: {fileID: 3107453569368352630, guid: 3f4c1b40159bcce4a8323de403f07538, type: 3}
+  previewMaterial: {fileID: 2100000, guid: ac381361250d3a74f805a4b54ee6a9c9, type: 2}
+  validPlacementMaterial: {fileID: 0}
+  invalidPlacementMaterial: {fileID: 0}
   currentFloor: {fileID: 0}
   FloorMaterialChanged: {fileID: 0}
   surfaceLayerMask:
