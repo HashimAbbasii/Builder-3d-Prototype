@@ -63,6 +63,9 @@ public class SpawningManager : MonoBehaviour
         {
             isCreatingFloor = false; // Reset the floor creation process
             currentFloor = null; // Reset the current floor object
+
+            ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
+            Debug.Log("Floor Up");
         }
 
         // Wall creation logic
@@ -116,6 +119,9 @@ public class SpawningManager : MonoBehaviour
         {
             isCreatingWall = false; // Reset the wall creation process
             currentWall = null; // Reset the current wall object
+
+            ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
+            Debug.Log("Wall Up");
         }
 
         // Preview object follows the mouse
@@ -145,6 +151,7 @@ public class SpawningManager : MonoBehaviour
     // Called when the floor button is clicked
     public void OnFloorButtonClick()
     {
+        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         isCreatingFloor = true;
         isCreatingWall = false; // Ensure wall creation is not active
         if (previewObject != null)
@@ -158,6 +165,7 @@ public class SpawningManager : MonoBehaviour
     // Called when the wall button is clicked
     public void OnWallButtonClick()
     {
+        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         isCreatingWall = true;
         isCreatingFloor = false; // Ensure floor creation is not active
         if (previewObject != null)
@@ -173,6 +181,9 @@ public class SpawningManager : MonoBehaviour
     {
         isCreatingWall = false;
         isCreatingFloor = false;
+
+        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+        Debug.Log("SelectObject");
         // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Length)
         {
@@ -212,12 +223,14 @@ public class SpawningManager : MonoBehaviour
     // Place the selected object on a valid surface
     private void PlaceObjectOnSurface()
     {
+
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.SphereCast(ray, 0.1f, out var hit)) return;
 
         // Check if the ray hit a valid surface with the Surface component
         var surface = hit.collider.GetComponent<ObjectType>();
+
 
         if (surface != null)
         {
@@ -234,6 +247,8 @@ public class SpawningManager : MonoBehaviour
                     {
                         // Instantiate the object (e.g., knife) at the calculated position
                         var placedObject = Instantiate(prefab, placePosition1, Quaternion.identity);
+
+                        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
 
                         modelsSpawned.Add(placedObject);
 
@@ -261,6 +276,7 @@ public class SpawningManager : MonoBehaviour
                         // Instantiate the object (e.g., knife) at the calculated position
                         var placedObject = Instantiate(prefab, placePosition2, Quaternion.identity);
 
+                        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
                         modelsSpawned.Add(placedObject);
 
                         // Reset the material of the placed object to the original material
@@ -324,6 +340,7 @@ public class SpawningManager : MonoBehaviour
                     {
                         var placedObject = Instantiate(prefab, placePosition3, Quaternion.identity);
 
+                        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
                         modelsSpawned.Add(placedObject);
 
                         // Reset the material of the placed object to the original material

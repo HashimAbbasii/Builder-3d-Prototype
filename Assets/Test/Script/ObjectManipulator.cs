@@ -192,7 +192,7 @@ public class ObjectManipulator : MonoBehaviour
                 }
                 else
                 {
-                    Debug.LogError("SelectableObject component not found on the parent.");
+                    //Debug.LogError("SelectableObject component not found on the parent.");
                 }
             }
             else
