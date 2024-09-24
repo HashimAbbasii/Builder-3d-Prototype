@@ -289,11 +289,11 @@ public class ObjectManipulator : MonoBehaviour
         DeselectObject(); // Call the method to deselect the object
     }
 
-    public void RemoveObject()
-    {
-        if (selectedObject == null) return;
+    //public void RemoveObject()
+    //{
+    //    if (selectedObject == null) return;
 
-        Destroy(selectedObject.parent.gameObject);
-        _isDragging = false; // Stop dragging when deselected
-    }
+    //    Destroy(selectedObject.parent.gameObject);
+    //    _isDragging = false; // Stop dragging when deselected
+    //}
 }
