@@ -29,7 +29,7 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> floorsSpawned = new();
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
-    
+
     private void Update()
     {
         // Floor creation logic
@@ -172,7 +172,7 @@ public class SpawningManager : MonoBehaviour
     public void SelectObject(int objectIndex)
     {
         isCreatingWall = false;
-        isCreatingFloor = false; 
+        isCreatingFloor = false;
         // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Length)
         {
@@ -215,14 +215,14 @@ public class SpawningManager : MonoBehaviour
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.SphereCast(ray, 0.1f, out var hit)) return;
-        
+
         // Check if the ray hit a valid surface with the Surface component
         var surface = hit.collider.GetComponent<ObjectType>();
-            
+
         if (surface != null)
         {
             var prefab = modelPrefabs[selectedObjectIndex];
-            
+
             switch (surface.surfaceType)
             {
                 case SurfaceType.Grass:
@@ -236,7 +236,7 @@ public class SpawningManager : MonoBehaviour
                         var placedObject = Instantiate(prefab, placePosition1, Quaternion.identity);
 
                         modelsSpawned.Add(placedObject);
-                        
+
                         // Reset the material of the placed object to the original material
                         var renderers = placedObject.GetComponentsInChildren<Renderer>();
                         foreach (var renderer in renderers)
@@ -255,14 +255,14 @@ public class SpawningManager : MonoBehaviour
                 case SurfaceType.Floor:
                     var floor = (FloorObject)surface;
                     var placePosition2 = hit.point;
-                    
+
                     if (prefab != null)
                     {
                         // Instantiate the object (e.g., knife) at the calculated position
                         var placedObject = Instantiate(prefab, placePosition2, Quaternion.identity);
 
                         modelsSpawned.Add(placedObject);
-                        
+
                         // Reset the material of the placed object to the original material
                         var renderers = placedObject.GetComponentsInChildren<Renderer>();
                         foreach (var renderer in renderers)
@@ -313,7 +313,7 @@ public class SpawningManager : MonoBehaviour
                     // if (!model.canPlaceObjectsOnIt) return;
 
                     var placePosition3 = hit.point;
-                    
+
                     // Adjust the y-position based on the surface's height offset
                     placePosition3.y += model.heightOffset;
 
@@ -325,7 +325,7 @@ public class SpawningManager : MonoBehaviour
                         var placedObject = Instantiate(prefab, placePosition3, Quaternion.identity);
 
                         modelsSpawned.Add(placedObject);
-                        
+
                         // Reset the material of the placed object to the original material
                         var renderers = placedObject.GetComponentsInChildren<Renderer>();
                         foreach (var renderer in renderers)

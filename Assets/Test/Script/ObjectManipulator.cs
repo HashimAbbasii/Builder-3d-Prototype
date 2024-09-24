@@ -140,7 +140,7 @@ public class ObjectManipulator : MonoBehaviour
         selectedObject = obj;
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
 
-        if (selectedObject.CompareTag("Wall"))
+        if (selectedObject.CompareTag("Wall") && selectedObject.CompareTag("Floor"))
         {
             // If the object is a wall, hide the slider
             scaleSlider.gameObject.SetActive(false);
