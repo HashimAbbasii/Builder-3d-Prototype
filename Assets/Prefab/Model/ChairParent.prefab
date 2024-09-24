@@ -105,6 +105,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chair
       objectReference: {fileID: 0}
+    - target: {fileID: 2402936684392395817, guid: d447345e53e530e4da5a90954daee82d, type: 3}
+      propertyPath: m_TagString
+      value: Model
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 659977757956640930, guid: d447345e53e530e4da5a90954daee82d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d447345e53e530e4da5a90954daee82d, type: 3}
