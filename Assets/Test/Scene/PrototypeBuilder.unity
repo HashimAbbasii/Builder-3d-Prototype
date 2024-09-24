@@ -4635,7 +4635,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 585b99b5dc612124e94345db68b4544a, type: 2}
   floorPrefab: {fileID: 4941838938931671173, guid: 10d603ecb1da14245b9ab8e355b12496, type: 3}
   wallPrefab: {fileID: 3107453569368352630, guid: 3f4c1b40159bcce4a8323de403f07538, type: 3}
-  previewMaterial: {fileID: 0}
+  previewMaterial: {fileID: 2100000, guid: 22dec637081447c4aabb0f13d837d1b2, type: 2}
   validPlacementMaterial: {fileID: 0}
   invalidPlacementMaterial: {fileID: 0}
   currentFloor: {fileID: 0}
