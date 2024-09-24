@@ -9,6 +9,7 @@ TagManager:
   - PlacedObject
   - Model
   - Evidence
+  - Wall
   layers:
   - Default
   - TransparentFX

@@ -140,6 +140,52 @@ public class ObjectManipulator : MonoBehaviour
         selectedObject = obj;
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
 
+        if (selectedObject.CompareTag("Wall"))
+        {
+            // If the object is a wall, hide the slider
+            scaleSlider.gameObject.SetActive(false);
+        }
+        else
+        {
+            // For other objects, show the slider
+            scaleSlider.gameObject.SetActive(true);
+        }
+        if (selectedObject.parent != null)
+        {
+            if (!selectedObject.CompareTag("Wall"))
+            {
+
+            
+            SelectableObject selectableObject = selectedObject.parent.GetComponent<SelectableObject>();
+
+            if (selectableObject != null)
+            {
+                Vector3 originalScale = selectableObject.OriginalScale;
+
+                // Check for zero in OriginalScale to avoid division by zero
+                if (originalScale.x != 0 && originalScale.y != 0 && originalScale.z != 0)
+                {
+                    var scaleValue = selectedObject.parent.localScale.x / originalScale.x;
+                    scaleSlider.value
+                        = scaleValue;
+                    // Use scaleValue as needed
+                }
+                else
+                {
+                    Debug.LogError("OriginalScale cannot be zero for any component.");
+                }
+            }
+            else
+            {
+                Debug.LogError("SelectableObject component not found on the parent.");
+            }
+        }
+        else
+        {
+           // Debug.LogError("Selected object's parent is null.");
+        }
+    }
+
         // Change the material of the new selected object
         if (selectedObject == null) return;
 
@@ -183,48 +229,7 @@ public class ObjectManipulator : MonoBehaviour
         return _sliderRect.rect.Contains(localMousePosition);
     }
 
-    // Set the object to be manipulated
-    //public void SetSelectedObject(Transform obj)
-    //{
-    //    // Check if the same object is clicked again to toggle selection
-    //    if (selectedObject == obj)
-    //    {
-    //        return; // If it's already selected, don't deselect or reselect
-    //    }
-
-    //    // Revert the material of the previously selected object
-    //    if (selectedObject != null)
-    //    {
-    //        // if (selectedObject)
-    //        //     selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
-    //        // RevertMaterial();
-
-    //        DeselectObject();
-    //    }
-
-    //    // Set the new selected object
-    //    selectedObject = obj;
-    //    selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
-        
-        
-    //    // Change the material of the new selected object
-    //    if (selectedObject == null) return;
-        
-    //    var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-    //    if (meshRenderer != null)
-    //    {
-    //        _originalMaterial = meshRenderer.material; // Store the original material
-    //        meshRenderer.material = selectedMaterial; // Apply the selected material
-    //    }
-
-    //    // Recalculate distance for the selected object
-    //    if (distanceCalculator != null)
-    //    {
-    //        distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
-    //    }
-
-    //    _isDragging = true; // Enable dragging when a new object is selected
-    //}
+   
 
     // Rotate the selected object by a specific angle
     public void RotateObject(float angle)
@@ -273,7 +278,9 @@ public class ObjectManipulator : MonoBehaviour
             selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
         selectedObject = null; // Deselect the object
         _isDragging = false; // Stop dragging when deselected
+        scaleSlider.gameObject.SetActive(true);
     }
+
 
     public void RemoveObject()
     {
