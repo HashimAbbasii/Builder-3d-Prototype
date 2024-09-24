@@ -36,6 +36,8 @@ public class ObjectManipulator : MonoBehaviour
 
         // Optionally, set up an event listener for the slider
         scaleSlider.onValueChanged.AddListener(ScaleObject);
+        
+        scaleSlider.transform.parent.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -156,15 +158,17 @@ public class ObjectManipulator : MonoBehaviour
             childObjects.gameObject.layer = LayerMask.NameToLayer("Selected");
         }
 
-        if (selectedObject.CompareTag("Wall") && selectedObject.CompareTag("Floor"))
+        Debug.Log(selectedObject.tag);
+        
+        if (selectedObject.CompareTag("Wall") || selectedObject.CompareTag("Floor"))
         {
-            // If the object is a wall, hide the slider
-            scaleSlider.gameObject.SetActive(false);
+            // For Walls and Floor
+            scaleSlider.transform.parent.gameObject.SetActive(false);
         }
         else
         {
             // For other objects, show the slider
-            scaleSlider.gameObject.SetActive(true);
+            scaleSlider.transform.parent.gameObject.SetActive(true);
         }
 
         if (selectedObject.parent != null)
@@ -181,8 +185,7 @@ public class ObjectManipulator : MonoBehaviour
                     if (originalScale.x != 0 && originalScale.y != 0 && originalScale.z != 0)
                     {
                         var scaleValue = selectedObject.parent.localScale.x / originalScale.x;
-                        scaleSlider.value
-                            = scaleValue;
+                        scaleSlider.value = scaleValue;
                         // Use scaleValue as needed
                     }
                     else
@@ -305,7 +308,7 @@ public class ObjectManipulator : MonoBehaviour
         }
         selectedObject = null; // Deselect the object
         _isDragging = false; // Stop dragging when deselected
-        scaleSlider.gameObject.SetActive(true);
+        scaleSlider.transform.parent.gameObject.SetActive(false);
     }
 
 
@@ -325,6 +328,7 @@ public class ObjectManipulator : MonoBehaviour
         
         Invoke(nameof(DeleteMissingSpawnedModels), 0.1f);
         
+        scaleSlider.transform.parent.gameObject.SetActive(false);
         _isDragging = false; // Stop dragging when deselected
     }
 
