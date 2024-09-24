@@ -278,7 +278,15 @@ public class ObjectManipulator : MonoBehaviour
     public void RemoveObject()
     {
         if (selectedObject == null) return;
-        
+
+        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
+        {
+            Destroy(line.gameObject);
+        }
+
+        ManagerHandler.Instance.calculateDistance.lines.Clear();
+
+        ManagerHandler.Instance.spawningManager.modelsSpawned.Remove(selectedObject.parent.gameObject);
         Destroy(selectedObject.parent.gameObject);
         _isDragging = false; // Stop dragging when deselected
     }
@@ -289,11 +297,11 @@ public class ObjectManipulator : MonoBehaviour
         DeselectObject(); // Call the method to deselect the object
     }
 
-    public void RemoveObject()
-    {
-        if (selectedObject == null) return;
+    //public void RemoveObject()
+    //{
+    //    if (selectedObject == null) return;
 
-        Destroy(selectedObject.parent.gameObject);
-        _isDragging = false; // Stop dragging when deselected
-    }
+    //    Destroy(selectedObject.parent.gameObject);
+    //    _isDragging = false; // Stop dragging when deselected
+    //}
 }

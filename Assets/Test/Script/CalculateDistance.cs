@@ -155,40 +155,12 @@ public class CalculateDistance : MonoBehaviour
             line.relatedObject = model;
             lines.Add(line);
         }
-        
-        
-        
-        
-        // var lineRenderer = selectedObject.GetComponent<LineRenderer>();
-        //
-        // if (lineRenderer == null)
-        // {
-        //     lineRenderer = selectedObject.AddComponent<LineRenderer>();
-        // }
-        
-        
-        
-        // // Check distance from wall first
-        // if (CheckDistanceToLayer(objectPosition, wallLayer, out closestPoint, out shortestDistance))
-        // {
-        //     //Debug.Log("Nearest object is the wall.");
-        // }
-        // else if (CheckDistanceToLayer(objectPosition, floorLayer, out closestPoint, out shortestDistance))
-        // {
-        //    // Debug.Log("Nearest object is the floor.");
-        // }
-        // else if (CheckDistanceToLayer(objectPosition, grassGroundLayer, out closestPoint, out shortestDistance))
-        // {
-        //    // Debug.Log("Nearest object is the grass ground.");
-        // }
+       
+        foreach (var line in lines)
+        {
+            DrawLine(line.lineRenderer, selectedObject.transform.position, line.relatedObject.transform.position);
+            DisplayDistanceOnLine(line, selectedObject.transform, line.relatedObject.transform);
+        }
 
-        
-        
-        
-        // Display the distance in Unity
-        // DisplayDistance(shortestDistance);
-
-        // Draw a line between the placed object and the closest point (wall, floor, or ground)
-        // DrawLine(lineRenderer, objectPosition, closestPoint);
     }
 }
