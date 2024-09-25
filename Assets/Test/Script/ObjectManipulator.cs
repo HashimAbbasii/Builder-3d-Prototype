@@ -70,11 +70,16 @@ public class ObjectManipulator : MonoBehaviour
                 }
                 else
                 {
+
                     // If another object is clicked, select the new one
-                    SetSelectedObject(selectedTransform);
-                    _isObjectSelected = true; // Mark the object as selected
-                    _isDragging = false; // Don't drag yet, only select
-                }
+                    if (!hit.collider.gameObject.CompareTag("Floor"))
+                   {
+                        SetSelectedObject(selectedTransform);
+                        _isObjectSelected = true; // Mark the object as selected
+                        _isDragging = false; // Don't drag yet, only select
+                    }
+
+                   }
             }
             else
             {
@@ -176,6 +181,7 @@ public class ObjectManipulator : MonoBehaviour
 
         // Set the new selected object
         selectedObject = obj;
+        
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
 
 
@@ -285,6 +291,7 @@ public class ObjectManipulator : MonoBehaviour
         {
             Debug.Log("Deselect");
             DeselectForFloor();
+            return;
         }
 
         selectedObject = FloorSelected;
@@ -301,8 +308,17 @@ public class ObjectManipulator : MonoBehaviour
             _originalMaterial = meshRenderer.material; // Store the original material
             meshRenderer.material = selectedMaterial; // Apply the selected material
         }
+        isFloorSelected = false;
+        selectedObject.gameObject.layer = LayerMask.NameToLayer("Floor");
+
+        foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
+        {
+            childObjects.gameObject.layer = LayerMask.NameToLayer("Floor");
+        }
+
 
     }
+    
 
     // Check if the click is on any rotation button by checking mouse position against the RectTransforms
     private bool IsClickOnAnyRotationButton()

@@ -177,7 +177,7 @@ public class SpawningManager : MonoBehaviour
     // Called when the floor button is clicked
     public void OnFloorButtonClick()
     {
-        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+        //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         isCreatingFloor = true;
         isCreatingWall = false; // Ensure wall creation is not active
         if (previewObject != null)
@@ -192,7 +192,7 @@ public class SpawningManager : MonoBehaviour
     // Called when the wall button is clicked
     public void OnWallButtonClick()
     {
-        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+      //  ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         isCreatingWall = true;
         isCreatingFloor = false; // Ensure floor creation is not active
         if (previewObject != null)
@@ -209,7 +209,7 @@ public class SpawningManager : MonoBehaviour
         isCreatingWall = false;
         isCreatingFloor = false;
 
-        ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+       // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         Debug.Log("SelectObject");
         // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Length)
