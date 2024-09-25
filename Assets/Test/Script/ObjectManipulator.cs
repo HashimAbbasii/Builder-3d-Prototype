@@ -23,6 +23,7 @@ public class ObjectManipulator : MonoBehaviour
 
     private RectTransform _sliderRect; // RectTransform of the slider
 
+    public GameObject bottomPanel;
     private void Start()
     {
         // Get the RectTransform of each rotation button and store it
@@ -170,6 +171,11 @@ public class ObjectManipulator : MonoBehaviour
             // For other objects, show the slider
             scaleSlider.transform.parent.gameObject.SetActive(true);
         }
+        //if (selectedObject.CompareTag("Floor")) 
+        //{
+        //    bottomPanel.SetActive(false);
+            
+        //}
 
         if (selectedObject.parent != null)
         {
@@ -198,6 +204,31 @@ public class ObjectManipulator : MonoBehaviour
                     //Debug.LogError("SelectableObject component not found on the parent.");
                 }
             }
+            //else if (!selectedObject.CompareTag("Floor"))
+            //{
+            //    SelectableObject selectableObject = selectedObject.parent.GetComponent<SelectableObject>();
+
+            //    if (selectableObject != null)
+            //    {
+            //        Vector3 originalScale = selectableObject.OriginalScale;
+
+            //        // Check for zero in OriginalScale to avoid division by zero
+            //        if (originalScale.x != 0 && originalScale.y != 0 && originalScale.z != 0)
+            //        {
+            //            var scaleValue = selectedObject.parent.localScale.x / originalScale.x;
+            //            scaleSlider.value = scaleValue;
+            //            // Use scaleValue as needed
+            //        }
+            //        else
+            //        {
+            //            Debug.LogError("OriginalScale cannot be zero for any component.");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        //Debug.LogError("SelectableObject component not found on the parent.");
+            //    }
+            //}
             else
             {
                 // Debug.LogError("Selected object's parent is null.");
@@ -308,7 +339,8 @@ public class ObjectManipulator : MonoBehaviour
         }
         selectedObject = null; // Deselect the object
         _isDragging = false; // Stop dragging when deselected
-        scaleSlider.transform.parent.gameObject.SetActive(false);
+        scaleSlider.transform.parent.gameObject.SetActive(true);
+        bottomPanel.SetActive(true);
     }
 
 

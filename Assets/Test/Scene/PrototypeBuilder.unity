@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.9048636, g: 0.8922905, b: 0.8873004, a: 1}
+  m_IndirectSpecularColor: {r: 0.9048618, g: 0.8922876, b: 0.8872974, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -615,7 +615,7 @@ MonoBehaviour:
   distanceCalculator: {fileID: 574101920}
   selectableLayer:
     serializedVersion: 2
-    m_Bits: 6152
+    m_Bits: 6144
   placeableLayer:
     serializedVersion: 2
     m_Bits: 2120
@@ -628,6 +628,7 @@ MonoBehaviour:
   - {fileID: 1699126759}
   - {fileID: 387258485}
   _isObjectSelected: 0
+  bottomPanel: {fileID: 277073219}
 --- !u!1 &125175380
 GameObject:
   m_ObjectHideFlags: 0
@@ -7180,7 +7181,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 49.900024, y: 9.113106}
+  m_AnchoredPosition: {x: 49.899902, y: 9.113106}
   m_SizeDelta: {x: 160, y: 80.774}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1228456788
