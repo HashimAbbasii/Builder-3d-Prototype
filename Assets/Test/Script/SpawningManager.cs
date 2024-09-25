@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class SpawningManager : MonoBehaviour
 {
+
     public GameObject[] modelPrefabs;
     public Material[] floorMaterials; // Array to hold different materials for the floor
     public GameObject floorPrefab;
@@ -12,6 +14,9 @@ public class SpawningManager : MonoBehaviour
     public Material previewMaterial;
     public Material validPlacementMaterial;
     public Material invalidPlacementMaterial;
+    public Material originalMatrial;
+  
+    
 
     private Vector3 initialMousePos;
     private Vector3 finalMousePos;
@@ -30,6 +35,13 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
 
+
+ 
+
+ 
+
+
+
     private void Update()
     {
         // Floor creation logic
@@ -45,6 +57,7 @@ public class SpawningManager : MonoBehaviour
                 FloorMaterialChanged = currentFloor;
             }
         }
+        
 
         if (isCreatingFloor && Input.GetMouseButton(0) && currentFloor != null) // Dragging the mouse
         {
@@ -161,6 +174,7 @@ public class SpawningManager : MonoBehaviour
         previewObject = null;
         selectedObjectIndex = -1;
     }
+
 
     // Called when the wall button is clicked
     public void OnWallButtonClick()

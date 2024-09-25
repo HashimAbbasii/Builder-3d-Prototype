@@ -7,19 +7,22 @@ public class ObjectManipulator : MonoBehaviour
 {
     public float rotationSpeed = 100f; // Speed for rotating the object
     public Transform selectedObject; // The currently selected object
-    private Material _originalMaterial; // To store the original material of the object
+    public Material _originalMaterial; // To store the original material of the object
     public Material selectedMaterial; // Material to apply when the object is selected
     private bool _isDragging; // To track if the object is being dragged
     public Slider scaleSlider; // Slider to control the object's scale
     public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
     public LayerMask selectableLayer; // Layer mask for selectable objects
     public LayerMask placeableLayer; // Layer mask for selected objects
+
+    public Button floorButton;
     public GameObject removeButton; // Button for removing the selected object
 
     // Store a list of RectTransforms for the rotation buttons
     public List<Button> rotationButtons = new();
     private List<RectTransform> _rotationButtonRects = new();
     public bool _isObjectSelected; // Track if the object is currently selected
+    public bool isFloorSelected=false;
 
     private RectTransform _sliderRect; // RectTransform of the slider
 
@@ -39,12 +42,18 @@ public class ObjectManipulator : MonoBehaviour
         scaleSlider.onValueChanged.AddListener(ScaleObject);
         
         scaleSlider.transform.parent.gameObject.SetActive(false);
+        floorButton.onClick.AddListener(FloorSelection);
+    }
+
+    public void FloorSelection()
+    {
+        isFloorSelected=true;
     }
 
     private void Update()
     {
         // Check if the mouse is clicked and it's not over any UI elements (rotation buttons or slider)
-        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider())
+        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() && isFloorSelected==false)
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -76,7 +85,20 @@ public class ObjectManipulator : MonoBehaviour
             }
         }
 
-        // If an object is selected, handle its movement and rotation
+        //...........Deal With Floor Button Selection ...............//
+        if (Input.GetMouseButtonDown(0) && isFloorSelected == true)
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit) && hit.collider.gameObject.CompareTag("Floor"))
+            {
+                Debug.Log("Floor Selected");
+                var selectedTransform=hit.transform;
+                SelectedObjectForFloor(selectedTransform);
+                return;
+            }
+        }
+
+         // If an object is selected, handle its movement and rotation
         if (selectedObject != null)
         {
             removeButton.SetActive(true);
@@ -107,6 +129,10 @@ public class ObjectManipulator : MonoBehaviour
                         distanceCalculator.CalculateDistances(selectedObject.parent.gameObject);
                     }
                 }
+            }
+            else if (selectedObject != null)
+            {
+
             }
 
             // Rotate the object using arrow keys or other methods
@@ -242,6 +268,7 @@ public class ObjectManipulator : MonoBehaviour
         if (meshRenderer != null)
         {
             _originalMaterial = meshRenderer.material; // Store the original material
+           
             meshRenderer.material = selectedMaterial; // Apply the selected material
         }
 
@@ -250,6 +277,32 @@ public class ObjectManipulator : MonoBehaviour
         {
             distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
         }
+    }
+
+
+    public void SelectedObjectForFloor(Transform FloorSelected)
+    {
+        if(selectedObject== FloorSelected)
+        {
+            Debug.Log("Deselect");
+            DeselectForFloor();
+        }
+
+        selectedObject = FloorSelected;
+        selectedObject.gameObject.layer = LayerMask.NameToLayer("SelectedFloor");
+
+        foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
+        {
+            childObjects.gameObject.layer = LayerMask.NameToLayer("SelectedFloor");
+        }
+        if (selectedObject == null) return;
+        var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            _originalMaterial = meshRenderer.material; // Store the original material
+            meshRenderer.material = selectedMaterial; // Apply the selected material
+        }
+
     }
 
     // Check if the click is on any rotation button by checking mouse position against the RectTransforms
@@ -311,6 +364,7 @@ public class ObjectManipulator : MonoBehaviour
 
         if (meshRenderer != null && _originalMaterial != null)
         {
+          Debug.Log("Revert Material");
             meshRenderer.material = _originalMaterial; // Restore the original material
         }
 
@@ -344,6 +398,11 @@ public class ObjectManipulator : MonoBehaviour
     }
 
 
+
+    public void DeselectForFloor()
+    {
+        RevertMaterial();
+    }
     public void RemoveObject()
     {
         if (selectedObject == null) return;
