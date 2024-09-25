@@ -6,5 +6,6 @@ public class ObjectType : MonoBehaviour
 
     // Optionally add other properties like surface type
     
+    public int objectID;
     public SurfaceType surfaceType;
 }

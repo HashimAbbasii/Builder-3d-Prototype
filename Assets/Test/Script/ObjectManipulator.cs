@@ -5,34 +5,29 @@ using UnityEngine.Serialization;
 
 public class ObjectManipulator : MonoBehaviour
 {
-    #region Public Fields (Set in Inspector)
     public float rotationSpeed = 100f; // Speed for rotating the object
     public Transform selectedObject; // The currently selected object
     public Material _originalMaterial; // To store the original material of the object
     public Material selectedMaterial; // Material to apply when the object is selected
+    private bool _isDragging; // To track if the object is being dragged
     public Slider scaleSlider; // Slider to control the object's scale
     public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
     public LayerMask selectableLayer; // Layer mask for selectable objects
-    public LayerMask placeableLayer; // Layer mask for objects that can be placed
-    public Button floorButton; // Button for selecting the floor
+    public LayerMask placeableLayer; // Layer mask for selected objects
+
+    public Button floorButton;
     public GameObject removeButton; // Button for removing the selected object
-    public List<Button> rotationButtons = new(); // List of rotation buttons
-    #endregion
 
-
-    #region Private Fields
-    private bool _isDragging; // Track if the object is being dragged
-    private List<RectTransform> _rotationButtonRects = new(); // List of RectTransforms for the rotation buttons
-    private RectTransform _sliderRect; // RectTransform of the slider
+    // Store a list of RectTransforms for the rotation buttons
+    public List<Button> rotationButtons = new();
+    private List<RectTransform> _rotationButtonRects = new();
     public bool _isObjectSelected; // Track if the object is currently selected
-    public bool isFloorSelected = false; // Track if the floor is selected
-    public GameObject bottomPanel; // Panel at the bottom UI
-    #endregion
+    public bool isFloorSelected = false;
 
+    private RectTransform _sliderRect; // RectTransform of the slider
 
+    public GameObject bottomPanel;
 
-
-    #region Unity_Method 
     private void Start()
     {
         // Get the RectTransform of each rotation button and store it
@@ -46,16 +41,21 @@ public class ObjectManipulator : MonoBehaviour
 
         // Optionally, set up an event listener for the slider
         scaleSlider.onValueChanged.AddListener(ScaleObject);
-        
+
         scaleSlider.transform.parent.gameObject.SetActive(false);
         floorButton.onClick.AddListener(FloorSelection);
     }
 
+    public void FloorSelection()
+    {
+        isFloorSelected = true;
+    }
 
     private void Update()
     {
         // Check if the mouse is clicked and it's not over any UI elements (rotation buttons or slider)
-        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() && isFloorSelected==false)
+        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() &&
+            isFloorSelected == false)
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -75,13 +75,13 @@ public class ObjectManipulator : MonoBehaviour
 
                     // If another object is clicked, select the new one
                     if (!hit.collider.gameObject.CompareTag("Floor"))
-                   {
+                    {
                         SetSelectedObject(selectedTransform);
                         _isObjectSelected = true; // Mark the object as selected
                         _isDragging = false; // Don't drag yet, only select
                     }
 
-                   }
+                }
             }
             else
             {
@@ -99,13 +99,13 @@ public class ObjectManipulator : MonoBehaviour
             if (Physics.Raycast(ray, out var hit) && hit.collider.gameObject.CompareTag("Floor"))
             {
                 Debug.Log("Floor Selected");
-                var selectedTransform=hit.transform;
+                var selectedTransform = hit.transform;
                 SelectedObjectForFloor(selectedTransform);
                 return;
             }
         }
 
-         // If an object is selected, handle its movement and rotation
+        // If an object is selected, handle its movement and rotation
         if (selectedObject != null)
         {
             removeButton.SetActive(true);
@@ -166,18 +166,7 @@ public class ObjectManipulator : MonoBehaviour
         }
     }
 
-    #endregion
-
-
-    #region Public Method
-
-    public void FloorSelection()
-    {
-        isFloorSelected=true;
-    }
     // Set the object to be manipulated
-
-
     public void SetSelectedObject(Transform obj)
     {
         // Check if the same object is clicked again to toggle selection
@@ -194,7 +183,7 @@ public class ObjectManipulator : MonoBehaviour
 
         // Set the new selected object
         selectedObject = obj;
-        
+
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
 
 
@@ -204,7 +193,7 @@ public class ObjectManipulator : MonoBehaviour
         }
 
         Debug.Log(selectedObject.tag);
-        
+
         if (selectedObject.CompareTag("Wall") || selectedObject.CompareTag("Floor"))
         {
             // For Walls and Floor
@@ -218,7 +207,7 @@ public class ObjectManipulator : MonoBehaviour
         //if (selectedObject.CompareTag("Floor")) 
         //{
         //    bottomPanel.SetActive(false);
-            
+
         //}
 
         if (selectedObject.parent != null)
@@ -286,7 +275,7 @@ public class ObjectManipulator : MonoBehaviour
         if (meshRenderer != null)
         {
             _originalMaterial = meshRenderer.material; // Store the original material
-           
+
             meshRenderer.material = selectedMaterial; // Apply the selected material
         }
 
@@ -300,7 +289,7 @@ public class ObjectManipulator : MonoBehaviour
 
     public void SelectedObjectForFloor(Transform FloorSelected)
     {
-        if(selectedObject== FloorSelected)
+        if (selectedObject == FloorSelected)
         {
             Debug.Log("Deselect");
             DeselectForFloor();
@@ -314,6 +303,7 @@ public class ObjectManipulator : MonoBehaviour
         {
             childObjects.gameObject.layer = LayerMask.NameToLayer("SelectedFloor");
         }
+
         if (selectedObject == null) return;
         var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
         if (meshRenderer != null)
@@ -321,6 +311,7 @@ public class ObjectManipulator : MonoBehaviour
             _originalMaterial = meshRenderer.material; // Store the original material
             meshRenderer.material = selectedMaterial; // Apply the selected material
         }
+
         isFloorSelected = false;
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Floor");
 
@@ -332,84 +323,8 @@ public class ObjectManipulator : MonoBehaviour
 
     }
 
-    // Rotate the selected object by a specific angle
-    public void RotateObject(float angle)
-    {
-        if (selectedObject != null)
-        {
-            selectedObject.parent.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
-        }
-    }
 
-    // Scale the selected object based on the slider value
-    public void ScaleObject(float scaleValue)
-    {
-        if (selectedObject != null)
-        {
-            //temporary Fix
-            selectedObject.parent.localScale =
-                selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
-        }
-    }
-    // Method to deselect the currently selected object
-    public void DeselectObject()
-    {
-        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
-        {
-            Destroy(line.gameObject);
-        }
-
-        ManagerHandler.Instance.calculateDistance.lines.Clear();
-
-        RevertMaterial(); // Revert the material
-        if (selectedObject)
-        {
-            selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
-            
-            foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
-            {
-                childObjects.gameObject.layer = LayerMask.NameToLayer("Selectable");
-            }
-        }
-        selectedObject = null; // Deselect the object
-        _isDragging = false; // Stop dragging when deselected
-        scaleSlider.transform.parent.gameObject.SetActive(true);
-        bottomPanel.SetActive(true);
-    }
-
-    public void DeselectForFloor()
-    {
-        RevertMaterial();
-    }
-    public void RemoveObject()
-    {
-        if (selectedObject == null) return;
-
-        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
-        {
-            Destroy(line.gameObject);
-        }
-
-        ManagerHandler.Instance.calculateDistance.lines.Clear();
-        
-        // ManagerHandler.Instance.spawningManager.modelsSpawned.Remove(selectedObject.parent.gameObject);
-        Destroy(selectedObject.parent.gameObject);
-        
-        Invoke(nameof(DeleteMissingSpawnedModels), 0.1f);
-        
-        scaleSlider.transform.parent.gameObject.SetActive(false);
-        _isDragging = false; // Stop dragging when deselected
-    }
     // Check if the click is on any rotation button by checking mouse position against the RectTransforms
-    public void DeselectButton()
-    {
-        DeselectObject(); // Call the method to deselect the object
-    }
-
-    #endregion
-
-
-    #region Private_Method
     private bool IsClickOnAnyRotationButton()
     {
         Vector2 localMousePosition;
@@ -436,10 +351,27 @@ public class ObjectManipulator : MonoBehaviour
             out localMousePosition);
         return _sliderRect.rect.Contains(localMousePosition);
     }
-    
 
-    
 
+    // Rotate the selected object by a specific angle
+    public void RotateObject(float angle)
+    {
+        if (selectedObject != null)
+        {
+            selectedObject.parent.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
+        }
+    }
+
+    // Scale the selected object based on the slider value
+    public void ScaleObject(float scaleValue)
+    {
+        if (selectedObject != null)
+        {
+            //temporary Fix
+            selectedObject.parent.localScale =
+                selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
+        }
+    }
 
     // Method to revert the material to the original material
     private void RevertMaterial()
@@ -450,16 +382,66 @@ public class ObjectManipulator : MonoBehaviour
 
         if (meshRenderer != null && _originalMaterial != null)
         {
-          Debug.Log("Revert Material");
+            Debug.Log("Revert Material");
             meshRenderer.material = _originalMaterial; // Restore the original material
         }
 
         _originalMaterial = null; // Clear the stored material
     }
 
+    // Method to deselect the currently selected object
+    public void DeselectObject()
+    {
+        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
+        {
+            Destroy(line.gameObject);
+        }
+
+        ManagerHandler.Instance.calculateDistance.lines.Clear();
+
+        RevertMaterial(); // Revert the material
+        if (selectedObject)
+        {
+            selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
+
+            foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
+            {
+                childObjects.gameObject.layer = LayerMask.NameToLayer("Selectable");
+            }
+        }
+
+        selectedObject = null; // Deselect the object
+        _isDragging = false; // Stop dragging when deselected
+        scaleSlider.transform.parent.gameObject.SetActive(true);
+        bottomPanel.SetActive(true);
+    }
 
 
 
+    public void DeselectForFloor()
+    {
+        RevertMaterial();
+    }
+
+    public void RemoveObject()
+    {
+        if (selectedObject == null) return;
+
+        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
+        {
+            Destroy(line.gameObject);
+        }
+
+        ManagerHandler.Instance.calculateDistance.lines.Clear();
+
+        // ManagerHandler.Instance.spawningManager.modelsSpawned.Remove(selectedObject.parent.gameObject);
+        Destroy(selectedObject.parent.gameObject);
+
+        Invoke(nameof(DeleteMissingSpawnedModels), 0.1f);
+
+        scaleSlider.transform.parent.gameObject.SetActive(false);
+        _isDragging = false; // Stop dragging when deselected
+    }
 
     private bool IsMissing(GameObject obj)
     {
@@ -469,10 +451,21 @@ public class ObjectManipulator : MonoBehaviour
 
     private void DeleteMissingSpawnedModels()
     {
-        ManagerHandler.Instance.spawningManager.modelsSpawned.RemoveAll(item => item == null || !item || IsMissing(item));
+        ManagerHandler.Instance.spawningManager.modelsSpawned.RemoveAll(
+            item => item == null || !item || IsMissing(item));
     }
 
-    #endregion
+    // Method to deselect the currently selected object via button click
+    public void DeselectButton()
+    {
+        DeselectObject(); // Call the method to deselect the object
+    }
 
+    //public void RemoveObject()
+    //{
+    //    if (selectedObject == null) return;
+
+    //    Destroy(selectedObject.parent.gameObject);
+    //    _isDragging = false; // Stop dragging when deselected
+    //}
 }
-

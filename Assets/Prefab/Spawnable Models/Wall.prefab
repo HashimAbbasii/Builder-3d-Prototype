@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3107453569368352631}
   - component: {fileID: 8416172655732483045}
   m_Layer: 11
-  m_Name: WallParent
+  m_Name: Wall
   m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1014ce0feb73fe4daf1ad48fd9be41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: 1
   surfaceType: 2
+  modelType: 0
   canPlaceObjectsOnIt: 0
   canBePlacedOnObject: 0
   heightOffset: 0
@@ -161,6 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dec1940e3772f14e915aff8e345ed4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: 0
   surfaceType: 2
   heightOffset: 0
   canPlaceObjectsOnIt: 0

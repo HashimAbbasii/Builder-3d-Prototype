@@ -2,21 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-
+    public CanvasHandler canvasHandler;
+    public ModelSpawnButton modelButtonPrefab;
+    
     public GameObject startPanel;
-    void Start()
+    
+    private void Start()
     {
-        startPanel.SetActive(true);  
+        // startPanel.SetActive(true);  
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
     public void HandleSceneManagement(int index)
     {
         SceneManager.LoadScene(index);

@@ -30,5 +30,7 @@ public class ManagerHandler : MonoBehaviour
     public CalculateDistance calculateDistance;
     public StarterManagement starterManagement;
 
+    public UIManager uiManager;
     #endregion
+
 }
