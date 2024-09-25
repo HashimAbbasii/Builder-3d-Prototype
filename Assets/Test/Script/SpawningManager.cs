@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,11 +6,8 @@ using UnityEngine.UI;
 
 public class SpawningManager : MonoBehaviour
 {
-
+    #region Public Fields (Set in Inspector)
     public GameObject[] modelPrefabs;
-    public List<GameObject> furniturePrefabs;
-    public List<GameObject> evidencePrefabs;
-    
     public Material[] floorMaterials; // Array to hold different materials for the floor
     public GameObject floorPrefab;
     public GameObject wallPrefab;
@@ -19,9 +15,15 @@ public class SpawningManager : MonoBehaviour
     public Material validPlacementMaterial;
     public Material invalidPlacementMaterial;
     public Material originalMatrial;
-  
-    
+    public GameObject FloorMaterialChanged;
+    public LayerMask surfaceLayerMask;
+    public List<GameObject> floorsSpawned = new();
+    public List<GameObject> wallsSpawned = new();
+    public List<GameObject> modelsSpawned = new();
+    #endregion
 
+
+    #region Private Fields
     private Vector3 initialMousePos;
     private Vector3 finalMousePos;
     public GameObject currentFloor;
@@ -31,30 +33,9 @@ public class SpawningManager : MonoBehaviour
     private bool isCreatingFloor = false;
     private bool isCreatingWall = false;
     private int selectedObjectIndex = -1;
+    #endregion
 
-    public GameObject FloorMaterialChanged;
-    public LayerMask surfaceLayerMask;
-
-    public List<GameObject> floorsSpawned = new();
-    public List<GameObject> wallsSpawned = new();
-    public List<GameObject> modelsSpawned = new();
-
-    private void Start()
-    {
-        foreach (var mp in modelPrefabs)
-        {
-            switch (mp.GetComponent<SelectableObject>().modelType)
-            {
-                case ModelType.Furniture:
-                    furniturePrefabs.Add(mp);
-                    break;
-                case ModelType.Evidence:
-                    evidencePrefabs.Add(mp);
-                    break;
-            }
-        }
-    }
-
+    #region Unity Method
     private void Update()
     {
         // Floor creation logic
@@ -174,6 +155,10 @@ public class SpawningManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+
+    #region Public Method
     // Called when the floor button is clicked
     public void OnFloorButtonClick()
     {
@@ -237,6 +222,50 @@ public class SpawningManager : MonoBehaviour
         }
     }
 
+    // Method to change the floor's texture/material
+    public void ChangeFloorTexture(int materialIndex)
+    {
+        if (materialIndex >= 0 && materialIndex < floorMaterials.Length)
+        {
+            // Find all objects in the scene that have the same prefab or a specific tag (e.g., "Floor")
+            GameObject[] allFloors = GameObject.FindGameObjectsWithTag("Floor");
+
+            foreach (var floor in allFloors)
+            {
+                // Check if the floor object has children
+                if (floor.transform.childCount > 0)
+                {
+                    // Get the first child of the floor object
+                    var firstChild = floor.transform.GetChild(0);
+
+                    // Access the Renderer component of the first child
+                    var floorRenderer = firstChild.GetComponent<Renderer>();
+
+                    if (floorRenderer != null)
+                    {
+                        // Apply the selected material
+                        floorRenderer.material = floorMaterials[materialIndex];
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Renderer component not found on the first child of the floor object.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("No children found on the floor object.");
+                }
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Invalid materialIndex or floor materials not set.");
+        }
+    }
+
+    #endregion
+
+    #region Private Method
     // Apply the given material to the preview object
     private void ApplyMaterial(GameObject obj, Material material)
     {
@@ -392,44 +421,6 @@ public class SpawningManager : MonoBehaviour
         }
     }
 
-    // Method to change the floor's texture/material
-    public void ChangeFloorTexture(int materialIndex)
-    {
-        if (materialIndex >= 0 && materialIndex < floorMaterials.Length)
-        {
-            // Find all objects in the scene that have the same prefab or a specific tag (e.g., "Floor")
-            GameObject[] allFloors = GameObject.FindGameObjectsWithTag("Floor");
+    #endregion
 
-            foreach (var floor in allFloors)
-            {
-                // Check if the floor object has children
-                if (floor.transform.childCount > 0)
-                {
-                    // Get the first child of the floor object
-                    var firstChild = floor.transform.GetChild(0);
-
-                    // Access the Renderer component of the first child
-                    var floorRenderer = firstChild.GetComponent<Renderer>();
-
-                    if (floorRenderer != null)
-                    {
-                        // Apply the selected material
-                        floorRenderer.material = floorMaterials[materialIndex];
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Renderer component not found on the first child of the floor object.");
-                    }
-                }
-                else
-                {
-                    Debug.LogWarning("No children found on the floor object.");
-                }
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Invalid materialIndex or floor materials not set.");
-        }
-    }
 }

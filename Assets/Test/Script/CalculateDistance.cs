@@ -7,66 +7,23 @@ using UnityEngine.UI;
 
 public class CalculateDistance : MonoBehaviour
 {
+    #region Public Fields (Set in Inspector)
     public LineHandler distanceLinePrefab;
     public LayerMask wallLayer;
     public LayerMask floorLayer;
     public LayerMask grassGroundLayer;
     public TextMeshProUGUI distanceText; // UI element to show distance (optional)
     public List<LineHandler> lines = new();
-    
-    private List<GameObject> _placedObjects = new();
 
-    
-    // Call this method after placing the object
-    // public void CalculateDistances(GameObject placedObject)
-    // {
-    //     if (placedObject == null)
-    //     {
-    //         Debug.LogError("Placed object is null.");
-    //         return;
-    //     }
-    //
-    //     var lineRenderer = placedObject.GetComponent<LineRenderer>();
-    //
-    //     if (lineRenderer == null)
-    //     {
-    //         lineRenderer = placedObject.AddComponent<LineRenderer>();
-    //     }
-    //
-    //     // Set up the line renderer's appearance
-    //     lineRenderer.startWidth = 0.05f;
-    //     lineRenderer.endWidth = 0.05f;
-    //     lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-    //     lineRenderer.startColor = Color.green;
-    //     lineRenderer.endColor = Color.red;
-    //
-    //     var objectPosition = placedObject.transform.position;
-    //     var closestPoint = Vector3.zero;
-    //     var shortestDistance = float.MaxValue;
-    //
-    //     // Check distance from wall first
-    //     if (CheckDistanceToLayer(objectPosition, wallLayer, out closestPoint, out shortestDistance))
-    //     {
-    //         //Debug.Log("Nearest object is the wall.");
-    //     }
-    //     else if (CheckDistanceToLayer(objectPosition, floorLayer, out closestPoint, out shortestDistance))
-    //     {
-    //         //Debug.Log("Nearest object is the floor.");
-    //     }
-    //     else if (CheckDistanceToLayer(objectPosition, grassGroundLayer, out closestPoint, out shortestDistance))
-    //     {
-    //        // Debug.Log("Nearest object is the grass ground.");
-    //     }
-    //
-    //     // Display the distance in Unity
-    //     DisplayDistance(shortestDistance);
-    //
-    //     // Draw a line between the placed object and the closest point (wall, floor, or ground)
-    //     DrawLine(lineRenderer, objectPosition, closestPoint);
-    //
-    //     // Add the object to the list of placed objects
-    //     _placedObjects.Add(placedObject);
-    // }
+    #endregion
+
+    #region Private Field
+
+    private List<GameObject> _placedObjects = new();
+    #endregion
+
+
+    #region Public Method
 
     public void CalculateDistances(GameObject placedObject)
     {
@@ -88,6 +45,34 @@ public class CalculateDistance : MonoBehaviour
         
     }
     
+    public void RecalculateDistanceForSelectedObject(GameObject selectedObject)
+    {
+        var objectPosition = selectedObject.transform.position;
+        var closestPoint = Vector3.zero;
+        var shortestDistance = float.MaxValue;
+
+        foreach (var model in ManagerHandler.Instance.spawningManager.modelsSpawned)
+        {
+            if (selectedObject.transform.parent.gameObject == model) continue;
+
+            var line = Instantiate(distanceLinePrefab, Vector3.zero, Quaternion.identity);
+            line.relatedObject = model;
+            lines.Add(line);
+        }
+       
+        foreach (var line in lines)
+        {
+            DrawLine(line.lineRenderer, selectedObject.transform.position, line.relatedObject.transform.position);
+            DisplayDistanceOnLine(line, selectedObject.transform, line.relatedObject.transform);
+        }
+
+    }
+
+    #endregion
+
+
+    #region Private Method
+
     private bool CheckDistanceToLayer(Vector3 objectPosition, LayerMask layerMask, out Vector3 closestPoint, out float distance)
     {
         var colliders = Physics.OverlapSphere(objectPosition, 100f, layerMask); // Adjust the radius as needed
@@ -140,27 +125,7 @@ public class CalculateDistance : MonoBehaviour
         line.distanceText.text = distance.ToString("F2") + " feet";
     }
 
+    #endregion
+
     // Method to recalculate the distance and update the LineRenderer when selecting an object
-    public void RecalculateDistanceForSelectedObject(GameObject selectedObject)
-    {
-        var objectPosition = selectedObject.transform.position;
-        var closestPoint = Vector3.zero;
-        var shortestDistance = float.MaxValue;
-
-        foreach (var model in ManagerHandler.Instance.spawningManager.modelsSpawned)
-        {
-            if (selectedObject.transform.parent.gameObject == model) continue;
-
-            var line = Instantiate(distanceLinePrefab, Vector3.zero, Quaternion.identity);
-            line.relatedObject = model;
-            lines.Add(line);
-        }
-       
-        foreach (var line in lines)
-        {
-            DrawLine(line.lineRenderer, selectedObject.transform.position, line.relatedObject.transform.position);
-            DisplayDistanceOnLine(line, selectedObject.transform, line.relatedObject.transform);
-        }
-
-    }
 }

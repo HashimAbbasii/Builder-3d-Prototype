@@ -24,9 +24,11 @@ public class ManagerHandler : MonoBehaviour
 
     #endregion
 
-
+    #region Public Fields (Set in Inspector)
     public ObjectManipulator objectManipulator;
     public SpawningManager spawningManager;
     public CalculateDistance calculateDistance;
     public StarterManagement starterManagement;
+
+    #endregion
 }
