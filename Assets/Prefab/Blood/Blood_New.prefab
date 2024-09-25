@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   surfaceType: 3
+  modelType: 1
   canPlaceObjectsOnIt: 0
   canBePlacedOnObject: 0
   heightOffset: 0

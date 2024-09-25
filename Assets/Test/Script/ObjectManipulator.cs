@@ -159,7 +159,6 @@ public class ObjectManipulator : MonoBehaviour
         }
     }
 
-
     // Set the object to be manipulated
     public void SetSelectedObject(Transform obj)
     {
@@ -332,8 +331,7 @@ public class ObjectManipulator : MonoBehaviour
             out localMousePosition);
         return _sliderRect.rect.Contains(localMousePosition);
     }
-
-
+    
 
     // Rotate the selected object by a specific angle
     public void RotateObject(float angle)

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,9 @@ public class SpawningManager : MonoBehaviour
 {
 
     public GameObject[] modelPrefabs;
+    public List<GameObject> furniturePrefabs;
+    public List<GameObject> evidencePrefabs;
+    
     public Material[] floorMaterials; // Array to hold different materials for the floor
     public GameObject floorPrefab;
     public GameObject wallPrefab;
@@ -35,12 +39,21 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
 
-
- 
-
- 
-
-
+    private void Start()
+    {
+        foreach (var mp in modelPrefabs)
+        {
+            switch (mp.GetComponent<SelectableObject>().modelType)
+            {
+                case ModelType.Furniture:
+                    furniturePrefabs.Add(mp);
+                    break;
+                case ModelType.Evidence:
+                    evidencePrefabs.Add(mp);
+                    break;
+            }
+        }
+    }
 
     private void Update()
     {
