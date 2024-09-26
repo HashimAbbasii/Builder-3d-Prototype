@@ -37,6 +37,16 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
 
+    private void OnValidate()
+    {
+        for (var i = 0; i < modelPrefabs.Count(); i++)
+        {
+            var model = modelPrefabs[i];
+
+            model.GetComponent<SelectableObject>().objectID = i + 2;
+        }
+    }
+
     private void Start()
     {
         for (var i = 0; i < modelPrefabs.Count(); i++)

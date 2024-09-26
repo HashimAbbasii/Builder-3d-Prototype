@@ -5459,9 +5459,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   modelPrefabs:
   - {fileID: 5687651643765127015, guid: 51d7109d5f33cd140a1cd796bb957f07, type: 3}
+  - {fileID: 1258782013648802562, guid: a0ffba371deca804eaa618cf7886fead, type: 3}
   - {fileID: 3641505614789950835, guid: 6c6d8dd417f0d664b916d44e9b679ba5, type: 3}
   - {fileID: 5081681931632193069, guid: 49c203557fae4004f84552e6fc867912, type: 3}
-  - {fileID: 1258782013648802562, guid: a0ffba371deca804eaa618cf7886fead, type: 3}
   - {fileID: 6336651685627368823, guid: 639025c3f8a889448b9d79ba528e6f84, type: 3}
   furniturePrefabs: []
   evidencePrefabs: []
@@ -12071,6 +12071,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveData:
     objectInfos: []
+  json: 
 --- !u!1 &1846661019
 GameObject:
   m_ObjectHideFlags: 0
