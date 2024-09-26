@@ -78,6 +78,51 @@ public class DataManager : MonoBehaviour
     public void LoadObjectList()
     {
         saveData = JsonConvert.DeserializeObject<SaveData>(json);
+
+        foreach (var oi in saveData.objectInfos)
+        {
+            if (oi.objectID == 0)
+            {
+                var floor = Instantiate(ManagerHandler.Instance.spawningManager.floorPrefab);
+                oi.objectItem = floor;
+                ManagerHandler.Instance.spawningManager.floorsSpawned.Add(floor);
+                //floor.transform.position = oi.objectPosition.ToVector3();
+                //floor.transform.rotation = Quaternion.Euler(oi.objectRotation.ToVector3());
+                //if (oi.childOf == -1) floor.transform.localScale = oi.objectScale.GetVector3();
+            }
+            else if (oi.objectID == 1)
+            {
+                var wall = Instantiate(ManagerHandler.Instance.spawningManager.wallPrefab);
+                oi.objectItem = wall;
+                ManagerHandler.Instance.spawningManager.wallsSpawned.Add(wall);
+                //wall.transform.position = oi.objectPosition.ToVector3();
+                //wall.transform.rotation = Quaternion.Euler(oi.objectRotation.ToVector3());
+                //if (oi.childOf == -1) wall.transform.localScale = oi.objectScale.GetVector3();
+            }
+            else
+            {
+                var model = Instantiate(ManagerHandler.Instance.spawningManager.modelPrefabs[oi.objectID - 2]);
+                oi.objectItem = model;
+                ManagerHandler.Instance.spawningManager.modelsSpawned.Add(model);
+                //model.transform.position = oi.objectPosition.ToVector3();
+                //model.transform.rotation = Quaternion.Euler(oi.objectRotation.ToVector3());
+                //if (oi.childOf == -1) model.transform.localScale = oi.objectScale.GetVector3();
+            }
+        }
+
+        foreach (var childObj in saveData.objectInfos.Where(t => t.childOf != -1))
+        {
+            //...........Check if Child Index not Equal to -1 than it place a Parent ..................//
+
+            childObj.objectItem.transform.SetParent(saveData.objectInfos[childObj.childOf].objectItem.transform);
+        }
+
+        foreach (var toTransform in saveData.objectInfos)
+        {
+            toTransform.objectItem.transform.localScale = toTransform.objectScale.ToVector3();
+            toTransform.objectItem.transform.position = toTransform.objectPosition.ToVector3();
+            toTransform.objectItem.transform.rotation = Quaternion.Euler(toTransform.objectRotation.ToVector3());
+        }
     }
 }
 
@@ -125,5 +170,10 @@ public class JsonSavableVector3
         x = vector3.x;
         y = vector3.y;
         z = vector3.z;
+    }
+
+    public Vector3 ToVector3()
+    {
+        return new Vector3(x, y, z);
     }
 }
