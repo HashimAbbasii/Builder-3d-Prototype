@@ -28,8 +28,11 @@ public class ObjectManipulatorTutorial : MonoBehaviour
 
     public GameObject bottomPanel;
 
+    public bool ArrowIndicate = false;
+
     private void Start()
     {
+        ArrowIndicate = false;
         // Get the RectTransform of each rotation button and store it
         foreach (var button in rotationButtons)
         {

@@ -49,6 +49,7 @@ public class SpawningManagerTutorial : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(ArrowHandle());
         for (var i = 0; i < modelPrefabs.Count(); i++)
         {
             var model = modelPrefabs[i];
@@ -208,19 +209,35 @@ public class SpawningManagerTutorial : MonoBehaviour
             PlaceObjectOnSurface();
         }
     }
-
+    public bool ArrowIndicate = false;
+    public GameObject Arrow;
     // Called when the floor button is clicked
     public void OnFloorButtonClick()
     {
-        //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
-        _isCreatingFloor = true;
-        _isCreatingWall = false; // Ensure wall creation is not active
-        if (_previewObject != null)
+        if (ArrowIndicate == false)
         {
-            Destroy(_previewObject);
+            Arrow.gameObject.SetActive(false);
+
+            _isCreatingFloor = true;
+            _isCreatingWall = false; // Ensure wall creation is not active
+            if (_previewObject != null)
+            {
+                Destroy(_previewObject);
+            }
+            _previewObject = null;
+            _selectedObjectIndex = -1;
         }
-        _previewObject = null;
-        _selectedObjectIndex = -1;
+        
+    }
+
+
+
+    IEnumerator ArrowHandle()
+    {
+        ArrowIndicate = true;
+        yield return new WaitForSecondsRealtime(2f);
+        ArrowIndicate = false;
+
     }
 
 
