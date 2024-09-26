@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.9048636, g: 0.8922905, b: 0.8873004, a: 1}
+  m_IndirectSpecularColor: {r: 0.9048618, g: 0.8922876, b: 0.8872974, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1554,7 +1554,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &256271425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13101,8 +13101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveData:
     objectInfos: []
-  json: '{"objectInfos":[{"objectName":"Floor","objectID":0,"childOf":-1,"objectPosition":{"x":-4.797855,"y":0.0,"z":4.34776735},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":9.569296,"y":0.1,"z":-8.821041}},{"objectName":"Wall","objectID":1,"childOf":-1,"objectPosition":{"x":-5.12320137,"y":0.0,"z":0.560894966},"objectRotation":{"x":0.0,"y":90.0,"z":0.0},"objectScale":{"x":-8.93198,"y":2.0,"z":0.11}},{"objectName":"Wall","objectID":1,"childOf":-1,"objectPosition":{"x":-0.206165791,"y":0.0,"z":5.02688742},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":9.632586,"y":2.0,"z":0.11}},{"objectName":"Wall","objectID":1,"childOf":-1,"objectPosition":{"x":-0.209186077,"y":0.0,"z":-3.90509653},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":9.809948,"y":2.0,"z":0.11}},{"objectName":"Wall","objectID":1,"childOf":-1,"objectPosition":{"x":4.55833673,"y":0.0,"z":0.5058956},"objectRotation":{"x":0.0,"y":90.0,"z":0.0},"objectScale":{"x":-8.931984,"y":2.0,"z":0.11}},{"objectName":"Table","objectID":2,"childOf":-1,"objectPosition":{"x":2.95571733,"y":0.0985,"z":2.06639719},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":1.0,"y":1.0,"z":1.0}},{"objectName":"Knife","objectID":4,"childOf":5,"objectPosition":{"x":3.06586933,"y":0.991578341,"z":2.43690133},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":1.0,"y":1.0,"z":1.0}},{"objectName":"Table","objectID":2,"childOf":-1,"objectPosition":{"x":-2.023973,"y":0.0985,"z":1.60692072},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":1.0,"y":1.0,"z":1.0}},{"objectName":"Chair","objectID":3,"childOf":-1,"objectPosition":{"x":-2.81119442,"y":0.0985,"z":1.81787729},"objectRotation":{"x":0.0,"y":90.0,"z":0.0},"objectScale":{"x":1.0,"y":1.0,"z":1.0}},{"objectName":"Knife","objectID":4,"childOf":7,"objectPosition":{"x":-2.09667039,"y":0.9915782,"z":1.92481041},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":1.0,"y":1.0,"z":1.0}},{"objectName":"Blood","objectID":5,"childOf":-1,"objectPosition":{"x":0.825780153,"y":0.0985,"z":-0.6260967},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":2.0,"y":2.0,"z":2.0}},{"objectName":"Dead
-    Body","objectID":6,"childOf":10,"objectPosition":{"x":1.16550481,"y":0.135108575,"z":-0.8921695},"objectRotation":{"x":0.0,"y":0.0,"z":0.0},"objectScale":{"x":1.0,"y":1.0,"z":1.0}}]}'
+  json: 
 --- !u!1 &1846661019
 GameObject:
   m_ObjectHideFlags: 0
@@ -14424,7 +14423,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 109009998}
   m_HandleRect: {fileID: 109009997}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
