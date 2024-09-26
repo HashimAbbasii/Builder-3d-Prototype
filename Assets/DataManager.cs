@@ -70,50 +70,57 @@ public class DataManager : MonoBehaviour
 
         json = JsonConvert.SerializeObject(saveData);
         
-        string path = Path.Combine(Application.persistentDataPath, "save.json");
+        var path = Path.Combine(Application.persistentDataPath, "save.json");
         File.WriteAllText(path, json);
     }
     
     [ContextMenu("Load Object List")]
     public void LoadObjectList()
     {
+        var path = Path.Combine(Application.persistentDataPath, "save.json");
+        if (File.Exists(path))
+        {
+            json = File.ReadAllText(path);
+        }
+        else
+        {
+            Debug.LogError("No save file found.");
+            return;
+        }
+        
         saveData = JsonConvert.DeserializeObject<SaveData>(json);
 
         foreach (var oi in saveData.objectInfos)
         {
-            if (oi.objectID == 0)
+            switch (oi.objectID)
             {
-                var floor = Instantiate(ManagerHandler.Instance.spawningManager.floorPrefab);
-                oi.objectItem = floor;
-                ManagerHandler.Instance.spawningManager.floorsSpawned.Add(floor);
-                //floor.transform.position = oi.objectPosition.ToVector3();
-                //floor.transform.rotation = Quaternion.Euler(oi.objectRotation.ToVector3());
-                //if (oi.childOf == -1) floor.transform.localScale = oi.objectScale.GetVector3();
-            }
-            else if (oi.objectID == 1)
-            {
-                var wall = Instantiate(ManagerHandler.Instance.spawningManager.wallPrefab);
-                oi.objectItem = wall;
-                ManagerHandler.Instance.spawningManager.wallsSpawned.Add(wall);
-                //wall.transform.position = oi.objectPosition.ToVector3();
-                //wall.transform.rotation = Quaternion.Euler(oi.objectRotation.ToVector3());
-                //if (oi.childOf == -1) wall.transform.localScale = oi.objectScale.GetVector3();
-            }
-            else
-            {
-                var model = Instantiate(ManagerHandler.Instance.spawningManager.modelPrefabs[oi.objectID - 2]);
-                oi.objectItem = model;
-                ManagerHandler.Instance.spawningManager.modelsSpawned.Add(model);
-                //model.transform.position = oi.objectPosition.ToVector3();
-                //model.transform.rotation = Quaternion.Euler(oi.objectRotation.ToVector3());
-                //if (oi.childOf == -1) model.transform.localScale = oi.objectScale.GetVector3();
+                case 0:
+                {
+                    var floor = Instantiate(ManagerHandler.Instance.spawningManager.floorPrefab);
+                    oi.objectItem = floor;
+                    ManagerHandler.Instance.spawningManager.floorsSpawned.Add(floor);
+                    break;
+                }
+                case 1:
+                {
+                    var wall = Instantiate(ManagerHandler.Instance.spawningManager.wallPrefab);
+                    oi.objectItem = wall;
+                    ManagerHandler.Instance.spawningManager.wallsSpawned.Add(wall);
+                    break;
+                }
+                default:
+                {
+                    var model = Instantiate(ManagerHandler.Instance.spawningManager.modelPrefabs[oi.objectID - 2]);
+                    oi.objectItem = model;
+                    ManagerHandler.Instance.spawningManager.modelsSpawned.Add(model);
+                    break;
+                }
             }
         }
 
+        //...........Check if Child Index not Equal to -1 than it place a Parent ..................//
         foreach (var childObj in saveData.objectInfos.Where(t => t.childOf != -1))
         {
-            //...........Check if Child Index not Equal to -1 than it place a Parent ..................//
-
             childObj.objectItem.transform.SetParent(saveData.objectInfos[childObj.childOf].objectItem.transform);
         }
 
