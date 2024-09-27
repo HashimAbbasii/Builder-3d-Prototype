@@ -766,7 +766,7 @@ GameObject:
   - component: {fileID: 125175383}
   - component: {fileID: 125175382}
   m_Layer: 5
-  m_Name: Knife
+  m_Name: Mat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -788,9 +788,9 @@ RectTransform:
   m_Father: {fileID: 511724769}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 127, y: -321}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 133.328, y: -60}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &125175382
@@ -844,7 +844,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 2
+          m_IntArgument: 5
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -5655,6 +5655,7 @@ MonoBehaviour:
   - {fileID: 3641505614789950835, guid: 6c6d8dd417f0d664b916d44e9b679ba5, type: 3}
   - {fileID: 5081681931632193069, guid: 49c203557fae4004f84552e6fc867912, type: 3}
   - {fileID: 6336651685627368823, guid: 639025c3f8a889448b9d79ba528e6f84, type: 3}
+  - {fileID: 5826881148016247925, guid: 8b5b36e736e9f804f8785408158a58dc, type: 3}
   furniturePrefabs: []
   evidencePrefabs: []
   floorMaterials:
@@ -12120,7 +12121,7 @@ GameObject:
   - component: {fileID: 1692264097}
   - component: {fileID: 1692264096}
   m_Layer: 5
-  m_Name: Knife
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12166,9 +12167,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Knife
-
-'
+  m_text: Mat
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -13590,7 +13589,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 183706516}
   m_HandleRect: {fileID: 183706515}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
