@@ -5,10 +5,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
-
+using TMPro;
 public class SpawningManager : MonoBehaviour
 {
-
+    public Text measurementText;
     public List<GameObject> modelPrefabs;
     public List<GameObject> furniturePrefabs;
     public List<GameObject> evidencePrefabs;
@@ -36,6 +36,8 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> floorsSpawned = new();
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
+    public TextMeshProUGUI _floorDimensionsText; // Reference to your UI Text element
+
 
     private void OnValidate()
     {
@@ -88,45 +90,53 @@ public class SpawningManager : MonoBehaviour
             eb.button.onClick.AddListener(() =>
                 SelectObject(modelPrefabs.FirstOrDefault(x => x == ep)!.GetComponent<SelectableObject>().objectID - 2));
         }
+       // UpdateFloorDimensionsText(Vector3.zero, Vector3.zero); // Initialize with zero dimensions
     }
 
     private void Update()
     {
         // Floor creation logic
-        if (_isCreatingFloor && Input.GetMouseButtonDown(0)) // Left mouse button pressed
+        if (_isCreatingFloor && Input.GetMouseButtonDown(0))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 _initialMousePos = hit.point;
-                _initialMousePos.y = 0f; // Ensure the y-axis is set to 0
+                _initialMousePos.y = 0f;
                 _currentFloor = Instantiate(floorPrefab, _initialMousePos, Quaternion.identity);
                 floorsSpawned.Add(_currentFloor);
                 floorMaterialChanged = _currentFloor;
+                _floorDimensionsText = _currentFloor.GetComponentInChildren<TextMeshProUGUI>();
+
+                // Initialize text when floor creation starts
+                UpdateFloorDimensionsText(_initialMousePos, _initialMousePos);
             }
         }
-        
 
-        if (_isCreatingFloor && Input.GetMouseButton(0) && _currentFloor != null) // Dragging the mouse
+        if (_isCreatingFloor && Input.GetMouseButton(0) && _currentFloor != null)
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit))
             {
                 _finalMousePos = hit.point;
-                _finalMousePos.y = 0f; // Ensure the y-axis remains at 0
+                _finalMousePos.y = 0f;
 
                 Vector3 scale = _finalMousePos - _initialMousePos;
-                _currentFloor.transform.localScale = new Vector3(scale.x, 0.1f, scale.z); // Assuming floor thickness is 0.1 unit
+                _currentFloor.transform.localScale = new Vector3(scale.x, 0.1f, scale.z);
+
+                // Update the UI text with the current dimensions
+                UpdateFloorDimensionsText(_initialMousePos, _finalMousePos);
             }
         }
 
-        if (_isCreatingFloor && Input.GetMouseButtonUp(0) && _currentFloor != null) // Mouse button released
-        {
-            _isCreatingFloor = false; // Reset the floor creation process
-            _currentFloor = null; // Reset the current floor object
 
-           // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
-            Debug.Log("Floor Up");
+
+        if (_isCreatingFloor && Input.GetMouseButtonUp(0) && _currentFloor != null)
+        {
+            _isCreatingFloor = false;
+            _currentFloor = null;
+            StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
+           
         }
 
         // Wall creation logic
@@ -210,6 +220,9 @@ public class SpawningManager : MonoBehaviour
     }
 
     // Called when the floor button is clicked
+
+   
+
     public void OnFloorButtonClick()
     {
         //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
@@ -467,4 +480,27 @@ public class SpawningManager : MonoBehaviour
             Debug.LogWarning("Invalid materialIndex or floor materials not set.");
         }
     }
+
+    private void UpdateFloorDimensionsText(Vector3 start, Vector3 end)
+    {
+        if (start != end)
+        {
+            float lengthInMeters = Vector3.Distance(start, end);
+            float lengthInFeet = lengthInMeters * 3.28084f; // Convert to feet
+            _floorDimensionsText.text = $"Length: {lengthInMeters:F2} m / {lengthInFeet:F2} ft";
+        }
+        else
+        {
+            _floorDimensionsText.text = ""; // Clear text if not dragging
+        }
+    }
+    private IEnumerator HideFloorDimensionsTextAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (_floorDimensionsText != null)
+        {
+            _floorDimensionsText.text = ""; // Clear text after delay
+        }
+    }
+
 }
