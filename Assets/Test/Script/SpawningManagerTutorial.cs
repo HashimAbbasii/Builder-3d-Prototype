@@ -19,6 +19,8 @@ public class SpawningManagerTutorial : MonoBehaviour
     public Material previewMaterial;
     public Material validPlacementMaterial;
     public Material invalidPlacementMaterial;
+    public ArrowControl arrowControl;
+
 
     private Vector3 _initialMousePos;
     private Vector3 _finalMousePos;
@@ -214,9 +216,9 @@ public class SpawningManagerTutorial : MonoBehaviour
     // Called when the floor button is clicked
     public void OnFloorButtonClick()
     {
-        if (ArrowIndicate == false)
+        if (arrowControl.FloorButton == true)
         {
-            Arrow.gameObject.SetActive(false);
+            //Arrow.gameObject.SetActive(false);
 
             _isCreatingFloor = true;
             _isCreatingWall = false; // Ensure wall creation is not active

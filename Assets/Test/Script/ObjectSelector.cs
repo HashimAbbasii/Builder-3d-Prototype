@@ -2,14 +2,14 @@ using UnityEngine;
 
 public class ObjectSelector : MonoBehaviour
 {
-    public ObjectManipulator manipulator;
+    public ObjectManipulatorTutorial manipulator;
     public LayerMask surfaceLayer;
 
     void Start()
     {
         if (manipulator == null)
         {
-            manipulator = FindObjectOfType<ObjectManipulator>();
+            manipulator = FindObjectOfType<ObjectManipulatorTutorial>();
             if (manipulator == null)
             {
                 Debug.LogError("ObjectManipulator script not found in the scene.");
