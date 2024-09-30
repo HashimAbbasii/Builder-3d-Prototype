@@ -20,6 +20,7 @@ public class ObjectManipulator : MonoBehaviour
 
     // Store a list of RectTransforms for the rotation buttons
     public List<Button> rotationButtons = new();
+    public RectTransform rotationImage;
     private List<RectTransform> _rotationButtonRects = new();
     public bool _isObjectSelected; // Track if the object is currently selected
     public bool isFloorSelected = false;
@@ -359,6 +360,14 @@ public class ObjectManipulator : MonoBehaviour
         if (selectedObject != null)
         {
             selectedObject.parent.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
+        }
+    }
+
+    public void SetRotation(float angle)
+    {
+        if (selectedObject != null)
+        {
+            selectedObject.parent.transform.rotation = Quaternion.Euler(0, angle, 0);
         }
     }
 
