@@ -24,8 +24,9 @@ public class DynamicAddLineSample_WorldCanvas : MonoBehaviour {
 				lastHitTransform = null;
 				prevIsDrawLine = isDrawLine;
 			}
-			GameObject hitObj = MouseRayer.GetMouseRayHit(Camera.main, out hitPos);
-			if (hitObj!=null)
+			var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out hitPos);
+
+			if (hitObj != null)
 			{
 				if (isDrawLine)
 				{
@@ -41,14 +42,22 @@ public class DynamicAddLineSample_WorldCanvas : MonoBehaviour {
 					}
 					else
 					{
-						GameObject hitDummy = new GameObject("SurfaceLineDummy");
-						hitDummy.transform.position = hitPos;
+						var hitDummy = new GameObject("SurfaceLineDummy")
+						{
+							transform =
+							{
+								position = hitPos
+							}
+						};
 						hitDummy.transform.SetParent(hitObj.transform);
 						MeasureLine_WorldCanvas.DrawLine(hitDummy.transform, false, false, OnSurface, 6f, showSubAxis);
-						if (lastHitTransform != null) {
+						if (lastHitTransform != null) 
+						{
 							MeasureLine_WorldCanvas.EndDrawLine ();
 							lastHitTransform = null;
-						} else {
+						} 
+						else 
+						{
 							lastHitTransform = hitObj.transform;
 						}
 					}
