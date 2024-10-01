@@ -23,7 +23,7 @@ public class SpawningManager : MonoBehaviour
 
     private Vector3 _initialMousePos;
     private Vector3 _finalMousePos;
-    private GameObject _currentFloor;
+    public GameObject _currentFloor;
     private GameObject _currentWall;
     private GameObject _previewObject;
     private Material _originalMaterial; // To store the original material of the model
@@ -225,6 +225,7 @@ public class SpawningManager : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 _initialMousePos = hit.point;
+               
                 _initialMousePos.y = 0f;
                 _currentFloor = Instantiate(floorPrefab, _initialMousePos, Quaternion.identity);
                 floorsSpawned.Add(_currentFloor);
@@ -254,13 +255,19 @@ public class SpawningManager : MonoBehaviour
                 _currentFloor.transform.localScale = new Vector3(scale.x, 0.1f, scale.z);
 
                 // Update the UI text with the current dimensions
-                UpdateFloorDimensionsText(_initialMousePos, _finalMousePos);
                 UpdateLinePositions(_initialMousePos, _finalMousePos);
                 xLineRenderer.SetPosition(0, _initialMousePos);
                 xLineRenderer.SetPosition(1, new Vector3(_finalMousePos.x, 0, _initialMousePos.z));
 
                 zLineRenderer.SetPosition(0, _initialMousePos);
                 zLineRenderer.SetPosition(1, new Vector3(_initialMousePos.x, 0, _finalMousePos.z));
+                Vector3 actualScale = _currentFloor.transform.localScale;
+                float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
+                float actualScaleZ = Mathf.Abs(actualScale.z);
+                Debug.Log("Xactual Size"+actualScaleX);
+
+                Debug.Log("Zactual Size"+actualScaleZ);
+                UpdateFloorDimensionsText(_initialMousePos, _finalMousePos);
 
             }
         }
@@ -646,13 +653,19 @@ public class SpawningManager : MonoBehaviour
     {
         if (start != end)
         {
-            float lengthInMetersX = Mathf.Abs(end.x - start.x);
-            float lengthInFeetX = lengthInMetersX * 3.28084f; // Convert to feet
-            xDimensionText.text = $"X Length: {lengthInMetersX:F2} m / {lengthInFeetX:F2} ft";
+            // Get actual scale of the floor
+            Vector3 actualScale = _currentFloor.transform.localScale;
 
-            float lengthInMetersZ = Mathf.Abs(end.z - start.z);
-            float lengthInFeetZ = lengthInMetersZ * 3.28084f; // Convert to feet
-            zDimensionText.text = $"Z Length: {lengthInMetersZ:F2} m / {lengthInFeetZ:F2} ft";
+            float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
+            float actualScaleZ = Mathf.Abs(actualScale.z); // Actual scale on Z-axis
+
+            // Convert to feet (optional)
+            float lengthInFeetX = actualScaleX ;
+            float lengthInFeetZ = actualScaleZ ;
+
+            // Update UI with actual dimensions
+            xDimensionText.text = $"X Length: {actualScaleX:F2} m / {lengthInFeetX:F2} ft";
+            zDimensionText.text = $"Z Length: {actualScaleZ:F2} m / {lengthInFeetZ:F2} ft";
 
             // Update positions for the text
             Vector3 midPointX = new Vector3((start.x + end.x) / 2, 0.1f, start.z);
@@ -662,8 +675,9 @@ public class SpawningManager : MonoBehaviour
         }
         else
         {
-            xDimensionText.text = ""; // Clear text if not dragging
-            zDimensionText.text = ""; // Clear text if not dragging
+            // Clear the text when not dragging
+            xDimensionText.text = "";
+            zDimensionText.text = "";
         }
     }
     private IEnumerator HideFloorDimensionsTextAfterDelay(float delay)
