@@ -175,7 +175,7 @@ public class SpawningManager : MonoBehaviour
 
         zDimensionText.rectTransform.anchoredPosition = currentPositionZ;
         RectTransform rectTransformZe = zDimensionText.rectTransform;
-        rectTransformZe.rotation = Quaternion.Euler(90, 0, 0);
+        rectTransformZe.rotation = Quaternion.Euler(90, -90, 0);
 
 
 
@@ -215,7 +215,7 @@ public class SpawningManager : MonoBehaviour
         zDimensionText.fontSize = 1;
         zDimensionText.color = Color.blue;
         wallDimensionText.fontSize = 1;
-        wallDimensionText.color = Color.black;
+        wallDimensionText.color = Color.white;
 
         for (var i = 0; i < modelPrefabs.Count(); i++)
         {
@@ -765,7 +765,7 @@ public class SpawningManager : MonoBehaviour
           
 
             // Update positions for the text
-            Vector3 midPointX = new Vector3((start.x + end.x) / 2, 0.1f, start.z);
+            Vector3 midPointX = new Vector3((start.x + end.x) / 2, 3f, start.z - 1.24f);
            
             wallDimensionText.transform.position = midPointX;
            
