@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using TMPro;
+using static UnityEditor.ShaderData;
 public class SpawningManager : MonoBehaviour
 {
     public Text measurementText;
@@ -38,6 +39,59 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> modelsSpawned = new();
     public TextMeshProUGUI _floorDimensionsText; // Reference to your UI Text element
 
+    private LineRenderer xLineRenderer;
+    private LineRenderer zLineRenderer;
+
+    public TextMeshProUGUI xDimensionText; // Text for X-axis dimensions
+    public TextMeshProUGUI zDimensionText; // Text for Z-axis dimensions
+
+    public Canvas uiCanvas; // Reference to the Canvas
+    public Canvas uiCanvasZaxis;
+
+
+
+    private void SetupLineRenderers()
+    {
+
+
+        //if (uiCanvas == null)
+        //{
+        //    // Find or create a Canvas in the scene
+        //    uiCanvas = FindObjectOfType<Canvas>();
+        //    if (uiCanvas == null)
+        //    {
+        //        uiCanvas = new GameObject("UI Canvas").AddComponent<Canvas>();
+        //        uiCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        //        uiCanvas.gameObject.AddComponent<CanvasScaler>();
+        //        uiCanvas.gameObject.AddComponent<GraphicRaycaster>();
+        //    }
+        //}
+        // Create and configure the material for LineRenderers
+        Material transparentMaterial = new Material(Shader.Find("Particles/Standard Unlit"));
+        transparentMaterial.color = new Color(1, 0, 0, 0.2f); // Red color with 50% transparency for XLine
+                                                              // X-axis line (representing X-scale)
+        xLineRenderer = new GameObject("XLine").AddComponent<LineRenderer>();
+        xLineRenderer.startWidth = 0.05f;
+        xLineRenderer.endWidth = 0.05f;
+        xLineRenderer.material = transparentMaterial;
+
+        // Z-axis line (representing Z-scale)
+        zLineRenderer = new GameObject("ZLine").AddComponent<LineRenderer>();
+        zLineRenderer.startWidth = 0.05f;
+        zLineRenderer.endWidth = 0.05f;
+        zLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
+
+        xLineRenderer.positionCount = 2;
+        zLineRenderer.positionCount = 2;
+
+        // Initially disable the lines
+        xLineRenderer.enabled = false;
+        zLineRenderer.enabled = false;
+
+
+       
+}
+
 
     private void OnValidate()
     {
@@ -51,6 +105,75 @@ public class SpawningManager : MonoBehaviour
 
     private void Start()
     {
+        SetupLineRenderers();  // Initialize the LineRenderers
+
+        xDimensionText = new GameObject("XDimensionText").AddComponent<TextMeshProUGUI>();
+        zDimensionText = new GameObject("ZDimensionText").AddComponent<TextMeshProUGUI>();
+
+       //......Set the Value By Default.........................................//
+
+
+        xDimensionText.transform.SetParent(uiCanvas.transform, false);
+        uiCanvas.transform.SetParent(xLineRenderer.transform, false);
+
+
+        Vector2 currentPosition = xDimensionText.rectTransform.anchoredPosition;
+        RectTransform rectTransform = xDimensionText.rectTransform;
+
+        // Access width and height
+        float width =  10f;
+        float height = 10f;
+        rectTransform.sizeDelta = new Vector2(width, height);
+
+
+        currentPosition.x = 0; // Set x to 0
+        currentPosition.y = 1.06f; // Set y to 0
+
+
+
+        xDimensionText.rectTransform.anchoredPosition = currentPosition;
+
+
+        RectTransform rectTransformX = xDimensionText.rectTransform;
+        rectTransformX.rotation = Quaternion.Euler(90,0,0);
+
+        //..........................;;;;............................//
+
+
+
+        zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
+        uiCanvasZaxis.transform.SetParent(zLineRenderer.transform, false);
+
+        //.....................Set Z Dimension...........................//
+
+        Vector2 currentPositionZ = zDimensionText.rectTransform.anchoredPosition;
+        RectTransform rectTransformZ = zDimensionText.rectTransform;
+
+
+        float widthZ = 10f;
+        float heightZ = 10f;
+        rectTransformZ.sizeDelta = new Vector2(widthZ, heightZ);
+
+
+        currentPositionZ.x = 0; // Set x to 0
+        currentPositionZ.y = 1.06f; // Set y to 0
+
+        zDimensionText.rectTransform.anchoredPosition = currentPositionZ;
+        RectTransform rectTransformZe = zDimensionText.rectTransform;
+        rectTransformZe.rotation = Quaternion.Euler(90, 0, 0);
+
+
+
+
+        zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
+
+
+        // Set text properties (position, font size, color, etc.)
+        xDimensionText.fontSize = 1;
+        xDimensionText.color = Color.red;
+        zDimensionText.fontSize = 1;
+        zDimensionText.color = Color.blue;
+
         for (var i = 0; i < modelPrefabs.Count(); i++)
         {
             var model = modelPrefabs[i];
@@ -110,6 +233,12 @@ public class SpawningManager : MonoBehaviour
 
                 // Initialize text when floor creation starts
                 UpdateFloorDimensionsText(_initialMousePos, _initialMousePos);
+                xLineRenderer.enabled = true;
+                zLineRenderer.enabled = true;
+                xLineRenderer.startWidth = 1f;
+                xLineRenderer.endWidth = 1f;
+                zLineRenderer.startWidth = 1f;
+                zLineRenderer.endWidth = 1f;
             }
         }
 
@@ -126,6 +255,13 @@ public class SpawningManager : MonoBehaviour
 
                 // Update the UI text with the current dimensions
                 UpdateFloorDimensionsText(_initialMousePos, _finalMousePos);
+                UpdateLinePositions(_initialMousePos, _finalMousePos);
+                xLineRenderer.SetPosition(0, _initialMousePos);
+                xLineRenderer.SetPosition(1, new Vector3(_finalMousePos.x, 0, _initialMousePos.z));
+
+                zLineRenderer.SetPosition(0, _initialMousePos);
+                zLineRenderer.SetPosition(1, new Vector3(_initialMousePos.x, 0, _finalMousePos.z));
+
             }
         }
 
@@ -133,8 +269,22 @@ public class SpawningManager : MonoBehaviour
 
         if (_isCreatingFloor && Input.GetMouseButtonUp(0) && _currentFloor != null)
         {
+            xLineRenderer.enabled = false;
+            zLineRenderer.enabled = false;
             _isCreatingFloor = false;
             _currentFloor = null;
+
+            xLineRenderer.startWidth = 0f;
+            xLineRenderer.endWidth = 0f;
+            zLineRenderer.startWidth = 0f;
+            zLineRenderer.endWidth = 0f;
+
+            // Hide the lines after the floor is placed
+            xLineRenderer.enabled = false;
+            zLineRenderer.enabled = false;
+            xDimensionText.text = "";
+            zDimensionText.text = "";
+
             StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
            
         }
@@ -221,7 +371,18 @@ public class SpawningManager : MonoBehaviour
 
     // Called when the floor button is clicked
 
-   
+
+    private void UpdateLinePositions(Vector3 start, Vector3 end)
+    {
+        // X-axis line
+        xLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
+        xLineRenderer.SetPosition(1, new Vector3(end.x, 0.01f, start.z)); // Draw along X-axis
+
+        // Z-axis line
+        zLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
+        zLineRenderer.SetPosition(1, new Vector3(start.x, 0.01f, end.z)); // Draw along Z-axis
+    }
+
 
     public void OnFloorButtonClick()
     {
@@ -485,13 +646,24 @@ public class SpawningManager : MonoBehaviour
     {
         if (start != end)
         {
-            float lengthInMeters = Vector3.Distance(start, end);
-            float lengthInFeet = lengthInMeters * 3.28084f; // Convert to feet
-            _floorDimensionsText.text = $"Length: {lengthInMeters:F2} m / {lengthInFeet:F2} ft";
+            float lengthInMetersX = Mathf.Abs(end.x - start.x);
+            float lengthInFeetX = lengthInMetersX * 3.28084f; // Convert to feet
+            xDimensionText.text = $"X Length: {lengthInMetersX:F2} m / {lengthInFeetX:F2} ft";
+
+            float lengthInMetersZ = Mathf.Abs(end.z - start.z);
+            float lengthInFeetZ = lengthInMetersZ * 3.28084f; // Convert to feet
+            zDimensionText.text = $"Z Length: {lengthInMetersZ:F2} m / {lengthInFeetZ:F2} ft";
+
+            // Update positions for the text
+            Vector3 midPointX = new Vector3((start.x + end.x) / 2, 0.1f, start.z);
+            Vector3 midPointZ = new Vector3(start.x, 0.1f, (start.z + end.z) / 2);
+            xDimensionText.transform.position = midPointX;
+            zDimensionText.transform.position = midPointZ;
         }
         else
         {
-            _floorDimensionsText.text = ""; // Clear text if not dragging
+            xDimensionText.text = ""; // Clear text if not dragging
+            zDimensionText.text = ""; // Clear text if not dragging
         }
     }
     private IEnumerator HideFloorDimensionsTextAfterDelay(float delay)
@@ -502,5 +674,6 @@ public class SpawningManager : MonoBehaviour
             _floorDimensionsText.text = ""; // Clear text after delay
         }
     }
+
 
 }
