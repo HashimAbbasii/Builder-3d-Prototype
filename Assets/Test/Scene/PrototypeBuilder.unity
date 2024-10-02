@@ -5764,6 +5764,7 @@ MonoBehaviour:
   CameraPosition: {fileID: 1573931599}
   CameraRotation: {fileID: 1279661727}
   moveSpeed: 0.05
+  rotationSpeed: 50
   maxZPosition: 10.38793
   minXPosition: -8
   maxXPosition: 8
@@ -11265,7 +11266,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1279661726
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13145,7 +13146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1573931598
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16642,7 +16643,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3881087802133023463
 RectTransform:
   m_ObjectHideFlags: 0
