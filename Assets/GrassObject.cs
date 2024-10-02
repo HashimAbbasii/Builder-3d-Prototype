@@ -5,18 +5,18 @@ using UnityEngine;
 
 public class GrassObject : ObjectType
 {
-    public void OnMouseDown()
-    {
-        Debug.Log("G OMD");
-    }
-
-    public void OnMouseUp()
-    {
-        Debug.Log("G OMU");
-    }
-
-    public void OnMouseDrag()
-    {
-        Debug.Log("G OM");
-    }
+    // public void OnMouseDown()
+    // {
+    //     Debug.Log("G OMD");
+    // }
+    //
+    // public void OnMouseUp()
+    // {
+    //     Debug.Log("G OMU");
+    // }
+    //
+    // public void OnMouseDrag()
+    // {
+    //     Debug.Log("G OM");
+    // }
 }

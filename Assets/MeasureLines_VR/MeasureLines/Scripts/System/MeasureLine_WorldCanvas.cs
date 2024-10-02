@@ -75,8 +75,8 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
     public float lineWidth = 0.08f;
     public Color lineColor = new Color(0.627f, 0.839f, 0.165f, 1);
 	static public Color StaticLineColor = new Color(0.627f, 0.839f, 0.165f, 1); 
-    public Color textColor = new Color(1, 1, 1, 1);
-	static public Color StaticTextColor = new Color(1, 1, 1, 1);
+    public Color textColor = new Color(0, 0, 0, 1);
+	static public Color StaticTextColor = new Color(0, 0, 0, 1);
     public int textSize = 14;
     public float canvasScale = 1f;
     public int decimalPlaces = 2;
