@@ -12,6 +12,11 @@ public class CameraManager : MonoBehaviour
     private Vector3 startPos;                  // Initial camera position
 
     [SerializeField] private float moveSpeed = 0.05f; // Adjust this value to change movement speed
+    [SerializeField] private float maxZPosition = 10.38793f; // Maximum Z-axis position
+    [SerializeField] private float minXPosition = -8f; // Minimum X-axis position
+    [SerializeField] private float maxXPosition = 8f;  // Maximum X-axis position
+    [SerializeField] private float minZPosition = -10f;  // Maximum X-axis position
+
 
     void Start()
     {
@@ -47,6 +52,27 @@ public class CameraManager : MonoBehaviour
 
         // Move the camera on the X-axis when joystick is moved sideways
         newPosition.x += horizontalInput * moveSpeed; // Increase X position based on joystick's horizontal input
+
+        // Restrict Z position to the specified maximum value
+        if (newPosition.z > maxZPosition)
+        {
+            newPosition.z = maxZPosition; // Clamp Z position
+        }
+
+        if (newPosition.z < minZPosition)
+        {
+            newPosition.z = minZPosition; // Clamp Z position
+        }
+
+        // Restrict X position between the minimum and maximum values
+        if (newPosition.x < minXPosition)
+        {
+            newPosition.x = minXPosition; // Clamp X position
+        }
+        else if (newPosition.x > maxXPosition)
+        {
+            newPosition.x = maxXPosition; // Clamp X position
+        }
 
         // Update the camera position
         mainCameraParent.transform.position = newPosition;
