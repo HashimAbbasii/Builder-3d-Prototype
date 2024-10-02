@@ -36,10 +36,24 @@ public class CameraManager : MonoBehaviour
             // Move the camera based on joystick input
             MoveCamera();
         }
+        if (CameraRotation.isOn)
+        {
+            // Move the camera based on joystick input
+           // RotateCamera();
+        }
     }
+
+
+
+  
+
+
+
+
 
     private void MoveCamera()
     {
+        
         // Get the joystick input
         float horizontalInput = joystick.Horizontal; // X-axis movement
         float verticalInput = joystick.Vertical;     // Z-axis movement

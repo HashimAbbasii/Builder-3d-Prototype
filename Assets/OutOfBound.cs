@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Test : MonoBehaviour
+public class OutOfBound : MonoBehaviour
 {
     private void OnMouseDown()
     {

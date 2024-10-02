@@ -19,6 +19,7 @@ public class ObjectManipulator : MonoBehaviour
     public GameObject removeButton; // Button for removing the selected object
 
     // Store a list of RectTransforms for the rotation buttons
+    public RectTransform rotationKnob;
     public List<Button> rotationButtons = new();
     public RectTransform rotationImage;
     private List<RectTransform> _rotationButtonRects = new();
@@ -55,14 +56,16 @@ public class ObjectManipulator : MonoBehaviour
     private void Update()
     {
         // Check if the mouse is clicked and it's not over any UI elements (rotation buttons or slider)
-        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() &&
+        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() && !IsClickOnRotationKnob() &&
             isFloorSelected == false)
         {
+            //Debug.Log("Hashim In");
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             // Use Raycast with LayerMask to only interact with objects on the selectable layer
             if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
             {
+                //Debug.Log("Hashim If");
                 var selectedTransform = hit.transform;
                 Debug.Log("selected Transform" + selectedTransform.name);
                 // If the object is already selected and clicked again, start dragging
@@ -86,7 +89,7 @@ public class ObjectManipulator : MonoBehaviour
             }
             else
             {
-
+                //Debug.Log("Hashim Else");
                 // If click is outside of any object or UI, deselect the object
                 DeselectObject();
                 _isObjectSelected = false; // Reset selection state
@@ -349,6 +352,14 @@ public class ObjectManipulator : MonoBehaviour
     {
         Vector2 localMousePosition;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(_sliderRect, Input.mousePosition, null,
+            out localMousePosition);
+        return _sliderRect.rect.Contains(localMousePosition);
+    }
+
+    private bool IsClickOnRotationKnob()
+    {
+        Vector2 localMousePosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rotationKnob, Input.mousePosition, null,
             out localMousePosition);
         return _sliderRect.rect.Contains(localMousePosition);
     }

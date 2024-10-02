@@ -6,15 +6,15 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using TMPro;
-using static UnityEditor.ShaderData;
-using Unity.VisualScripting;
+
 public class SpawningManager : MonoBehaviour
 {
     public Text measurementText;
     public List<GameObject> modelPrefabs;
     public List<GameObject> furniturePrefabs;
     public List<GameObject> evidencePrefabs;
-    
+
+    public Shader lineShader;
     public Material[] floorMaterials; // Array to hold different materials for the floor
     public GameObject floorPrefab;
     public GameObject wallPrefab;
@@ -34,6 +34,7 @@ public class SpawningManager : MonoBehaviour
 
     public GameObject floorMaterialChanged;
     public LayerMask surfaceLayerMask;
+    public LayerMask floorPlacementMask;
 
     public List<GameObject> floorsSpawned = new();
     public List<GameObject> wallsSpawned = new();
@@ -71,25 +72,26 @@ public class SpawningManager : MonoBehaviour
         //        uiCanvas.gameObject.AddComponent<GraphicRaycaster>();
         //    }
         //}
+
         // Create and configure the material for LineRenderers
-        Material transparentMaterial = new Material(Shader.Find("Particles/Standard Unlit"));
+        Material transparentMaterial = new Material(lineShader);
         transparentMaterial.color = new Color(1, 0, 0, 0.2f); // Red color with 50% transparency for XLine
                                                               // X-axis line (representing X-scale)
         xLineRenderer = new GameObject("XLine").AddComponent<LineRenderer>();
-        xLineRenderer.startWidth = 0.05f;
-        xLineRenderer.endWidth = 0.05f;
+        xLineRenderer.startWidth = 0.025f;
+        xLineRenderer.endWidth = 0.025f;
         xLineRenderer.material = transparentMaterial;
 
         // Z-axis line (representing Z-scale)
         zLineRenderer = new GameObject("ZLine").AddComponent<LineRenderer>();
-        zLineRenderer.startWidth = 0.05f;
-        zLineRenderer.endWidth = 0.05f;
+        zLineRenderer.startWidth = 0.025f;
+        zLineRenderer.endWidth = 0.025f;
         zLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
 
 
         wallLineRenderer = new GameObject("WallLine").AddComponent<LineRenderer>();
-        wallLineRenderer.startWidth = 0.05f;
-        wallLineRenderer.endWidth = 0.05f;
+        wallLineRenderer.startWidth = 0.025f;
+        wallLineRenderer.endWidth = 0.025f;
         wallLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
 
         xLineRenderer.positionCount = 2;
@@ -215,7 +217,7 @@ public class SpawningManager : MonoBehaviour
         zDimensionText.fontSize = 1;
         zDimensionText.color = Color.blue;
         wallDimensionText.fontSize = 1;
-        wallDimensionText.color = Color.white;
+        wallDimensionText.color = Color.gray;
 
         for (var i = 0; i < modelPrefabs.Count(); i++)
         {
@@ -265,7 +267,7 @@ public class SpawningManager : MonoBehaviour
         if (_isCreatingFloor && Input.GetMouseButtonDown(0))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, floorPlacementMask))
             {
                 _initialMousePos = hit.point;
                
@@ -279,17 +281,17 @@ public class SpawningManager : MonoBehaviour
                 UpdateFloorDimensionsText(_initialMousePos, _initialMousePos);
                 xLineRenderer.enabled = true;
                 zLineRenderer.enabled = true;
-                xLineRenderer.startWidth = 1f;
-                xLineRenderer.endWidth = 1f;
-                zLineRenderer.startWidth = 1f;
-                zLineRenderer.endWidth = 1f;
+                xLineRenderer.startWidth = 0.3f;
+                xLineRenderer.endWidth = 0.3f;
+                zLineRenderer.startWidth = 0.3f;
+                zLineRenderer.endWidth = 0.3f;
             }
         }
 
         if (_isCreatingFloor && Input.GetMouseButton(0) && _currentFloor != null)
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit))
+            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, floorPlacementMask))
             {
                 _finalMousePos = hit.point;
                 _finalMousePos.y = 0f;
@@ -352,8 +354,8 @@ public class SpawningManager : MonoBehaviour
                 UpdateFloorDimensionsTextForWall(_initialMousePos, _initialMousePos);
                 wallLineRenderer.enabled = true;
               //  zLineRenderer.enabled = true;
-                wallLineRenderer.startWidth = 1f;
-                wallLineRenderer.endWidth = 1f;
+                wallLineRenderer.startWidth = 0.3f;
+                wallLineRenderer.endWidth = 0.3f;
                
 
             }

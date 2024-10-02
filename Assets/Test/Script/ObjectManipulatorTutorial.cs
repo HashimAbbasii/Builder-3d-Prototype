@@ -60,11 +60,13 @@ public class ObjectManipulatorTutorial : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() &&
             isFloorSelected == false)
         {
+            Debug.Log("Hashim In");
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             // Use Raycast with LayerMask to only interact with objects on the selectable layer
             if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
             {
+                Debug.Log("Hashim If");
                 var selectedTransform = hit.transform;
                 Debug.Log("selected Transform" + selectedTransform.name);
                 // If the object is already selected and clicked again, start dragging
@@ -89,10 +91,15 @@ public class ObjectManipulatorTutorial : MonoBehaviour
             else
             {
 
+                Debug.Log("Hashim Else");
                 // If click is outside of any object or UI, deselect the object
                 DeselectObject();
                 _isObjectSelected = false; // Reset selection state
             }
+        }
+        else
+        {
+            Debug.Log("Hashim Out");
         }
 
         //...........Deal With Floor Button Selection ...............//
@@ -345,6 +352,8 @@ public class ObjectManipulatorTutorial : MonoBehaviour
 
         return false; // Mouse is not over any rotation buttons
     }
+
+    
 
     // Check if the click is on the slider by checking mouse position against the slider RectTransform
     private bool IsClickOnSlider()

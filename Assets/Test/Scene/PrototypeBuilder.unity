@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.8600787, g: 0.83677375, b: 0.8409715, a: 1}
+  m_IndirectSpecularColor: {r: 0.8586061, g: 0.83684653, b: 0.8387581, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -667,6 +667,7 @@ MonoBehaviour:
     m_Bits: 2120
   floorButton: {fileID: 281768695}
   removeButton: {fileID: 387258483}
+  rotationKnob: {fileID: 648594153}
   rotationButtons:
   - {fileID: 1638963108}
   - {fileID: 742779441}
@@ -768,12 +769,12 @@ GameObject:
   - component: {fileID: 117636635}
   - component: {fileID: 117636639}
   m_Layer: 0
-  m_Name: Plane
+  m_Name: Out of Bound
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &117636635
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1434,7 +1435,7 @@ GameObject:
   - component: {fileID: 235088375}
   - component: {fileID: 235088374}
   m_Layer: 5
-  m_Name: WallPlacement
+  m_Name: Wall Placement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1899,7 +1900,7 @@ GameObject:
   - component: {fileID: 264862670}
   - component: {fileID: 264862669}
   m_Layer: 5
-  m_Name: CanvasZ-axis
+  m_Name: Canvas Floor Z-axis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3808,7 +3809,7 @@ GameObject:
   - component: {fileID: 442248408}
   - component: {fileID: 442248407}
   m_Layer: 5
-  m_Name: Wall placementCanvas
+  m_Name: Canvas Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5014,7 +5015,7 @@ GameObject:
   - component: {fileID: 584324095}
   - component: {fileID: 584324094}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Canvas Floor X-axis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5762,6 +5763,11 @@ MonoBehaviour:
   mainCameraParent: {fileID: 1726211686}
   CameraPosition: {fileID: 1573931599}
   CameraRotation: {fileID: 1279661727}
+  moveSpeed: 0.05
+  maxZPosition: 10.38793
+  minXPosition: -8
+  maxXPosition: 8
+  minZPosition: -10
 --- !u!4 &664152242
 Transform:
   m_ObjectHideFlags: 0
@@ -6826,6 +6832,7 @@ MonoBehaviour:
   - {fileID: 5826881148016247925, guid: 8b5b36e736e9f804f8785408158a58dc, type: 3}
   furniturePrefabs: []
   evidencePrefabs: []
+  lineShader: {fileID: 211, guid: 0000000000000000f000000000000000, type: 0}
   floorMaterials:
   - {fileID: 2100000, guid: 7e181fd161a9d4c41a7d09c87806d01d, type: 2}
   - {fileID: 2100000, guid: 706f980b38d16794aa0696f44ee5ef41, type: 2}
@@ -6841,6 +6848,9 @@ MonoBehaviour:
   surfaceLayerMask:
     serializedVersion: 2
     m_Bits: 0
+  floorPlacementMask:
+    serializedVersion: 2
+    m_Bits: 64
   floorsSpawned: []
   wallsSpawned: []
   modelsSpawned: []
@@ -11255,7 +11265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1279661726
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11710,8 +11720,8 @@ Camera:
   m_GameObject: {fileID: 1344682279}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0, g: 0.38888884, b: 1, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -13135,7 +13145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1573931598
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16632,7 +16642,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3881087802133023463
 RectTransform:
   m_ObjectHideFlags: 0
