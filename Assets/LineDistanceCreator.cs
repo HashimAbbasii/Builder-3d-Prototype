@@ -15,6 +15,8 @@ public class LineDistanceCreator : MonoBehaviour
 	private bool _prevIsDrawLine = true;
 	private readonly bool showSubAxis = false;
 
+	public LayerMask floorLayer;
+
 	private Transform _startPointx;
 	private Transform _startPointz;
 	private Transform _endPointx;
@@ -50,7 +52,7 @@ public class LineDistanceCreator : MonoBehaviour
 					_prevIsDrawLine = _isDrawLine;
 				}
 
-				var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out _hitPos);
+				var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out _hitPos, floorLayer);
 
 				if (hitObj != null)
 				{

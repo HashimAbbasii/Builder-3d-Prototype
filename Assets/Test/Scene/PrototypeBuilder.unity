@@ -4135,6 +4135,9 @@ MonoBehaviour:
   lines: 4
   onSurface: 1
   verticalOrHorizontal: 0
+  floorLayer:
+    serializedVersion: 2
+    m_Bits: 72
   hitPoint: {x: 0, y: 0, z: 0}
   spx: {x: 0, y: 0, z: 0}
   spz: {x: 0, y: 0, z: 0}
