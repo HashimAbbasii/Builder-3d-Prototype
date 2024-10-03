@@ -4112,7 +4112,7 @@ GameObject:
   - component: {fileID: 479896439}
   - component: {fileID: 479896438}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: LineHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4130,7 +4130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23fcce857eb199c49b88c3d93e2f336c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lines: 2
+  lines: 4
   onSurface: 1
   verticalOrHorizontal: 0
   hitPoint: {x: 0, y: 0, z: 0}
@@ -7093,6 +7093,8 @@ MonoBehaviour:
   uiCanvas: {fileID: 584324096}
   uiCanvasZaxis: {fileID: 264862671}
   uiCanvasWall: {fileID: 442248409}
+  lineDistanceCreator: {fileID: 479896438}
+  lineHandler: {fileID: 479896437}
 --- !u!1 &840088138
 GameObject:
   m_ObjectHideFlags: 0

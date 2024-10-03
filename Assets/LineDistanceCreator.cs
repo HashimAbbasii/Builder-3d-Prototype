@@ -153,7 +153,7 @@ public class LineDistanceCreator : MonoBehaviour
 
 		if (Input.GetKeyUp(KeyCode.Mouse0))
 		{
-			Invoke(nameof(DeleteLines), 1f);
+			//Invoke(nameof(DeleteLines), 1f);
 		}
 		
 	}

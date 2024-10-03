@@ -55,6 +55,9 @@ public class SpawningManager : MonoBehaviour
     public Canvas uiCanvasZaxis;
     public Canvas uiCanvasWall;
 
+    public LineDistanceCreator lineDistanceCreator;
+    public GameObject lineHandler;
+
 
 
     private void SetupLineRenderers()
@@ -279,7 +282,7 @@ public class SpawningManager : MonoBehaviour
                 _floorDimensionsText = _currentFloor.GetComponentInChildren<TextMeshProUGUI>();
 
                 // Initialize text when floor creation starts
-                UpdateFloorDimensionsText(_initialMousePos, _initialMousePos);
+                //UpdateFloorDimensionsText(_initialMousePos, _initialMousePos);
                 xLineRenderer.enabled = true;
                 zLineRenderer.enabled = true;
                 xLineRenderer.startWidth = 0.3f;
@@ -317,7 +320,7 @@ public class SpawningManager : MonoBehaviour
                 Debug.Log("Zactual Size: " + actualScaleZ);
 
                 // Continuously update the dimensions in the UI as the object is dragged
-                UpdateFloorDimensionsText(_initialMousePos, _finalMousePos);
+                //UpdateFloorDimensionsText(_initialMousePos, _finalMousePos);
             }
         }
 
@@ -339,8 +342,8 @@ public class SpawningManager : MonoBehaviour
             zLineRenderer.enabled = false;
             xDimensionText.text = "";
             zDimensionText.text = "";
-
-            StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
+            Invoke(nameof(DeleteLinesForAll), 0.3f);
+            //   StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
 
         }
 
@@ -354,7 +357,7 @@ public class SpawningManager : MonoBehaviour
                 _initialMousePos.y = 0f; // Ensure the y-axis is set to 0
                 _currentWall = Instantiate(wallPrefab, _initialMousePos, Quaternion.identity);
                 wallsSpawned.Add(_currentWall);
-                UpdateFloorDimensionsTextForWall(_initialMousePos, _initialMousePos);
+               // UpdateFloorDimensionsTextForWall(_initialMousePos, _initialMousePos);
                 wallLineRenderer.enabled = true;
               //  zLineRenderer.enabled = true;
                 wallLineRenderer.startWidth = 0.3f;
@@ -385,7 +388,7 @@ public class SpawningManager : MonoBehaviour
 
                     // Keep the initial position the same and update only the position along the x-axis
                     _currentWall.transform.position = new Vector3(_initialMousePos.x + distanceX / 2, 0f, _initialMousePos.z);
-                    UpdateFloorDimensionsTextForWall(_initialMousePos, _finalMousePos);
+                  //  UpdateFloorDimensionsTextForWall(_initialMousePos, _finalMousePos);
                    // Debug.Log("X-axis ");
                 }
                 else
@@ -419,7 +422,9 @@ public class SpawningManager : MonoBehaviour
            // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
             Debug.Log("Wall Up");
             wallDimensionText.text = "";
-            StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
+          ///  StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
+            Invoke(nameof(DeleteLinesForAll),0.3f);
+            
 
 
         }
@@ -451,6 +456,13 @@ public class SpawningManager : MonoBehaviour
     // Called when the floor button is clicked
 
 
+
+    public void DeleteLinesForAll()
+    {
+        MeasureLine_WorldCanvas.DeleteAllLines();
+        lineHandler.gameObject.SetActive(false);    
+    }
+
     private void UpdateLinePositions(Vector3 start, Vector3 end)
     {
         // X-axis line
@@ -470,6 +482,8 @@ public class SpawningManager : MonoBehaviour
     public void OnFloorButtonClick()
     {
         //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+        lineHandler.gameObject.SetActive(true);
+        lineDistanceCreator.lines = 4;
         _isCreatingFloor = true;
         _isCreatingWall = false; // Ensure wall creation is not active
         if (_previewObject != null)
@@ -484,7 +498,11 @@ public class SpawningManager : MonoBehaviour
     // Called when the wall button is clicked
     public void OnWallButtonClick()
     {
-      //  ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+        lineHandler.gameObject.SetActive(true);
+
+        lineDistanceCreator.lines = 2;
+
+        //  ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         _isCreatingWall = true;
         _isCreatingFloor = false; // Ensure floor creation is not active
         if (_previewObject != null)
