@@ -125,6 +125,7 @@ public class SpawningManager : MonoBehaviour
 
     private void Start()
     {
+        lineHandler.gameObject.SetActive(false);
         SetupLineRenderers();  // Initialize the LineRenderers
 
         xDimensionText = new GameObject("XDimensionText").AddComponent<TextMeshProUGUI>();
