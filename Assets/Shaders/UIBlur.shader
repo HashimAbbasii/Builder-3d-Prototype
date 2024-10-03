@@ -3,7 +3,7 @@ Shader "Custom/UIBlur"
 
     Properties
     {
-        [Toggle(IS_BLUR_ALPHA_MASKED)] _IsAlphaMasked("Image Alpha Masks Blur", Float) = 1
+        [Toggle(IS_BLUR_ALPHA_MASKED)] _IsAlphaMasked("Imit age Alpha Masks Blur", Float) = 1
         [Toggle(IS_SPRITE_VISIBLE)] _IsSpriteVisible("Show Image", Float) = 1
 
         // Internally enforced by MAX_RADIUS
@@ -73,7 +73,7 @@ Shader "Custom/UIBlur"
                 #pragma multi_compile __ IS_SPRITE_VISIBLE
                 #pragma multi_compile __ UNITY_UI_ALPHACLIP
 
-                #include "UIBlur_Shared.cginc"
+                #include "Assets/Shaders/UIBlur_Shared.cginc"
 
                 sampler2D _GrabTexture;
                 float4 _GrabTexture_TexelSize;
@@ -109,7 +109,7 @@ Shader "Custom/UIBlur"
                 #pragma multi_compile __ IS_SPRITE_VISIBLE
                 #pragma multi_compile __ UNITY_UI_ALPHACLIP
 
-                #include "Assets\Shaders\UIBlur_Shared.cginc"
+                #include "Assets/Shaders/UIBlur_Shared.cginc"
 
 
                 sampler2D _GrabTexture;

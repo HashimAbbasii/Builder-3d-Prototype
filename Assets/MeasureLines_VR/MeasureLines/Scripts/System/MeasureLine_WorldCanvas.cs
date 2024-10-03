@@ -187,46 +187,53 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
     /// Clear all lines
     /// </summary>
     static public void DeleteAllLines()
-	{
-		//Del all MeasureLine_WorldCanvas
-		MeasureLine_WorldCanvas[] mws = UnityEngine.Object.FindObjectsOfType<MeasureLine_WorldCanvas>();
-		for (int i=0;i<mws.Length;i++)
-		{
-			MeasureLine_WorldCanvas mw = mws[i];
-			if (mw.gameObject.name == "SurfaceLineDummy")
-			{
-				Destroy(mw.gameObject);
-			}
-			else
-			{
-				Destroy(mw);
-			}
-		}
-		//Del all SurfaceLineDummy empty object
-		GameObject sld = GameObject.Find("SurfaceLineDummy");
-		while(sld!=null)
-		{
-			DestroyImmediate(sld);
-			sld = GameObject.Find("SurfaceLineDummy");
-		}
-		//Del all childs of lineCollection
-		Transform lineCollection = GameObject.Find ("lineCollection").transform;
-		List<GameObject> cildObjects = new List<GameObject>();
-		for (int i=0;i<lineCollection.childCount;i++)
-		{
-			cildObjects.Add(lineCollection.GetChild(i).gameObject);
-		}
-		for (int i=0;i<cildObjects.Count;i++)
-		{
-			Destroy(cildObjects[i]);
-		}
-		cildObjects.Clear();
-		//Clear SurfaceLink
-		surfaceLinks.Clear();
-	}
+    {
+	    //Del all MeasureLine_WorldCanvas
+	    var mws = UnityEngine.Object.FindObjectsOfType<MeasureLine_WorldCanvas>();
+	    
+	    for (var i = 0; i < mws.Length; i++)
+	    {
+		    MeasureLine_WorldCanvas mw = mws[i];
+		    if (mw.gameObject.name == "SurfaceLineDummy")
+		    {
+			    Destroy(mw.gameObject);
+		    }
+		    else
+		    {
+			    Destroy(mw);
+		    }
+	    }
+
+	    //Del all SurfaceLineDummy empty object
+	    var sld = GameObject.Find("SurfaceLineDummy");
+	    
+	    while (sld != null)
+	    {
+		    DestroyImmediate(sld);
+		    sld = GameObject.Find("SurfaceLineDummy");
+	    }
+
+	    //Del all childs of lineCollection
+	    var lineCollection = GameObject.Find("lineCollection").transform;
+	    var childObjects = new List<GameObject>();
+
+	    for (var i = 0; i < lineCollection.childCount; i++)
+	    {
+		    childObjects.Add(lineCollection.GetChild(i).gameObject);
+	    }
+
+	    for (var i = 0; i < childObjects.Count; i++)
+	    {
+		    Destroy(childObjects[i]);
+	    }
+
+	    childObjects.Clear();
+	    //Clear SurfaceLink
+	    surfaceLinks.Clear();
+    }
 
 
-	/// <summary>
+    /// <summary>
 	/// For Dynamic Draw Line Function
 	/// </summary>
 	static public void AddLine(Transform obj1, Transform obj2, bool InitSizeForVR, bool canBeBlock, bool onSurface, float splitDistanceForText = 0, bool ignoreSurfaceLinks = false)
