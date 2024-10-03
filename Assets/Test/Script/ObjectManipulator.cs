@@ -29,7 +29,11 @@ public class ObjectManipulator : MonoBehaviour
     private RectTransform _sliderRect; // RectTransform of the slider
 
     public GameObject bottomPanel;
-
+    [Space(2)]
+    [Header("Model Selection Panel")]
+    public GameObject FloorTextureChangePanel;
+    public GameObject ChairChangePanel;
+    public GameObject TableChangePanel;
     private void Start()
     {
         // Get the RectTransform of each rotation button and store it
