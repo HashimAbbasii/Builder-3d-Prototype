@@ -8,7 +8,8 @@ public class CameraManager : MonoBehaviour
     public VariableJoystick joystick;          // Reference to your joystick
     public GameObject mainCameraParent;        // Reference to the camera parent
     public Toggle CameraPosition;              // Toggle for camera position
-    public Toggle CameraRotation;              // Toggle for camera rotation
+    public Toggle CameraRotation;
+    public SpawningManager spawningManager;
     private Vector3 startPos;                  // Initial camera position
 
     [SerializeField] private float moveSpeed = 0.05f;   // Adjust this value to change movement speed
@@ -17,6 +18,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float minXPosition = -8f;       // Minimum X-axis position
     [SerializeField] private float maxXPosition = 8f;        // Maximum X-axis position
     [SerializeField] private float minZPosition = -10f;      // Minimum Z-axis position
+
 
     void Start()
     {
@@ -99,6 +101,7 @@ public class CameraManager : MonoBehaviour
         if (currentXRotation > 180f)
         {
             currentXRotation -= 360f;
+            Debug.Log("Current Rotation"+currentXRotation);
         }
 
         // Calculate the new X rotation after applying the joystick input

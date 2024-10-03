@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.86009043, g: 0.8367843, b: 0.84097904, a: 1}
+  m_IndirectSpecularColor: {r: 0.8586061, g: 0.83684653, b: 0.8387581, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -679,6 +679,9 @@ MonoBehaviour:
   _isObjectSelected: 0
   isFloorSelected: 0
   bottomPanel: {fileID: 277073219}
+  FloorTextureChangePanel: {fileID: 0}
+  ChairChangePanel: {fileID: 0}
+  TableChangePanel: {fileID: 0}
 --- !u!1 &109009996
 GameObject:
   m_ObjectHideFlags: 0
@@ -4098,6 +4101,58 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 471078418}
   m_CullTransparentMesh: 1
+--- !u!1 &479896437
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 479896439}
+  - component: {fileID: 479896438}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &479896438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479896437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23fcce857eb199c49b88c3d93e2f336c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lines: 2
+  onSurface: 1
+  verticalOrHorizontal: 0
+  hitPoint: {x: 0, y: 0, z: 0}
+  spx: {x: 0, y: 0, z: 0}
+  spz: {x: 0, y: 0, z: 0}
+  epx: {x: 0, y: 0, z: 0}
+  epz: {x: 0, y: 0, z: 0}
+--- !u!4 &479896439
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479896437}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.3430766, y: -0.090153456, z: -3.6260176}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &511724768
 GameObject:
   m_ObjectHideFlags: 0
@@ -5824,6 +5879,7 @@ MonoBehaviour:
   mainCameraParent: {fileID: 1726211686}
   CameraPosition: {fileID: 1573931599}
   CameraRotation: {fileID: 1279661727}
+  spawningManager: {fileID: 0}
   moveSpeed: 0.05
   rotationSpeed: 50
   maxZPosition: 10.38793
@@ -16724,7 +16780,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 109009998}
   m_HandleRect: {fileID: 109009997}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

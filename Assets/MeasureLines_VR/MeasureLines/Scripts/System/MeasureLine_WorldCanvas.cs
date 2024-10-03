@@ -72,7 +72,7 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
     private Material mat;
     public Camera mainCamera;
     private Transform camTransform;
-    public float lineWidth = 0.08f;
+    public float lineWidth = 0.15f;
     public Color lineColor = new Color(0.627f, 0.839f, 0.165f, 1);
 	static public Color StaticLineColor = new Color(0.627f, 0.839f, 0.165f, 1); 
     public Color textColor = new Color(0, 0, 0, 1);

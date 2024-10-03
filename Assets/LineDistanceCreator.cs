@@ -5,6 +5,8 @@ using UnityEngine.Serialization;
 
 public class LineDistanceCreator : MonoBehaviour
 {
+	public int lines;
+
 	public bool onSurface = true;
 	public bool verticalOrHorizontal = false;
 	private Vector3 _hitPos;
@@ -39,7 +41,7 @@ public class LineDistanceCreator : MonoBehaviour
 		//Add Line
 		if (Input.GetKeyDown(KeyCode.Mouse0))
 		{
-			for (var i = 0; i < 4; i++)
+			for (var i = 0; i < lines; i++)
 			{
 				_isDrawLine = true;
 				if (_prevIsDrawLine != _isDrawLine)
@@ -113,22 +115,51 @@ public class LineDistanceCreator : MonoBehaviour
 
 		if (Input.GetKey(KeyCode.Mouse0))
 		{
-			if (_endPointx != null && _endPointz != null)
+
+			if (lines == 4)
 			{
-				var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-				if (Physics.Raycast(ray, out var hit))
+				if (_endPointx != null && _endPointz != null)
 				{
-					hitPoint = hit.point;
-					_endPointx.position = new Vector3(hit.point.x, _startPointx.position.y, _startPointx.position.z);
-					_endPointz.position = new Vector3(_startPointz.position.x, _startPointz.position.y , hit.point.z);
+					var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+					if (Physics.Raycast(ray, out var hit))
+					{
+						hitPoint = hit.point;
+						_endPointx.position = new Vector3(hit.point.x, _startPointx.position.y, _startPointx.position.z);
+						_endPointz.position = new Vector3(_startPointz.position.x, _startPointz.position.y, hit.point.z);
+					}
 				}
 			}
+			else
+			{
+                if (_endPointx)
+                {
+                    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    if (Physics.Raycast(ray, out var hit))
+                    {
+                        hitPoint = hit.point;
+						if (Mathf.Abs((hit.point - _startPointx.position).x) > Mathf.Abs((hit.point - _startPointx.position).z))
+						{
+							_endPointx.position = new Vector3(hit.point.x, _startPointx.position.y, _startPointx.position.z);
+						}
+						else
+						{
+							_endPointx.position = new Vector3(_startPointx.position.x, _startPointx.position.y, hit.point.z);
+						}
+                        //_endPointz.position = new Vector3(_startPointz.position.x, _startPointz.position.y, hit.point.z);
+                    }
+                }
+            }
 		}
 
 		if (Input.GetKeyUp(KeyCode.Mouse0))
 		{
-			
+			Invoke(nameof(DeleteLines), 1f);
 		}
 		
+	}
+
+	private void DeleteLines()
+	{
+		MeasureLine_WorldCanvas.DeleteAllLines();
 	}
 }
