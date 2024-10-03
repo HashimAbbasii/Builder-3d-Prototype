@@ -337,11 +337,11 @@ public class SpawningManager : MonoBehaviour
             // Hide the lines after the floor is placed
             xLineRenderer.enabled = false;
             zLineRenderer.enabled = false;
-            //xDimensionText.text = "";
-            //zDimensionText.text = "";
+            xDimensionText.text = "";
+            zDimensionText.text = "";
 
-          //  StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
-           
+            StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
+
         }
 
         // Wall creation logic
@@ -418,8 +418,8 @@ public class SpawningManager : MonoBehaviour
 
            // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
             Debug.Log("Wall Up");
-          //  wallDimensionText.text = "";
-            //StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
+            wallDimensionText.text = "";
+            StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
 
 
         }
@@ -761,8 +761,8 @@ public class SpawningManager : MonoBehaviour
         else
         {
             // Clear the text when dragging is finished or not happening
-            //xDimensionText.text = "";
-            //zDimensionText.text = "";
+            xDimensionText.text = "";
+            zDimensionText.text = "";
         }
     }
 
@@ -825,9 +825,9 @@ public class SpawningManager : MonoBehaviour
         }
         else
         {
-            // Clear the text when not dragging
-           // wallDimensionText.text = "";
-            
+           ////////////// Clear the text when not dragging
+            wallDimensionText.text = "";
+
         }
     }
 
