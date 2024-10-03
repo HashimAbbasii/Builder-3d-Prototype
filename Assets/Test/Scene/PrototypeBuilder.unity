@@ -7056,6 +7056,7 @@ MonoBehaviour:
   validPlacementMaterial: {fileID: 0}
   invalidPlacementMaterial: {fileID: 0}
   _currentFloor: {fileID: 0}
+  _wallAlongZAxis: 0
   floorMaterialChanged: {fileID: 0}
   surfaceLayerMask:
     serializedVersion: 2
