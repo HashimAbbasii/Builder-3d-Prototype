@@ -418,7 +418,7 @@ public class SpawningManager : MonoBehaviour
 
            // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
             Debug.Log("Wall Up");
-            wallDimensionText.text = "";
+          //  wallDimensionText.text = "";
             //StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
 
 
@@ -788,7 +788,7 @@ public class SpawningManager : MonoBehaviour
 
                // float lengthInFeetX = actualScaleX;
                 RectTransform rectTransform = wallDimensionText.GetComponent<RectTransform>();
-                rectTransform.transform.rotation = Quaternion.Euler(0, 0, 0);
+                rectTransform.transform.rotation = Quaternion.Euler(90, 0, 0);
 
 
                 // Update UI with actual dimensions
@@ -796,7 +796,7 @@ public class SpawningManager : MonoBehaviour
 
 
                 // Update positions for the text
-                Vector3 midPointX = new Vector3((start.x + end.x) / 2, 1f, start.z - 1.24f);
+                Vector3 midPointX = new Vector3((start.x + end.x) / 2, 2f, start.z - 0f);
 
                 wallDimensionText.transform.position = midPointX;
             }
@@ -826,7 +826,7 @@ public class SpawningManager : MonoBehaviour
         else
         {
             // Clear the text when not dragging
-            wallDimensionText.text = "";
+           // wallDimensionText.text = "";
             
         }
     }
