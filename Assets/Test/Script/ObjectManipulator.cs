@@ -15,7 +15,7 @@ public class ObjectManipulator : MonoBehaviour
     public LayerMask selectableLayer; // Layer mask for selectable objects
     public LayerMask placeableLayer; // Layer mask for selected objects
 
-    public Button floorButton;
+    public ButtonWithTextTMP floorButton;
     public GameObject removeButton; // Button for removing the selected object
 
     // Store a list of RectTransforms for the rotation buttons
@@ -55,6 +55,7 @@ public class ObjectManipulator : MonoBehaviour
     public void FloorSelection()
     {
         isFloorSelected = true;
+        floorButton.buttonText.color = Color.black;
     }
 
     private void Update()
@@ -321,6 +322,7 @@ public class ObjectManipulator : MonoBehaviour
         }
 
         isFloorSelected = false;
+        floorButton.buttonText.color = Color.white;
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Floor");
 
         foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
