@@ -73,15 +73,17 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
     public Camera mainCamera;
     private Transform camTransform;
     public float lineWidth = 0.15f;
-    public Color lineColor = new Color(0.627f, 0.839f, 0.165f, 1);
-	static public Color StaticLineColor = new Color(0.627f, 0.839f, 0.165f, 1); 
+    // public Color lineColor = new Color(0.627f, 0.839f, 0.165f, 1);
+    public Color lineColor = new Color(1f, 0f, 0f, 1);
+	// static public Color StaticLineColor = new Color(0.627f, 0.839f, 0.165f, 1); 
+	static public Color StaticLineColor = new Color(1f, 0f, 0f, 1); 
     public Color textColor = new Color(0, 0, 0, 1);
 	static public Color StaticTextColor = new Color(0, 0, 0, 1);
-    public int textSize = 14;
-    public float canvasScale = 1f;
+    public int textSize = 100;
+    public float canvasScale = 0.1f;
     public int decimalPlaces = 2;
-    public MetricOrImperial metricOrImperial = MetricOrImperial.Meter;
-    static public MetricOrImperial StaticMetricOrImperial = MetricOrImperial.Meter;
+    public MetricOrImperial metricOrImperial = MetricOrImperial.Foot;
+    static public MetricOrImperial StaticMetricOrImperial = MetricOrImperial.Foot;
     public bool InitSizeForVR = false;
     public float lineWidthVR = 0.015f;
     public int textSizeVR = 100;
@@ -181,8 +183,8 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
     //		if (isEmptyObject)
     //			Gizmos.DrawWireSphere (myTransform.position, 0.5f);
     //	}
-
-
+    
+    
     /// <summary>
     /// Clear all lines
     /// </summary>
@@ -963,6 +965,7 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
 					Text uiText = AddTextToCanvas("", new GameObject ("uiText_Link"));
 					uiText.color = textColor;
 					uiText.fontSize = textSize;
+					uiText.fontStyle = FontStyle.Bold;
 					uiText.transform.SetParent (wCanvas_Link.transform);
 					uiText.transform.localPosition = Vector3.zero;
 					uiText.text = NumberToPlaceString (targetLength[i], decimalPlaces);

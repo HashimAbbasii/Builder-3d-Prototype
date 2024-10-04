@@ -25,7 +25,7 @@ public class MouseRayer : MonoBehaviour {
     static public GameObject GetMouseRayHit(Camera cameras, out Vector3 point)
 	{
 		int layerMask = 0;
-		layerMask = 6;
+		layerMask = ~layerMask;
 		GameObject result = null;
 		point = Vector3.zero;
 		Ray ray = cameras.ScreenPointToRay(Input.mousePosition);
@@ -46,7 +46,7 @@ public class MouseRayer : MonoBehaviour {
 	static public GameObject GetMouseRayHit(Vector3 mousePos, out Vector3 point)
 	{
 		int layerMask = 0;
-		layerMask = 6;
+		layerMask = ~layerMask;
 		GameObject result = null;
 		point = Vector3.zero;
 		Ray ray = Camera.main.ScreenPointToRay(mousePos);

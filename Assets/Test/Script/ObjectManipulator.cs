@@ -37,10 +37,10 @@ public class ObjectManipulator : MonoBehaviour
     private void Start()
     {
         // Get the RectTransform of each rotation button and store it
-        foreach (var button in rotationButtons)
-        {
-            _rotationButtonRects.Add(button.GetComponent<RectTransform>());
-        }
+        // foreach (var button in rotationButtons)
+        // {
+        //     _rotationButtonRects.Add(button.GetComponent<RectTransform>());
+        // }
 
         // Get the RectTransform of the slider to detect interaction
         _sliderRect = scaleSlider.GetComponent<RectTransform>();

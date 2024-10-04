@@ -42,20 +42,20 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> modelsSpawned = new();
     public TextMeshProUGUI _floorDimensionsText; // Reference to your UI Text element
 
-    private LineRenderer xLineRenderer;
-    private LineRenderer zLineRenderer;
-    private LineRenderer wallLineRenderer;
+    // private LineRenderer xLineRenderer;
+    // private LineRenderer zLineRenderer;
+    // private LineRenderer wallLineRenderer;
+    //
+    //
+    // public TextMeshProUGUI xDimensionText; // Text for X-axis dimensions
+    // public TextMeshProUGUI zDimensionText; // Text for Z-axis dimensions
+    // public TextMeshProUGUI wallDimensionText;
+    //
+    // public Canvas uiCanvas; // Reference to the Canvas
+    // public Canvas uiCanvasZaxis;
+    // public Canvas uiCanvasWall;
 
-
-    public TextMeshProUGUI xDimensionText; // Text for X-axis dimensions
-    public TextMeshProUGUI zDimensionText; // Text for Z-axis dimensions
-    public TextMeshProUGUI wallDimensionText;
-
-    public Canvas uiCanvas; // Reference to the Canvas
-    public Canvas uiCanvasZaxis;
-    public Canvas uiCanvasWall;
-
-    public LineDistanceCreator lineDistanceCreator;
+    [FormerlySerializedAs("lineDistanceCreator")] public EssentialDistanceManager essentialDistanceManager;
     public GameObject lineHandler;
 
 
@@ -81,31 +81,31 @@ public class SpawningManager : MonoBehaviour
         Material transparentMaterial = new Material(lineShader);
         transparentMaterial.color = new Color(1, 0, 0, 0.2f); // Red color with 50% transparency for XLine
                                                               // X-axis line (representing X-scale)
-        xLineRenderer = new GameObject("XLine").AddComponent<LineRenderer>();
-        xLineRenderer.startWidth = 0.025f;
-        xLineRenderer.endWidth = 0.025f;
-        xLineRenderer.material = transparentMaterial;
+        // // xLineRenderer = new GameObject("XLine").AddComponent<LineRenderer>();
+        // xLineRenderer.startWidth = 0.025f;
+        // xLineRenderer.endWidth = 0.025f;
+        // xLineRenderer.material = transparentMaterial;
 
-        // Z-axis line (representing Z-scale)
-        zLineRenderer = new GameObject("ZLine").AddComponent<LineRenderer>();
-        zLineRenderer.startWidth = 0.025f;
-        zLineRenderer.endWidth = 0.025f;
-        zLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
+        // // Z-axis line (representing Z-scale)
+        // zLineRenderer = new GameObject("ZLine").AddComponent<LineRenderer>();
+        // zLineRenderer.startWidth = 0.025f;
+        // zLineRenderer.endWidth = 0.025f;
+        // zLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
 
 
-        wallLineRenderer = new GameObject("WallLine").AddComponent<LineRenderer>();
-        wallLineRenderer.startWidth = 0.025f;
-        wallLineRenderer.endWidth = 0.025f;
-        wallLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
-
-        xLineRenderer.positionCount = 2;
-        zLineRenderer.positionCount = 2;
-        wallLineRenderer.positionCount = 0;
-
-        // Initially disable the lines
-        xLineRenderer.enabled = false;
-        zLineRenderer.enabled = false;
-        wallLineRenderer.enabled = false;
+        // wallLineRenderer = new GameObject("WallLine").AddComponent<LineRenderer>();
+        // wallLineRenderer.startWidth = 0.025f;
+        // wallLineRenderer.endWidth = 0.025f;
+        // wallLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
+        //
+        // xLineRenderer.positionCount = 2;
+        // zLineRenderer.positionCount = 2;
+        // wallLineRenderer.positionCount = 0;
+        //
+        // // Initially disable the lines
+        // xLineRenderer.enabled = false;
+        // zLineRenderer.enabled = false;
+        // wallLineRenderer.enabled = false;
 
 
 
@@ -126,110 +126,110 @@ public class SpawningManager : MonoBehaviour
     private void Start()
     {
         lineHandler.gameObject.SetActive(false);
-        SetupLineRenderers();  // Initialize the LineRenderers
+        SetupLineRenderers(); // Initialize the LineRenderers
 
-        xDimensionText = new GameObject("XDimensionText").AddComponent<TextMeshProUGUI>();
-        zDimensionText = new GameObject("ZDimensionText").AddComponent<TextMeshProUGUI>();
-        wallDimensionText = new GameObject("WallDimensionText").AddComponent<TextMeshProUGUI>();
+        // xDimensionText = new GameObject("XDimensionText").AddComponent<TextMeshProUGUI>();
+        // zDimensionText = new GameObject("ZDimensionText").AddComponent<TextMeshProUGUI>();
+        // wallDimensionText = new GameObject("WallDimensionText").AddComponent<TextMeshProUGUI>();
 
         //......Set the Value By Default.........................................//
+        //
 
+        // xDimensionText.transform.SetParent(uiCanvas.transform, false);
+        // uiCanvas.transform.SetParent(xLineRenderer.transform, false);
+        //
 
-        xDimensionText.transform.SetParent(uiCanvas.transform, false);
-        uiCanvas.transform.SetParent(xLineRenderer.transform, false);
-
-
-        Vector2 currentPosition = xDimensionText.rectTransform.anchoredPosition;
-        RectTransform rectTransform = xDimensionText.rectTransform;
-
-        // Access width and height
-        float width =  10f;
-        float height = 10f;
-        rectTransform.sizeDelta = new Vector2(width, height);
-
-
-        currentPosition.x = 0; // Set x to 0
-        currentPosition.y = 1.06f; // Set y to 0
-
-
-
-        xDimensionText.rectTransform.anchoredPosition = currentPosition;
-
-
-        RectTransform rectTransformX = xDimensionText.rectTransform;
-        rectTransformX.rotation = Quaternion.Euler(90,0,0);
-
-        //..........................;;;;............................//
-
-
-
-        zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
-        uiCanvasZaxis.transform.SetParent(zLineRenderer.transform, false);
-
-        //.....................Set Z Dimension...........................//
-
-        Vector2 currentPositionZ = zDimensionText.rectTransform.anchoredPosition;
-        RectTransform rectTransformZ = zDimensionText.rectTransform;
-
-
-        float widthZ = 10f;
-        float heightZ = 10f;
-        rectTransformZ.sizeDelta = new Vector2(widthZ, heightZ);
-
-
-        currentPositionZ.x = 5; // Set x to 0
-        currentPositionZ.y = 1.06f; // Set y to 0
-
-        zDimensionText.rectTransform.anchoredPosition = currentPositionZ;
-        RectTransform rectTransformZe = zDimensionText.rectTransform;
-        rectTransformZe.rotation = Quaternion.Euler(90, -90, 0);
-
-
-
-
-        zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
-
-        //.........................,,,....................................//
-        wallDimensionText.transform.SetParent(uiCanvasWall.transform, false);
-        uiCanvasWall.transform.SetParent(wallLineRenderer.transform, false);
-
-
-        Vector2 currentPositionwall = wallDimensionText.rectTransform.anchoredPosition;
-        RectTransform rectTransformwall = wallDimensionText.rectTransform;
+        // Vector2 currentPosition = xDimensionText.rectTransform.anchoredPosition;
+        // RectTransform rectTransform = xDimensionText.rectTransform;
 
         // Access width and height
-        float widthwall = 10f;
-        float heightwall = 10f;
-        wallDimensionText.rectTransform.sizeDelta = new Vector2(widthwall, heightwall);
+        // float width = 10f;
+        // float height = 10f;
+        // rectTransform.sizeDelta = new Vector2(width, height);
+        //
+        //
+        // currentPosition.x = 0; // Set x to 0
+        // currentPosition.y = 1.06f; // Set y to 0
+        //
+        //
+        //
+        // xDimensionText.rectTransform.anchoredPosition = currentPosition;
+        //
 
-
-        currentPositionwall.x = 0; // Set x to 0
-        currentPositionwall.y = 1.06f; // Set y to 0
-
-
-
-        wallDimensionText.rectTransform.anchoredPosition = currentPositionwall;
-
-
-        RectTransform rectTransformWall = wallDimensionText.rectTransform;
-        rectTransformWall.rotation = Quaternion.Euler(90, 0, 0);
-
-
-
-        // Set text properties (position, font size, color, etc.)
-        xDimensionText.fontSize = 1;
-        xDimensionText.color = Color.red;
-        zDimensionText.fontSize = 1;
-        zDimensionText.color = Color.blue;
-        wallDimensionText.fontSize = 1;
-        wallDimensionText.color = Color.gray;
+        // RectTransform rectTransformX = xDimensionText.rectTransform;
+        // rectTransformX.rotation = Quaternion.Euler(90, 0, 0);
+        //
+        // //..........................;;;;............................//
+        //
+        //
+        //
+        // zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
+        // uiCanvasZaxis.transform.SetParent(zLineRenderer.transform, false);
+        //
+        // //.....................Set Z Dimension...........................//
+        //
+        // Vector2 currentPositionZ = zDimensionText.rectTransform.anchoredPosition;
+        // RectTransform rectTransformZ = zDimensionText.rectTransform;
+        //
+        //
+        // float widthZ = 10f;
+        // float heightZ = 10f;
+        // rectTransformZ.sizeDelta = new Vector2(widthZ, heightZ);
+        //
+        //
+        // currentPositionZ.x = 5; // Set x to 0
+        // currentPositionZ.y = 1.06f; // Set y to 0
+        //
+        // zDimensionText.rectTransform.anchoredPosition = currentPositionZ;
+        // RectTransform rectTransformZe = zDimensionText.rectTransform;
+        // rectTransformZe.rotation = Quaternion.Euler(90, -90, 0);
+        //
+        //
+        //
+        //
+        // zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
+        //
+        // //.........................,,,....................................//
+        // wallDimensionText.transform.SetParent(uiCanvasWall.transform, false);
+        // uiCanvasWall.transform.SetParent(wallLineRenderer.transform, false);
+        //
+        //
+        // Vector2 currentPositionwall = wallDimensionText.rectTransform.anchoredPosition;
+        // RectTransform rectTransformwall = wallDimensionText.rectTransform;
+        //
+        // // Access width and height
+        // float widthwall = 10f;
+        // float heightwall = 10f;
+        // wallDimensionText.rectTransform.sizeDelta = new Vector2(widthwall, heightwall);
+        //
+        //
+        // currentPositionwall.x = 0; // Set x to 0
+        // currentPositionwall.y = 1.06f; // Set y to 0
+        //
+        //
+        //
+        // wallDimensionText.rectTransform.anchoredPosition = currentPositionwall;
+        //
+        //
+        // RectTransform rectTransformWall = wallDimensionText.rectTransform;
+        // rectTransformWall.rotation = Quaternion.Euler(90, 0, 0);
+        //
+        //
+        //
+        // // Set text properties (position, font size, color, etc.)
+        // xDimensionText.fontSize = 1;
+        // xDimensionText.color = Color.red;
+        // zDimensionText.fontSize = 1;
+        // zDimensionText.color = Color.blue;
+        // wallDimensionText.fontSize = 1;
+        // wallDimensionText.color = Color.gray;
 
         for (var i = 0; i < modelPrefabs.Count(); i++)
         {
             var model = modelPrefabs[i];
 
             model.GetComponent<SelectableObject>().objectID = i + 2;
-            
+
             switch (model.GetComponent<SelectableObject>().modelType)
             {
                 case ModelType.Furniture:
@@ -263,7 +263,7 @@ public class SpawningManager : MonoBehaviour
             eb.button.onClick.AddListener(() =>
                 SelectObject(modelPrefabs.FirstOrDefault(x => x == ep)!.GetComponent<SelectableObject>().objectID - 2));
         }
-       // UpdateFloorDimensionsText(Vector3.zero, Vector3.zero); // Initialize with zero dimensions
+        // UpdateFloorDimensionsText(Vector3.zero, Vector3.zero); // Initialize with zero dimensions
     }
 
     private void Update()
@@ -284,12 +284,12 @@ public class SpawningManager : MonoBehaviour
 
                 // Initialize text when floor creation starts
                 //UpdateFloorDimensionsText(_initialMousePos, _initialMousePos);
-                xLineRenderer.enabled = true;
-                zLineRenderer.enabled = true;
-                xLineRenderer.startWidth = 0.3f;
-                xLineRenderer.endWidth = 0.3f;
-                zLineRenderer.startWidth = 0.3f;
-                zLineRenderer.endWidth = 0.3f;
+                // xLineRenderer.enabled = true;
+                // zLineRenderer.enabled = true;
+                // xLineRenderer.startWidth = 0.3f;
+                // xLineRenderer.endWidth = 0.3f;
+                // zLineRenderer.startWidth = 0.3f;
+                // zLineRenderer.endWidth = 0.3f;
             }
         }
 
@@ -305,12 +305,12 @@ public class SpawningManager : MonoBehaviour
                 _currentFloor.transform.localScale = new Vector3(scale.x, 0.1f, scale.z);
 
                 // Update the UI text with the current dimensions dynamically
-                UpdateLinePositions(_initialMousePos, _finalMousePos);
-                xLineRenderer.SetPosition(0, _initialMousePos);
-                xLineRenderer.SetPosition(1, new Vector3(_finalMousePos.x, 0, _initialMousePos.z));
-
-                zLineRenderer.SetPosition(0, _initialMousePos);
-                zLineRenderer.SetPosition(1, new Vector3(_initialMousePos.x, 0, _finalMousePos.z));
+                // UpdateLinePositions(_initialMousePos, _finalMousePos);
+                // xLineRenderer.SetPosition(0, _initialMousePos);
+                // xLineRenderer.SetPosition(1, new Vector3(_finalMousePos.x, 0, _initialMousePos.z));
+                //
+                // zLineRenderer.SetPosition(0, _initialMousePos);
+                // zLineRenderer.SetPosition(1, new Vector3(_initialMousePos.x, 0, _finalMousePos.z));
 
                 // Get the actual scale of the current floor
                 Vector3 actualScale = _currentFloor.transform.localScale;
@@ -328,21 +328,21 @@ public class SpawningManager : MonoBehaviour
 
         if (_isCreatingFloor && Input.GetMouseButtonUp(0) && _currentFloor != null)
         {
-            xLineRenderer.enabled = false;
-            zLineRenderer.enabled = false;
+            // xLineRenderer.enabled = false;
+            // zLineRenderer.enabled = false;
             _isCreatingFloor = false;
             _currentFloor = null;
 
-            xLineRenderer.startWidth = 0f;
-            xLineRenderer.endWidth = 0f;
-            zLineRenderer.startWidth = 0f;
-            zLineRenderer.endWidth = 0f;
+            // xLineRenderer.startWidth = 0f;
+            // xLineRenderer.endWidth = 0f;
+            // zLineRenderer.startWidth = 0f;
+            // zLineRenderer.endWidth = 0f;
 
             // Hide the lines after the floor is placed
-            xLineRenderer.enabled = false;
-            zLineRenderer.enabled = false;
-            xDimensionText.text = "";
-            zDimensionText.text = "";
+            // xLineRenderer.enabled = false;
+            // zLineRenderer.enabled = false;
+            // xDimensionText.text = "";
+            // zDimensionText.text = "";
             Invoke(nameof(DeleteLinesForAll), 0.3f);
             //   StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
 
@@ -359,10 +359,10 @@ public class SpawningManager : MonoBehaviour
                 _currentWall = Instantiate(wallPrefab, _initialMousePos, Quaternion.identity);
                 wallsSpawned.Add(_currentWall);
                // UpdateFloorDimensionsTextForWall(_initialMousePos, _initialMousePos);
-                wallLineRenderer.enabled = true;
-              //  zLineRenderer.enabled = true;
-                wallLineRenderer.startWidth = 0.3f;
-                wallLineRenderer.endWidth = 0.3f;
+              //   wallLineRenderer.enabled = true;
+              // //  zLineRenderer.enabled = true;
+              //   wallLineRenderer.startWidth = 0.3f;
+              //   wallLineRenderer.endWidth = 0.3f;
                
 
             }
@@ -402,7 +402,8 @@ public class SpawningManager : MonoBehaviour
                     // Keep the initial position the same and update only the position along the z-axis
                     _currentWall.transform.position = new Vector3(_initialMousePos.x, 0f, _initialMousePos.z + distanceZ / 2);
                     _wallAlongZAxis=true;
-                    UpdateFloorDimensionsTextForWall(_initialMousePos, _finalMousePos);
+                    // UpdateFloorDimensionsTextForWall(_initialMousePos, _finalMousePos);
+                    
                    // Debug.Log("Z-axis ");
                 }
 
@@ -420,10 +421,10 @@ public class SpawningManager : MonoBehaviour
             _isCreatingWall = false; // Reset the wall creation process
             _currentWall = null; // Reset the current wall object
 
-           // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
-            Debug.Log("Wall Up");
-            wallDimensionText.text = "";
-          ///  StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
+            // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
+            // Debug.Log("Wall Up");
+            // wallDimensionText.text = "";
+            ///  StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
             Invoke(nameof(DeleteLinesForAll),0.3f);
             
 
@@ -464,27 +465,27 @@ public class SpawningManager : MonoBehaviour
         lineHandler.gameObject.SetActive(false);    
     }
 
-    private void UpdateLinePositions(Vector3 start, Vector3 end)
-    {
-        // X-axis line
-        xLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
-        xLineRenderer.SetPosition(1, new Vector3(end.x, 0.01f, start.z)); // Draw along X-axis
-
-        // Z-axis line
-        zLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
-        zLineRenderer.SetPosition(1, new Vector3(start.x, 0.01f, end.z)); // Draw along Z-axis
-    }
-    private void UpdateLineForWall(Vector3 start, Vector3 end)
-    {
-        wallLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
-        wallLineRenderer.SetPosition(1, new Vector3(end.x, 0.01f, start.z)); // Draw along X-axis
-    }
+    // private void UpdateLinePositions(Vector3 start, Vector3 end)
+    // {
+    //     // X-axis line
+    //     xLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
+    //     xLineRenderer.SetPosition(1, new Vector3(end.x, 0.01f, start.z)); // Draw along X-axis
+    //
+    //     // Z-axis line
+    //     zLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
+    //     zLineRenderer.SetPosition(1, new Vector3(start.x, 0.01f, end.z)); // Draw along Z-axis
+    // }
+    // private void UpdateLineForWall(Vector3 start, Vector3 end)
+    // {
+    //     wallLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
+    //     wallLineRenderer.SetPosition(1, new Vector3(end.x, 0.01f, start.z)); // Draw along X-axis
+    // }
 
     public void OnFloorButtonClick()
     {
         //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         lineHandler.gameObject.SetActive(true);
-        lineDistanceCreator.lines = 4;
+        essentialDistanceManager.lines = 4;
         _isCreatingFloor = true;
         _isCreatingWall = false; // Ensure wall creation is not active
         if (_previewObject != null)
@@ -501,7 +502,7 @@ public class SpawningManager : MonoBehaviour
     {
         lineHandler.gameObject.SetActive(true);
 
-        lineDistanceCreator.lines = 2;
+        essentialDistanceManager.lines = 2;
 
         //  ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         _isCreatingWall = true;
@@ -744,111 +745,111 @@ public class SpawningManager : MonoBehaviour
         }
     }
 
-    private void UpdateFloorDimensionsText(Vector3 start, Vector3 end)
-    {
-        if (start != end)
-        {
-            // Get the current scale of the floor based on drag
-            Vector3 actualScale = _currentFloor.transform.localScale;
-            
-            
-
-            // Calculate dynamic scale based on drag for x and z axes
-            float actualScaleX = Mathf.Abs(end.x - start.x); // Dynamic calculation based on drag
-            float actualScaleZ = Mathf.Abs(end.z - start.z); // Dynamic calculation based on drag
-
-            // Ensure the x-axis length starts at 1
-            float displayScaleX = Mathf.Max(1f, actualScaleX); // Set the minimum text value to 1
-            float displayScaleZ = actualScaleZ;
-          
-
-            // Convert to feet (if needed)
-            float lengthInFeetX = displayScaleX;
-            float lengthInFeetZ = displayScaleZ;
-
-            // Update the UI text, ensuring the x-axis starts at 1
-            xDimensionText.text = $"X Length: {displayScaleX:F2} m / {lengthInFeetX:F2} ft";
-            zDimensionText.text = $"Z Length: {displayScaleZ:F2} m / {lengthInFeetZ:F2} ft";
-           
-            // Update the positions for the dimension text labels
-            Vector3 midPointX = new Vector3((start.x + end.x) / 2, 0f, start.z);
-            Vector3 midPointZ = new Vector3(start.x+1f , 0.1f, (start.z + end.z) / 2);
-            xDimensionText.transform.position = midPointX;
-          
-            zDimensionText.transform.position = midPointZ;
-        }
-        else
-        {
-            // Clear the text when dragging is finished or not happening
-            xDimensionText.text = "";
-            zDimensionText.text = "";
-        }
-    }
-
-
+    // private void UpdateFloorDimensionsText(Vector3 start, Vector3 end)
+    // {
+    //     if (start != end)
+    //     {
+    //         // Get the current scale of the floor based on drag
+    //         Vector3 actualScale = _currentFloor.transform.localScale;
+    //         
+    //         
+    //
+    //         // Calculate dynamic scale based on drag for x and z axes
+    //         float actualScaleX = Mathf.Abs(end.x - start.x); // Dynamic calculation based on drag
+    //         float actualScaleZ = Mathf.Abs(end.z - start.z); // Dynamic calculation based on drag
+    //
+    //         // Ensure the x-axis length starts at 1
+    //         float displayScaleX = Mathf.Max(1f, actualScaleX); // Set the minimum text value to 1
+    //         float displayScaleZ = actualScaleZ;
+    //       
+    //
+    //         // Convert to feet (if needed)
+    //         float lengthInFeetX = displayScaleX;
+    //         float lengthInFeetZ = displayScaleZ;
+    //
+    //         // Update the UI text, ensuring the x-axis starts at 1
+    //         xDimensionText.text = $"X Length: {displayScaleX:F2} m / {lengthInFeetX:F2} ft";
+    //         zDimensionText.text = $"Z Length: {displayScaleZ:F2} m / {lengthInFeetZ:F2} ft";
+    //        
+    //         // Update the positions for the dimension text labels
+    //         Vector3 midPointX = new Vector3((start.x + end.x) / 2, 0f, start.z);
+    //         Vector3 midPointZ = new Vector3(start.x+1f , 0.1f, (start.z + end.z) / 2);
+    //         xDimensionText.transform.position = midPointX;
+    //       
+    //         zDimensionText.transform.position = midPointZ;
+    //     }
+    //     else
+    //     {
+    //         // Clear the text when dragging is finished or not happening
+    //         xDimensionText.text = "";
+    //         zDimensionText.text = "";
+    //     }
+    // }
 
 
-    private void UpdateFloorDimensionsTextForWall(Vector3 start, Vector3 end)
-    {
-        if (start != end)
-        {
-            if (_wallAlongZAxis == false)
-            {
-
-                Debug.Log("Wall Text Update");
-                // Get actual scale of the floor
-                Vector3 actualScale = _currentWall.transform.localScale;
-
-                float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
 
 
-                // Convert to feet (optional)
-                float lengthInFeetX = actualScaleX;
-
-               // float lengthInFeetX = actualScaleX;
-                RectTransform rectTransform = wallDimensionText.GetComponent<RectTransform>();
-                rectTransform.transform.rotation = Quaternion.Euler(90, 0, 0);
-
-
-                // Update UI with actual dimensions
-                wallDimensionText.text = $"X Length: {actualScaleX:F2} m / {lengthInFeetX:F2} ft";
-
-
-                // Update positions for the text
-                Vector3 midPointX = new Vector3((start.x + end.x) / 2, 2f, start.z - 0f);
-
-                wallDimensionText.transform.position = midPointX;
-            }
-            else
-            {
-                Vector3 actualScale = _currentWall.transform.localScale;
-
-                float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
-
-
-                // Convert to feet (optional)
-                float lengthInFeetX = actualScaleX;
-                RectTransform rectTransform = wallDimensionText.GetComponent<RectTransform>();
-                rectTransform.transform.rotation= Quaternion.Euler(90,0,90);
-                // Update UI with actual dimensions
-                wallDimensionText.text = $"X Length: {actualScaleX:F2} m / {lengthInFeetX:F2} ft";
-
-
-                // Update positions for the text
-                Vector3 midPointX = new Vector3((start.x + end.x)/2.2f , 1f, start.z - 1.24f);
-
-                wallDimensionText.transform.position = midPointX;
-
-            }
-           
-        }
-        else
-        {
-           ////////////// Clear the text when not dragging
-            wallDimensionText.text = "";
-
-        }
-    }
+    // private void UpdateFloorDimensionsTextForWall(Vector3 start, Vector3 end)
+    // {
+    //     if (start != end)
+    //     {
+    //         if (_wallAlongZAxis == false)
+    //         {
+    //
+    //             Debug.Log("Wall Text Update");
+    //             // Get actual scale of the floor
+    //             Vector3 actualScale = _currentWall.transform.localScale;
+    //
+    //             float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
+    //
+    //
+    //             // Convert to feet (optional)
+    //             float lengthInFeetX = actualScaleX;
+    //
+    //            // float lengthInFeetX = actualScaleX;
+    //             RectTransform rectTransform = wallDimensionText.GetComponent<RectTransform>();
+    //             rectTransform.transform.rotation = Quaternion.Euler(90, 0, 0);
+    //
+    //
+    //             // Update UI with actual dimensions
+    //             wallDimensionText.text = $"X Length: {actualScaleX:F2} m / {lengthInFeetX:F2} ft";
+    //
+    //
+    //             // Update positions for the text
+    //             Vector3 midPointX = new Vector3((start.x + end.x) / 2, 2f, start.z - 0f);
+    //
+    //             wallDimensionText.transform.position = midPointX;
+    //         }
+    //         else
+    //         {
+    //             Vector3 actualScale = _currentWall.transform.localScale;
+    //
+    //             float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
+    //
+    //
+    //             // Convert to feet (optional)
+    //             float lengthInFeetX = actualScaleX;
+    //             RectTransform rectTransform = wallDimensionText.GetComponent<RectTransform>();
+    //             rectTransform.transform.rotation= Quaternion.Euler(90,0,90);
+    //             // Update UI with actual dimensions
+    //             wallDimensionText.text = $"X Length: {actualScaleX:F2} m / {lengthInFeetX:F2} ft";
+    //
+    //
+    //             // Update positions for the text
+    //             Vector3 midPointX = new Vector3((start.x + end.x)/2.2f , 1f, start.z - 1.24f);
+    //
+    //             wallDimensionText.transform.position = midPointX;
+    //
+    //         }
+    //        
+    //     }
+    //     else
+    //     {
+    //        ////////////// Clear the text when not dragging
+    //         wallDimensionText.text = "";
+    //
+    //     }
+    // }
 
 
 
