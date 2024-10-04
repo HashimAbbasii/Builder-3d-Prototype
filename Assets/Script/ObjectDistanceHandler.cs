@@ -4,15 +4,73 @@ using UnityEngine;
 
 public class ObjectDistanceHandler : MonoBehaviour
 {
-   public bool OnSurface = true;
+	public bool OnSurface = true;
 	private Vector3 hitPos;
 	private Transform lastHitTransform;
 	private bool isDrawLine = true;
 	private bool prevIsDrawLine = true;
-    private bool showSubAxis = false;
+	private bool showSubAxis = false;
 	public bool verticalOrHorizontal = false;
 
-	void Update () 
+	public List<MeasureLine_WorldCanvas> lineCanvasList = new();
+
+	[ContextMenu("ListLines")]
+	public void ListLinesFunction()
+	{
+		lineCanvasList.Clear();
+		var mws = FindObjectsOfType<MeasureLine_WorldCanvas>();
+	    
+		foreach (var mw in mws)
+		{
+			lineCanvasList.Add(mw);
+			// if (mw.gameObject.name == "SurfaceLineDummy")
+			// {
+			// 	Destroy(mw.gameObject);
+			// }
+			// else
+			// {
+			// 	Destroy(mw);
+			// }
+		}
+
+		foreach (var mw in lineCanvasList)
+		{
+			mw.lineWidth = 0.05f;
+			mw.gameObject.name = "LineStartPoint";
+			foreach (var to in mw.targetObjects)
+			{
+				to.gameObject.name = "LineEndPoint";
+			}
+
+			mw.lineRender.transform.parent = transform;
+			mw.linkTexts[0].transform.parent.parent = transform;
+		}
+		
+		//Del all SurfaceLineDummy empty object
+		// var sld = GameObject.Find("SurfaceLineDummy");
+	 //    
+		// while (sld != null)
+		// {
+		// 	DestroyImmediate(sld);
+		// 	sld = GameObject.Find("SurfaceLineDummy");
+		// }
+
+		//Del all childs of lineCollection
+		// var lineCollection = GameObject.Find("lineCollection").transform;
+		// var childObjects = new List<GameObject>();
+		//
+		// for (var i = 0; i < lineCollection.childCount; i++)
+		// {
+		// 	childObjects.Add(lineCollection.GetChild(i).gameObject);
+		// }
+		//
+		// for (var i = 0; i < childObjects.Count; i++)
+		// {
+		// 	Destroy(childObjects[i]);
+		// }
+	}
+	
+	void Update()
 	{
 		//MeasureLine_WorldCanvas's verticalOrHorizontal
 		MeasureLine_WorldCanvas.verticalOrHorizontal = verticalOrHorizontal;
@@ -25,31 +83,28 @@ public class ObjectDistanceHandler : MonoBehaviour
 				lastHitTransform = null;
 				prevIsDrawLine = isDrawLine;
 			}
+
 			var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out hitPos);
 
-			Debug.Log("ODH I");
-			
 			if (hitObj != null)
 			{
-				Debug.Log("ODH II");
-				
 				if (isDrawLine)
 				{
-					Debug.Log("ODH III");
 					if (!OnSurface)
 					{
 						MeasureLine_WorldCanvas.DrawLine(hitObj.transform, false, false, OnSurface, 6f);
-						if (lastHitTransform != null) {
-							MeasureLine_WorldCanvas.EndDrawLine ();
+						if (lastHitTransform != null)
+						{
+							MeasureLine_WorldCanvas.EndDrawLine();
 							lastHitTransform = null;
-						} else {
+						}
+						else
+						{
 							lastHitTransform = hitObj.transform;
 						}
 					}
 					else
 					{
-						Debug.Log("ODH IIIE");
-						
 						var hitDummy = new GameObject("SurfaceLineDummy")
 						{
 							transform =
@@ -58,13 +113,17 @@ public class ObjectDistanceHandler : MonoBehaviour
 							}
 						};
 						hitDummy.transform.SetParent(hitObj.transform);
+						
 						MeasureLine_WorldCanvas.DrawLine(hitDummy.transform, false, false, OnSurface, 6f, showSubAxis);
-						if (lastHitTransform != null) 
+						
+						
+						
+						if (lastHitTransform != null)
 						{
-							MeasureLine_WorldCanvas.EndDrawLine ();
+							MeasureLine_WorldCanvas.EndDrawLine();
 							lastHitTransform = null;
-						} 
-						else 
+						}
+						else
 						{
 							lastHitTransform = hitObj.transform;
 						}
@@ -81,9 +140,12 @@ public class ObjectDistanceHandler : MonoBehaviour
 				lastHitTransform = null;
 				prevIsDrawLine = isDrawLine;
 			}
-			GameObject hitObj = MouseRayer.GetMouseRayHit(Camera.main, out hitPos);
-			if (lastHitTransform != null) {
-				if (lastHitTransform != hitObj.transform) {
+
+			var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out hitPos);
+			if (lastHitTransform != null)
+			{
+				if (lastHitTransform != hitObj.transform)
+				{
 					MeasureLine_WorldCanvas.DeleteLine(lastHitTransform, hitObj.transform, OnSurface);
 					lastHitTransform = null;
 				}
@@ -92,7 +154,9 @@ public class ObjectDistanceHandler : MonoBehaviour
 					MeasureLine_WorldCanvas.DeleteLine(hitObj.transform, OnSurface);
 					lastHitTransform = null;
 				}
-			} else {
+			}
+			else
+			{
 				lastHitTransform = hitObj.transform;
 			}
 		}

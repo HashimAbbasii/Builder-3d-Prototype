@@ -119,7 +119,7 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
 	private Vector3[] nearPoint_Links;
 	private RaycastHit hit_Target0;
 	private RaycastHit hit_Target1;
-	private Renderer lineRender = null;
+	public Renderer lineRender = null;
 	private int layer = 0;
 	private int lastTargetLineCount = 0;
 	private GameObject lineCollection;
@@ -191,7 +191,7 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
     static public void DeleteAllLines()
     {
 	    //Del all MeasureLine_WorldCanvas
-	    var mws = UnityEngine.Object.FindObjectsOfType<MeasureLine_WorldCanvas>();
+	    var mws = FindObjectsOfType<MeasureLine_WorldCanvas>();
 	    
 	    for (var i = 0; i < mws.Length; i++)
 	    {
@@ -200,10 +200,10 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
 		    {
 			    Destroy(mw.gameObject);
 		    }
-		    else
-		    {
-			    Destroy(mw);
-		    }
+		    // else
+		    // {
+			   //  Destroy(mw);
+		    // }
 	    }
 
 	    //Del all SurfaceLineDummy empty object
@@ -214,24 +214,24 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
 		    DestroyImmediate(sld);
 		    sld = GameObject.Find("SurfaceLineDummy");
 	    }
-
-	    //Del all childs of lineCollection
-	    var lineCollection = GameObject.Find("lineCollection").transform;
-	    var childObjects = new List<GameObject>();
-
-	    for (var i = 0; i < lineCollection.childCount; i++)
-	    {
-		    childObjects.Add(lineCollection.GetChild(i).gameObject);
-	    }
-
-	    for (var i = 0; i < childObjects.Count; i++)
-	    {
-		    Destroy(childObjects[i]);
-	    }
-
-	    childObjects.Clear();
-	    //Clear SurfaceLink
-	    surfaceLinks.Clear();
+	    
+	     //Del all childs of lineCollection
+	     var lineCollection = GameObject.Find("lineCollection").transform;
+	     var childObjects = new List<GameObject>();
+	    
+	     for (var i = 0; i < lineCollection.childCount; i++)
+	     {
+		     childObjects.Add(lineCollection.GetChild(i).gameObject);
+	     }
+	    
+	     for (var i = 0; i < childObjects.Count; i++)
+	     {
+		     Destroy(childObjects[i]);
+	     }
+	    
+	     childObjects.Clear();
+	    // Clear SurfaceLink
+	     surfaceLinks.Clear();
     }
 
 
@@ -511,7 +511,7 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
 			}
 		}
 	}
-
+    
 	static public void EndDrawLine()
 	{
 		staticTarget = null;
