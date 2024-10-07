@@ -9,6 +9,7 @@ public class PinchZoom : MonoBehaviour
     public float zoomOutSpeed = 0.2f;   // Speed of zooming out
     public float minZoom = 30.0f;    // Minimum zoom level
     public float maxZoom = 90.0f;   // Maximum zoom level
+    public float pitchTolerance = 0.1f; // Tolerance for pitching action
 
     private Vector3 lastMousePosition;
 
@@ -31,14 +32,18 @@ public class PinchZoom : MonoBehaviour
             // Find the difference in the distances between each frame
             float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-            // Determine the zoom speed based on whether we're zooming in or out
-            float speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
+            // Check if the delta magnitude difference exceeds the tolerance
+            if (Mathf.Abs(deltaMagnitudeDiff) > pitchTolerance)
+            {
+                // Determine the zoom speed based on whether we're zooming in or out
+                float speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
 
-            // Zoom the camera's field of view based on the difference in distance between the touches
-            float newFOV = mainCamera.fieldOfView + deltaMagnitudeDiff * speed;
+                // Zoom the camera's field of view based on the difference in distance between the touches
+                float newFOV = mainCamera.fieldOfView + deltaMagnitudeDiff * speed;
 
-            // Clamp the field of view to the min and max values
-            mainCamera.fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
+                // Clamp the field of view to the min and max values
+                mainCamera.fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
+            }
         }
     }
 }
