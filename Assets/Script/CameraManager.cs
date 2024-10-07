@@ -22,7 +22,6 @@ public class CameraManager : MonoBehaviour
     private Vector3 startPos;                  // Initial camera position
     private Vector2 previousTouch0Position = Vector2.zero;
     private Vector2 previousTouch1Position = Vector2.zero;
-    private bool isTwoFingerTouching = false;
 
     void Start()
     {
@@ -42,22 +41,27 @@ public class CameraManager : MonoBehaviour
             Touch touch1 = Input.GetTouch(1);
 
             // Call methods based on toggle states
-            if (CameraPosition.isOn)
-            {
-                MoveCameraWithTwoTouches(touch0, touch1);
-            }
-            if (CameraRotation.isOn)
-            {
-                RotateCameraWithTwoTouches(touch0, touch1);
-            }
+            //if (CameraPosition.isOn)
+            //{
+            MoveCameraWithTwoTouches(touch0, touch1);
+            //}
+            //if (CameraRotation.isOn)
+            //{
+            //    RotateCameraWithTwoTouches(touch0, touch1);
+            //}
 
             // Handle zoom functionality
             ZoomCamera(touch0, touch1);
         }
+        else if (Input.touchCount == 3)
+        {
+            Touch touch0 = Input.GetTouch(0);
+            Touch touch1 = Input.GetTouch(1);
+            RotateCameraWithTwoTouches(touch0, touch1);
+        }
         else
         {
             // Reset touch tracking if not using two fingers
-            isTwoFingerTouching = false;
         }
     }
 
@@ -84,31 +88,29 @@ public class CameraManager : MonoBehaviour
         Vector2 currentTouch1Position = touch1.position;
 
         // Only track the first touch movement if we are already in a two-finger touch
-        if (isTwoFingerTouching)
+
+
+        // Calculate the difference between the previous and current touch positions
+        Vector2 touch0Delta = currentTouch0Position - previousTouch0Position;
+        Vector2 touch1Delta = currentTouch1Position - previousTouch1Position;
+
+        // Rotate the camera based on the average of both touch deltas
+        mainCameraParent.transform.Rotate(0f, (touch0Delta.x + touch1Delta.x) / 2 * rotationSpeed * Time.deltaTime, 0f, Space.World);
+
+        // Get current X rotation in local space and clamp
+        float currentXRotation = mainCameraParent.transform.localEulerAngles.x;
+        if (currentXRotation > 180f)
         {
-            // Calculate the difference between the previous and current touch positions
-            Vector2 touch0Delta = currentTouch0Position - previousTouch0Position;
-            Vector2 touch1Delta = currentTouch1Position - previousTouch1Position;
-
-            // Rotate the camera based on the average of both touch deltas
-            mainCameraParent.transform.Rotate(0f, (touch0Delta.x + touch1Delta.x) / 2 * rotationSpeed * Time.deltaTime, 0f, Space.World);
-
-            // Get current X rotation in local space and clamp
-            float currentXRotation = mainCameraParent.transform.localEulerAngles.x;
-            if (currentXRotation > 180f)
-            {
-                currentXRotation -= 360f;
-            }
-            float newXRotation = Mathf.Clamp(currentXRotation - ((touch0Delta.y + touch1Delta.y) / 2) * rotationSpeed * Time.deltaTime, -55f, 0f);
-
-            // Apply the clamped rotation
-            mainCameraParent.transform.localEulerAngles = new Vector3(newXRotation, mainCameraParent.transform.localEulerAngles.y, 0f);
+            currentXRotation -= 360f;
         }
+        float newXRotation = Mathf.Clamp(currentXRotation - ((touch0Delta.y + touch1Delta.y) / 2) * rotationSpeed * Time.deltaTime, -55f, 0f);
+
+        // Apply the clamped rotation
+        mainCameraParent.transform.localEulerAngles = new Vector3(newXRotation, mainCameraParent.transform.localEulerAngles.y, 0f);
 
         // Store the current touch positions for the next frame
         previousTouch0Position = currentTouch0Position;
         previousTouch1Position = currentTouch1Position;
-        isTwoFingerTouching = true;
     }
 
     private void ZoomCamera(Touch touch0, Touch touch1)
@@ -124,6 +126,8 @@ public class CameraManager : MonoBehaviour
         // Find the difference in the distances between each frame
         float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
+        Debug.Log(deltaMagnitudeDiff);
+
         // Check if the delta magnitude difference exceeds the tolerance
         if (Mathf.Abs(deltaMagnitudeDiff) > pitchTolerance)
         {
@@ -131,10 +135,10 @@ public class CameraManager : MonoBehaviour
             float speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
 
             // Zoom the camera's field of view based on the difference in distance between the touches
-            float newFOV = mainCameraParent.GetComponent<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
+            float newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
 
             // Clamp the field of view to the min and max values
-            mainCameraParent.GetComponent<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
+            mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
         }
     }
 
