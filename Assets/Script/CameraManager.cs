@@ -12,12 +12,12 @@ public class CameraManager : MonoBehaviour
     public SpawningManager spawningManager;
 
     [SerializeField] private float moveSpeed = 0.05f;   // Adjust this value to change movement speed
-    [SerializeField] private float rotationSpeed = 50f; // Speed for camera rotation
+    [SerializeField] private float rotationSpeed = 5f; // Speed for camera rotation
     [SerializeField] private float zoomInSpeed = 0.05f;   // Speed of zooming in
     [SerializeField] private float zoomOutSpeed = 0.2f;   // Speed of zooming out
     [SerializeField] private float minZoom = 30.0f;    // Minimum zoom level
     [SerializeField] private float maxZoom = 90.0f;   // Maximum zoom level
-    [SerializeField] private float pitchTolerance = 0.1f; // Tolerance for pitching action
+    [SerializeField] private float pitchTolerance = 1f; // Tolerance for pitching action
 
     private Vector3 startPos;                  // Initial camera position
     private Vector2 previousTouch0Position = Vector2.zero;

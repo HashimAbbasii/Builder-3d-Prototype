@@ -94,7 +94,7 @@ public class ObjectManipulator : MonoBehaviour
                 else
                 {
                     // If touch is outside of any object or UI, deselect the object
-                    DeselectObject();
+                    Invoke (nameof(DeselectObject), 0.3f); 
                     _isObjectSelected = false; // Reset selection state
                 }
             }
@@ -410,6 +410,7 @@ public class ObjectManipulator : MonoBehaviour
     // Method to deselect the currently selected object
     public void DeselectObject()
     {
+        Debug.Log("Deseleted");
         foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
         {
             Destroy(line.gameObject);
