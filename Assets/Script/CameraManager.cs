@@ -8,18 +8,18 @@ public class CameraManager : MonoBehaviour
     public VariableJoystick joystick;          // Reference to your joystick
     public GameObject mainCameraParent;        // Reference to the camera parent
     public Toggle CameraPosition;              // Toggle for camera position
-    public Toggle CameraRotation;
+    public Toggle CameraRotation;              // Toggle for camera rotation
     public SpawningManager spawningManager;
-    private Vector3 startPos;                  // Initial camera position
 
     [SerializeField] private float moveSpeed = 0.05f;   // Adjust this value to change movement speed
     [SerializeField] private float rotationSpeed = 50f; // Speed for camera rotation
-    [SerializeField] private float maxZPosition = 10.38793f; // Maximum Z-axis position
-    [SerializeField] private float minXPosition = -8f;       // Minimum X-axis position
-    [SerializeField] private float maxXPosition = 8f;        // Maximum X-axis position
-    [SerializeField] private float minZPosition = -10f;      // Minimum Z-axis position
+    [SerializeField] private float zoomInSpeed = 0.05f;   // Speed of zooming in
+    [SerializeField] private float zoomOutSpeed = 0.2f;   // Speed of zooming out
+    [SerializeField] private float minZoom = 30.0f;    // Minimum zoom level
+    [SerializeField] private float maxZoom = 90.0f;   // Maximum zoom level
+    [SerializeField] private float pitchTolerance = 0.1f; // Tolerance for pitching action
 
-    private Vector2 previousTouchDelta = Vector2.zero;
+    private Vector3 startPos;                  // Initial camera position
     private Vector2 previousTouch0Position = Vector2.zero;
     private Vector2 previousTouch1Position = Vector2.zero;
     private bool isTwoFingerTouching = false;
@@ -36,22 +36,23 @@ public class CameraManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.touchCount == 2)
+        if (Input.touchCount == 2) // Handle two-finger touch for movement, rotation, and zoom
         {
-            // Handle camera movement and rotation using two touches
             Touch touch0 = Input.GetTouch(0);
             Touch touch1 = Input.GetTouch(1);
 
+            // Call methods based on toggle states
             if (CameraPosition.isOn)
             {
-                // Move the camera with two touches
                 MoveCameraWithTwoTouches(touch0, touch1);
             }
             if (CameraRotation.isOn)
             {
-                // Rotate the camera with two touches
                 RotateCameraWithTwoTouches(touch0, touch1);
             }
+
+            // Handle zoom functionality
+            ZoomCamera(touch0, touch1);
         }
         else
         {
@@ -71,10 +72,6 @@ public class CameraManager : MonoBehaviour
         Vector3 newPosition = mainCameraParent.transform.position;
         newPosition.x -= averageDelta.x * moveSpeed * Time.deltaTime; // Move along the X-axis
         newPosition.z -= averageDelta.y * moveSpeed * Time.deltaTime; // Move along the Z-axis
-
-        // Apply movement constraints
-        newPosition.x = Mathf.Clamp(newPosition.x, minXPosition, maxXPosition);
-        newPosition.z = Mathf.Clamp(newPosition.z, minZPosition, maxZPosition);
 
         // Update camera position
         mainCameraParent.transform.position = newPosition;
@@ -112,6 +109,33 @@ public class CameraManager : MonoBehaviour
         previousTouch0Position = currentTouch0Position;
         previousTouch1Position = currentTouch1Position;
         isTwoFingerTouching = true;
+    }
+
+    private void ZoomCamera(Touch touch0, Touch touch1)
+    {
+        // Find the position in the previous frame of each touch
+        Vector2 touch1PrevPos = touch0.position - touch0.deltaPosition;
+        Vector2 touch2PrevPos = touch1.position - touch1.deltaPosition;
+
+        // Find the magnitude of the vector (distance) between the touches in each frame
+        float prevTouchDeltaMag = (touch1PrevPos - touch2PrevPos).magnitude;
+        float touchDeltaMag = (touch0.position - touch1.position).magnitude;
+
+        // Find the difference in the distances between each frame
+        float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+
+        // Check if the delta magnitude difference exceeds the tolerance
+        if (Mathf.Abs(deltaMagnitudeDiff) > pitchTolerance)
+        {
+            // Determine the zoom speed based on whether we're zooming in or out
+            float speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
+
+            // Zoom the camera's field of view based on the difference in distance between the touches
+            float newFOV = mainCameraParent.GetComponent<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
+
+            // Clamp the field of view to the min and max values
+            mainCameraParent.GetComponent<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
+        }
     }
 
     // Called when the CameraPosition toggle is changed
