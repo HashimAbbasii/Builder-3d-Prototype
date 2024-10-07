@@ -19,6 +19,10 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float maxXPosition = 8f;        // Maximum X-axis position
     [SerializeField] private float minZPosition = -10f;      // Minimum Z-axis position
 
+    private Vector2 previousTouchDelta = Vector2.zero;
+    private Vector2 previousTouch0Position = Vector2.zero;
+    private Vector2 previousTouch1Position = Vector2.zero;
+    private bool isTwoFingerTouching = false;
 
     void Start()
     {
@@ -32,88 +36,83 @@ public class CameraManager : MonoBehaviour
 
     void Update()
     {
-        // Check if the CameraPosition toggle is on
-        if (CameraPosition.isOn)
+        if (Input.touchCount == 2)
         {
-            // Move the camera based on joystick input
-            MoveCamera();
+            // Handle camera movement and rotation using two touches
+            Touch touch0 = Input.GetTouch(0);
+            Touch touch1 = Input.GetTouch(1);
+
+            if (CameraPosition.isOn)
+            {
+                // Move the camera with two touches
+                MoveCameraWithTwoTouches(touch0, touch1);
+            }
+            if (CameraRotation.isOn)
+            {
+                // Rotate the camera with two touches
+                RotateCameraWithTwoTouches(touch0, touch1);
+            }
         }
-        if (CameraRotation.isOn)
+        else
         {
-            // Rotate the camera based on joystick input
-            RotateCamera();
+            // Reset touch tracking if not using two fingers
+            isTwoFingerTouching = false;
         }
     }
 
-    private void MoveCamera()
+    private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
     {
-        // Get the joystick input
-        float horizontalInput = joystick.Horizontal; // X-axis movement
-        float verticalInput = joystick.Vertical;     // Z-axis movement
+        // Calculate the movement delta (average of the two touches' deltas)
+        Vector2 touchDelta0 = touch0.deltaPosition;
+        Vector2 touchDelta1 = touch1.deltaPosition;
+        Vector2 averageDelta = (touchDelta0 + touchDelta1) / 2f;
 
-        // Calculate the new camera position
+        // Calculate new camera position
         Vector3 newPosition = mainCameraParent.transform.position;
+        newPosition.x -= averageDelta.x * moveSpeed * Time.deltaTime; // Move along the X-axis
+        newPosition.z -= averageDelta.y * moveSpeed * Time.deltaTime; // Move along the Z-axis
 
-        // Move the camera on the Z-axis when joystick is moved up
-        newPosition.z += verticalInput * moveSpeed; // Increase Z position based on joystick's vertical input
+        // Apply movement constraints
+        newPosition.x = Mathf.Clamp(newPosition.x, minXPosition, maxXPosition);
+        newPosition.z = Mathf.Clamp(newPosition.z, minZPosition, maxZPosition);
 
-        // Move the camera on the X-axis when joystick is moved sideways
-        newPosition.x += horizontalInput * moveSpeed; // Increase X position based on joystick's horizontal input
-
-        // Restrict Z position to the specified maximum value
-        if (newPosition.z > maxZPosition)
-        {
-            newPosition.z = maxZPosition; // Clamp Z position
-        }
-
-        if (newPosition.z < minZPosition)
-        {
-            newPosition.z = minZPosition; // Clamp Z position
-        }
-
-        // Restrict X position between the minimum and maximum values
-        if (newPosition.x < minXPosition)
-        {
-            newPosition.x = minXPosition; // Clamp X position
-        }
-        else if (newPosition.x > maxXPosition)
-        {
-            newPosition.x = maxXPosition; // Clamp X position
-        }
-
-        // Update the camera position
+        // Update camera position
         mainCameraParent.transform.position = newPosition;
     }
 
-    private void RotateCamera()
+    private void RotateCameraWithTwoTouches(Touch touch0, Touch touch1)
     {
-        // Get joystick input for rotation
-        float horizontalInput = joystick.Horizontal; // Joystick movement along the X-axis
-        float verticalInput = joystick.Vertical;     // Joystick movement along the Y-axis
+        // Calculate the current distance between the two touches
+        Vector2 currentTouch0Position = touch0.position;
+        Vector2 currentTouch1Position = touch1.position;
 
-        // Rotate the camera on the Y-axis (left/right) when joystick is moved horizontally (X-axis)
-        mainCameraParent.transform.Rotate(0f, horizontalInput * rotationSpeed * Time.deltaTime, 0f, Space.World);
-
-        // Get current X rotation in local space
-        float currentXRotation = mainCameraParent.transform.localEulerAngles.x;
-
-        // Adjust X rotation for clamping (Unity represents rotations in 0-360, so we convert to -180 to 180 range)
-        if (currentXRotation > 180f)
+        // Only track the first touch movement if we are already in a two-finger touch
+        if (isTwoFingerTouching)
         {
-            currentXRotation -= 360f;
-            Debug.Log("Current Rotation"+currentXRotation);
+            // Calculate the difference between the previous and current touch positions
+            Vector2 touch0Delta = currentTouch0Position - previousTouch0Position;
+            Vector2 touch1Delta = currentTouch1Position - previousTouch1Position;
+
+            // Rotate the camera based on the average of both touch deltas
+            mainCameraParent.transform.Rotate(0f, (touch0Delta.x + touch1Delta.x) / 2 * rotationSpeed * Time.deltaTime, 0f, Space.World);
+
+            // Get current X rotation in local space and clamp
+            float currentXRotation = mainCameraParent.transform.localEulerAngles.x;
+            if (currentXRotation > 180f)
+            {
+                currentXRotation -= 360f;
+            }
+            float newXRotation = Mathf.Clamp(currentXRotation - ((touch0Delta.y + touch1Delta.y) / 2) * rotationSpeed * Time.deltaTime, -55f, 0f);
+
+            // Apply the clamped rotation
+            mainCameraParent.transform.localEulerAngles = new Vector3(newXRotation, mainCameraParent.transform.localEulerAngles.y, 0f);
         }
 
-        // Calculate the new X rotation after applying the joystick input
-        float newXRotation = currentXRotation + verticalInput * rotationSpeed * Time.deltaTime;
-
-        // Clamp the X rotation between -60 and 0 degrees
-        newXRotation = Mathf.Clamp(newXRotation, -55f, 0f);
-
-        // Apply the clamped X rotation
-        mainCameraParent.transform.localEulerAngles = new Vector3(newXRotation, mainCameraParent.transform.localEulerAngles.y, 0f);
+        // Store the current touch positions for the next frame
+        previousTouch0Position = currentTouch0Position;
+        previousTouch1Position = currentTouch1Position;
+        isTwoFingerTouching = true;
     }
-
 
     // Called when the CameraPosition toggle is changed
     private void OnCameraPositionToggleChanged(bool isOn)
