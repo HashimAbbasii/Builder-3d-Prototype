@@ -701,12 +701,12 @@ MonoBehaviour:
   removeButton: {fileID: 387258483}
   rotationKnob: {fileID: 648594153}
   rotationButtons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 387258485}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   rotationImage: {fileID: 906750724}
   _isObjectSelected: 0
   isFloorSelected: 0
