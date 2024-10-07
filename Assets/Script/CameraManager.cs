@@ -19,7 +19,14 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float maxZoom = 90.0f;   // Maximum zoom level
     [SerializeField] private float pitchTolerance = 1f; // Tolerance for pitching action
 
+    [SerializeField] private float maxZPosition = 10.38793f; // Maximum Z-axis position
+    [SerializeField] private float minXPosition = -8f;       // Minimum X-axis position
+    [SerializeField] private float maxXPosition = 8f;        // Maximum X-axis position
+    [SerializeField] private float minZPosition = -10f;      // Minimum Z-axis position
+
+    
     private Vector3 startPos;                  // Initial camera position
+    private Quaternion startRot;                  // Initial camera position
     private Vector2 previousTouch0Position = Vector2.zero;
     private Vector2 previousTouch1Position = Vector2.zero;
 
@@ -27,6 +34,7 @@ public class CameraManager : MonoBehaviour
     {
         // Set the initial camera position
         startPos = mainCameraParent.transform.position;
+        startRot = mainCameraParent.transform.rotation;
 
         // Set up listeners for the toggles
         CameraPosition.onValueChanged.AddListener(OnCameraPositionToggleChanged);
@@ -57,7 +65,8 @@ public class CameraManager : MonoBehaviour
         {
             Touch touch0 = Input.GetTouch(0);
             Touch touch1 = Input.GetTouch(1);
-            RotateCameraWithTwoTouches(touch0, touch1);
+            Touch touch2 = Input.GetTouch(2);
+            RotateCameraWithThreeTouches(touch0, touch1, touch2);
         }
         else
         {
@@ -65,6 +74,22 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+    // private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
+    // {
+    //     // Calculate the movement delta (average of the two touches' deltas)
+    //     Vector2 touchDelta0 = touch0.deltaPosition;
+    //     Vector2 touchDelta1 = touch1.deltaPosition;
+    //     Vector2 averageDelta = (touchDelta0 + touchDelta1) / 2f;
+    //
+    //     // Calculate new camera position
+    //     Vector3 newPosition = mainCameraParent.transform.position;
+    //     newPosition.x -= averageDelta.x * moveSpeed * Time.deltaTime; // Move along the X-axis
+    //     newPosition.z -= averageDelta.y * moveSpeed * Time.deltaTime; // Move along the Z-axis
+    //
+    //     // Update camera position
+    //     mainCameraParent.transform.position = newPosition;
+    // }
+    
     private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
     {
         // Calculate the movement delta (average of the two touches' deltas)
@@ -74,43 +99,78 @@ public class CameraManager : MonoBehaviour
 
         // Calculate new camera position
         Vector3 newPosition = mainCameraParent.transform.position;
-        newPosition.x -= averageDelta.x * moveSpeed * Time.deltaTime; // Move along the X-axis
-        newPosition.z -= averageDelta.y * moveSpeed * Time.deltaTime; // Move along the Z-axis
-
+        newPosition += mainCameraParent.transform.right * -averageDelta.x * moveSpeed * Time.deltaTime; // Move along the camera's right axis
+        newPosition += mainCameraParent.transform.forward * -averageDelta.y * moveSpeed * Time.deltaTime; // Move along the camera's forward axis
+        
+        newPosition.x = Mathf.Clamp(newPosition.x, minXPosition, maxXPosition);
+        newPosition.z = Mathf.Clamp(newPosition.z, minZPosition, maxZPosition);
+        
         // Update camera position
         mainCameraParent.transform.position = newPosition;
     }
 
-    private void RotateCameraWithTwoTouches(Touch touch0, Touch touch1)
+    // private void RotateCameraWithTwoTouches(Touch touch0, Touch touch1)
+    // {
+    //     // Calculate the current distance between the two touches
+    //     Vector2 currentTouch0Position = touch0.position;
+    //     Vector2 currentTouch1Position = touch1.position;
+    //
+    //     // Only track the first touch movement if we are already in a two-finger touch
+    //
+    //
+    //     // Calculate the difference between the previous and current touch positions
+    //     Vector2 touch0Delta = currentTouch0Position - previousTouch0Position;
+    //     Vector2 touch1Delta = currentTouch1Position - previousTouch1Position;
+    //
+    //     // Rotate the camera based on the average of both touch deltas
+    //     mainCameraParent.transform.Rotate(0f, (touch0Delta.x + touch1Delta.x) / 2 * rotationSpeed * Time.deltaTime, 0f, Space.World);
+    //
+    //     // Get current X rotation in local space and clamp
+    //     float currentXRotation = mainCameraParent.transform.localEulerAngles.x;
+    //     if (currentXRotation > 180f)
+    //     {
+    //         currentXRotation -= 360f;
+    //     }
+    //     float newXRotation = Mathf.Clamp(currentXRotation - ((touch0Delta.y + touch1Delta.y) / 2) * rotationSpeed * Time.deltaTime, -55f, 0f);
+    //
+    //     // Apply the clamped rotation
+    //     mainCameraParent.transform.localEulerAngles = new Vector3(newXRotation, mainCameraParent.transform.localEulerAngles.y, 0f);
+    //
+    //     // Store the current touch positions for the next frame
+    //     previousTouch0Position = currentTouch0Position;
+    //     previousTouch1Position = currentTouch1Position;
+    // }
+    
+    private void RotateCameraWithThreeTouches(Touch touch0, Touch touch1, Touch touch2)
     {
-        // Calculate the current distance between the two touches
+        // Calculate the current positions of the three touches
         Vector2 currentTouch0Position = touch0.position;
         Vector2 currentTouch1Position = touch1.position;
+        Vector2 currentTouch2Position = touch2.position;
 
-        // Only track the first touch movement if we are already in a two-finger touch
-
+        // Calculate the previous positions of the three touches
+        Vector2 previousTouch0Position = touch0.position - touch0.deltaPosition;
+        Vector2 previousTouch1Position = touch1.position - touch1.deltaPosition;
+        Vector2 previousTouch2Position = touch2.position - touch2.deltaPosition;
 
         // Calculate the difference between the previous and current touch positions
         Vector2 touch0Delta = currentTouch0Position - previousTouch0Position;
         Vector2 touch1Delta = currentTouch1Position - previousTouch1Position;
+        Vector2 touch2Delta = currentTouch2Position - previousTouch2Position;
 
-        // Rotate the camera based on the average of both touch deltas
-        mainCameraParent.transform.Rotate(0f, (touch0Delta.x + touch1Delta.x) / 2 * rotationSpeed * Time.deltaTime, 0f, Space.World);
+        // Calculate the average touch delta
+        Vector2 averageDelta = (touch0Delta + touch1Delta + touch2Delta) / 3f;
 
-        // Get current X rotation in local space and clamp
-        float currentXRotation = mainCameraParent.transform.localEulerAngles.x;
-        if (currentXRotation > 180f)
-        {
-            currentXRotation -= 360f;
-        }
-        float newXRotation = Mathf.Clamp(currentXRotation - ((touch0Delta.y + touch1Delta.y) / 2) * rotationSpeed * Time.deltaTime, -55f, 0f);
+        // Calculate the rotation delta
+        Vector3 rotationDelta = new Vector3(-averageDelta.y, averageDelta.x, 0f) * rotationSpeed * Time.deltaTime;
 
-        // Apply the clamped rotation
-        mainCameraParent.transform.localEulerAngles = new Vector3(newXRotation, mainCameraParent.transform.localEulerAngles.y, 0f);
+        // Rotate the camera based on the rotation delta
+        mainCameraParent.transform.Rotate(rotationDelta, Space.Self);
 
         // Store the current touch positions for the next frame
         previousTouch0Position = currentTouch0Position;
         previousTouch1Position = currentTouch1Position;
+        previousTouch2Position = currentTouch2Position;
     }
 
     private void ZoomCamera(Touch touch0, Touch touch1)
@@ -166,4 +226,11 @@ public class CameraManager : MonoBehaviour
         CameraPosition.onValueChanged.RemoveListener(OnCameraPositionToggleChanged);
         CameraRotation.onValueChanged.RemoveListener(OnCameraRotationToggleChanged);
     }
+
+    public void ResetCamera()
+    {
+        mainCameraParent.transform.position = startPos;
+        mainCameraParent.transform.rotation = startRot;
+    }
+    
 }
