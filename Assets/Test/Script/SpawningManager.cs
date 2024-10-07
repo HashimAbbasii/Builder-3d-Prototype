@@ -268,34 +268,43 @@ public class SpawningManager : MonoBehaviour
 
     private void Update()
     {
+#if UNITY_EDITOR
+        // Simulate touch input using the mouse for testing in the Editor
+        SimulateTouchInput();
+#else
+    // Actual touch input for mobile devices
+    if (Input.touchCount == 1) 
+    {
+        Touch touch = Input.GetTouch(0);
+        ProcessTouch(touch);
+    }
+#endif
+    }
+
+    // Called when the floor button is clicked
+
+    //.........Procrss Touch ....//
+
+    private void ProcessTouch(Touch touch)
+    {
+        var ray = Camera.main.ScreenPointToRay(touch.position);
+
         // Floor creation logic
-        if (_isCreatingFloor && Input.GetMouseButtonDown(0))
+        if (_isCreatingFloor && touch.phase == TouchPhase.Began)
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, floorPlacementMask))
             {
                 _initialMousePos = hit.point;
-               
                 _initialMousePos.y = 0f;
                 _currentFloor = Instantiate(floorPrefab, _initialMousePos, Quaternion.identity);
                 floorsSpawned.Add(_currentFloor);
                 floorMaterialChanged = _currentFloor;
                 _floorDimensionsText = _currentFloor.GetComponentInChildren<TextMeshProUGUI>();
-
-                // Initialize text when floor creation starts
-                //UpdateFloorDimensionsText(_initialMousePos, _initialMousePos);
-                // xLineRenderer.enabled = true;
-                // zLineRenderer.enabled = true;
-                // xLineRenderer.startWidth = 0.3f;
-                // xLineRenderer.endWidth = 0.3f;
-                // zLineRenderer.startWidth = 0.3f;
-                // zLineRenderer.endWidth = 0.3f;
             }
         }
 
-        if (_isCreatingFloor && Input.GetMouseButton(0) && _currentFloor != null)
+        if (_isCreatingFloor && touch.phase == TouchPhase.Moved && _currentFloor != null)
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out var hit, Mathf.Infinity, floorPlacementMask))
             {
                 _finalMousePos = hit.point;
@@ -304,158 +313,131 @@ public class SpawningManager : MonoBehaviour
                 Vector3 scale = _finalMousePos - _initialMousePos;
                 _currentFloor.transform.localScale = new Vector3(scale.x, 0.1f, scale.z);
 
-                // Update the UI text with the current dimensions dynamically
-                // UpdateLinePositions(_initialMousePos, _finalMousePos);
-                // xLineRenderer.SetPosition(0, _initialMousePos);
-                // xLineRenderer.SetPosition(1, new Vector3(_finalMousePos.x, 0, _initialMousePos.z));
-                //
-                // zLineRenderer.SetPosition(0, _initialMousePos);
-                // zLineRenderer.SetPosition(1, new Vector3(_initialMousePos.x, 0, _finalMousePos.z));
-
-                // Get the actual scale of the current floor
-                Vector3 actualScale = _currentFloor.transform.localScale;
                 float actualScaleX = Mathf.Abs(scale.x);  // Adjust scale calculation
                 float actualScaleZ = Mathf.Abs(scale.z);
 
                 Debug.Log("Xactual Size: " + actualScaleX);
                 Debug.Log("Zactual Size: " + actualScaleZ);
-
-                // Continuously update the dimensions in the UI as the object is dragged
-                //UpdateFloorDimensionsText(_initialMousePos, _finalMousePos);
             }
         }
 
-
-        if (_isCreatingFloor && Input.GetMouseButtonUp(0) && _currentFloor != null)
+        if (_isCreatingFloor && touch.phase == TouchPhase.Ended && _currentFloor != null)
         {
-            // xLineRenderer.enabled = false;
-            // zLineRenderer.enabled = false;
             _isCreatingFloor = false;
             _currentFloor = null;
 
-            // xLineRenderer.startWidth = 0f;
-            // xLineRenderer.endWidth = 0f;
-            // zLineRenderer.startWidth = 0f;
-            // zLineRenderer.endWidth = 0f;
-
-            // Hide the lines after the floor is placed
-            // xLineRenderer.enabled = false;
-            // zLineRenderer.enabled = false;
-            // xDimensionText.text = "";
-            // zDimensionText.text = "";
             Invoke(nameof(DeleteLinesForAll), 0.3f);
-            //   StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
-
         }
 
         // Wall creation logic
-        if (_isCreatingWall && Input.GetMouseButtonDown(0)) // Left mouse button pressed
+        if (_isCreatingWall && touch.phase == TouchPhase.Began)
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 _initialMousePos = hit.point;
-                _initialMousePos.y = 0f; // Ensure the y-axis is set to 0
+                _initialMousePos.y = 0f;
                 _currentWall = Instantiate(wallPrefab, _initialMousePos, Quaternion.identity);
                 wallsSpawned.Add(_currentWall);
-               // UpdateFloorDimensionsTextForWall(_initialMousePos, _initialMousePos);
-              //   wallLineRenderer.enabled = true;
-              // //  zLineRenderer.enabled = true;
-              //   wallLineRenderer.startWidth = 0.3f;
-              //   wallLineRenderer.endWidth = 0.3f;
-               
-
             }
         }
 
-        if (_isCreatingWall && Input.GetMouseButton(0) && _currentWall != null) // Dragging the mouse
+        if (_isCreatingWall && touch.phase == TouchPhase.Moved && _currentWall != null)
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 _finalMousePos = hit.point;
-                _finalMousePos.y = 0f; // Ensure the y-axis remains at 0
+                _finalMousePos.y = 0f;
 
                 var direction = _finalMousePos - _initialMousePos;
 
-                // Determine whether the drag is more along the x-axis or the z-axis
                 if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
                 {
-                    // Dragging along the x-axis
                     _wallAlongZAxis = false;
                     var distanceX = _finalMousePos.x - _initialMousePos.x;
                     _currentWall.transform.localScale = new Vector3(distanceX, _currentWall.transform.localScale.y, _currentWall.transform.localScale.z);
-                    _currentWall.transform.rotation = Quaternion.Euler(0, 0, 0); // Set rotation to 0 degrees on the y-axis
-
-                    // Keep the initial position the same and update only the position along the x-axis
+                    _currentWall.transform.rotation = Quaternion.Euler(0, 0, 0);
                     _currentWall.transform.position = new Vector3(_initialMousePos.x + distanceX / 2, 0f, _initialMousePos.z);
-                  //  UpdateFloorDimensionsTextForWall(_initialMousePos, _finalMousePos);
-                   // Debug.Log("X-axis ");
                 }
                 else
                 {
-                    // Dragging along the z-axis
                     var distanceZ = _finalMousePos.z - _initialMousePos.z;
                     _currentWall.transform.localScale = new Vector3(distanceZ, _currentWall.transform.localScale.y, _currentWall.transform.localScale.z);
-                    _currentWall.transform.rotation = Quaternion.Euler(0, 90, 0); // Set rotation to 90 degrees on the y-axis
-
-                    // Keep the initial position the same and update only the position along the z-axis
+                    _currentWall.transform.rotation = Quaternion.Euler(0, 90, 0);
                     _currentWall.transform.position = new Vector3(_initialMousePos.x, 0f, _initialMousePos.z + distanceZ / 2);
-                    _wallAlongZAxis=true;
-                    // UpdateFloorDimensionsTextForWall(_initialMousePos, _finalMousePos);
-                    
-                   // Debug.Log("Z-axis ");
+                    _wallAlongZAxis = true;
                 }
-
-                //UpdateLineForWall(_initialMousePos, _finalMousePos);
-              //  wallLineRenderer.SetPosition(0, _initialMousePos);
-            //    wallLineRenderer.SetPosition(1, new Vector3(_finalMousePos.x, 0, _initialMousePos.z));
-                Vector3 actualScale = _currentWall.transform.localScale;
-                float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
-             
             }
         }
 
-        if (_isCreatingWall && Input.GetMouseButtonUp(0) && _currentWall != null) // Mouse button released
+        if (_isCreatingWall && touch.phase == TouchPhase.Ended && _currentWall != null)
         {
-            _isCreatingWall = false; // Reset the wall creation process
-            _currentWall = null; // Reset the current wall object
+            _isCreatingWall = false;
+            _currentWall = null;
 
-            // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
-            // Debug.Log("Wall Up");
-            // wallDimensionText.text = "";
-            ///  StartCoroutine(HideFloorDimensionsTextAfterDelay(2f));    // Hide the Text After Sometime
-            Invoke(nameof(DeleteLinesForAll),0.3f);
-            
-
-
+            Invoke(nameof(DeleteLinesForAll), 0.3f);
         }
 
-        // Preview object follows the mouse
+        // Preview object logic
         if (_previewObject != null)
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out RaycastHit hit, 1000, surfaceLayerMask, QueryTriggerInteraction.Collide))
             {
                 var previewPosition = hit.point;
-                previewPosition.y = 0f; // Ensure the y-axis remains at 0
+                previewPosition.y = 0f;
                 _previewObject.transform.position = previewPosition;
 
-                // Check if the object is being placed on a valid surface
                 var surface = hit.collider.GetComponent<ObjectType>();
-                ApplyMaterial(_previewObject, surface != null ? validPlacementMaterial : invalidPlacementMaterial); // Invalid surface
-                // Valid surface
+                ApplyMaterial(_previewObject, surface != null ? validPlacementMaterial : invalidPlacementMaterial);
             }
         }
 
-        // Object placement logic
-        if (Input.GetMouseButtonUp(0) && _selectedObjectIndex != -1 && _previewObject != null) // Place object on mouse button release
+        if (touch.phase == TouchPhase.Ended && _selectedObjectIndex != -1 && _previewObject != null)
         {
             PlaceObjectOnSurface();
         }
     }
 
-    // Called when the floor button is clicked
+
+    //..................Editor Testing ......................//
+
+
+#if UNITY_EDITOR
+    private void SimulateTouchInput()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Touch touch = new Touch
+            {
+                fingerId = 0,
+                position = Input.mousePosition,
+                phase = TouchPhase.Began
+            };
+            ProcessTouch(touch);
+        }
+
+        if (Input.GetMouseButton(0))
+        {
+            Touch touch = new Touch
+            {
+                fingerId = 0,
+                position = Input.mousePosition,
+                phase = TouchPhase.Moved
+            };
+            ProcessTouch(touch);
+        }
+
+        if (Input.GetMouseButtonUp(0))
+        {
+            Touch touch = new Touch
+            {
+                fingerId = 0,
+                position = Input.mousePosition,
+                phase = TouchPhase.Ended
+            };
+            ProcessTouch(touch);
+        }
+    }
+#endif
 
 
 
