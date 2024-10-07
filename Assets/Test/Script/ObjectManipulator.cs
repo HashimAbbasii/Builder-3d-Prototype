@@ -60,118 +60,110 @@ public class ObjectManipulator : MonoBehaviour
 
     private void Update()
     {
-        // Check if the mouse is clicked and it's not over any UI elements (rotation buttons or slider)
-        if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() && !IsClickOnRotationKnob() &&
-            isFloorSelected == false)
+        // Ensure that there's only one touch on the screen
+        if (Input.touchCount == 1)
         {
-            //Debug.Log("Hashim In");
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Touch touch = Input.GetTouch(0);
+            var ray = Camera.main.ScreenPointToRay(touch.position);
 
-            // Use Raycast with LayerMask to only interact with objects on the selectable layer
-            if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
+            // Handle touch start (equivalent to MouseButtonDown)
+            if (touch.phase == TouchPhase.Began && !IsClickOnAnyRotationButton() && !IsClickOnSlider() && !IsClickOnRotationKnob() && !isFloorSelected)
             {
-                //Debug.Log("Hashim If");
-                var selectedTransform = hit.transform;
-                Debug.Log("selected Transform" + selectedTransform.name);
-                // If the object is already selected and clicked again, start dragging
-                if (_isObjectSelected && selectedObject == selectedTransform)
+                // Use Raycast with LayerMask to only interact with objects on the selectable layer
+                if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
                 {
-                    // Enable dragging only if it's already selected
-                    _isDragging = true;
+                    var selectedTransform = hit.transform;
+                    Debug.Log("Selected Transform: " + selectedTransform.name);
+
+                    // If the object is already selected and touched again, start dragging
+                    if (_isObjectSelected && selectedObject == selectedTransform)
+                    {
+                        _isDragging = true; // Enable dragging
+                    }
+                    else
+                    {
+                        // If another object is touched, select the new one
+                        if (!hit.collider.gameObject.CompareTag("Floor"))
+                        {
+                            SetSelectedObject(selectedTransform);
+                            _isObjectSelected = true; // Mark object as selected
+                            _isDragging = false; // Don't drag yet, only select
+                        }
+                    }
                 }
                 else
                 {
+                    // If touch is outside of any object or UI, deselect the object
+                    DeselectObject();
+                    _isObjectSelected = false; // Reset selection state
+                }
+            }
 
-                    // If another object is clicked, select the new one
-                    if (!hit.collider.gameObject.CompareTag("Floor"))
+            // Handle floor selection
+            if (touch.phase == TouchPhase.Began && isFloorSelected == true)
+            {
+                if (Physics.Raycast(ray, out var hit) && hit.collider.gameObject.CompareTag("Floor"))
+                {
+                    Debug.Log("Floor Selected");
+                    var selectedTransform = hit.transform;
+                    SelectedObjectForFloor(selectedTransform);
+                    return;
+                }
+            }
+
+            // If an object is selected, handle its movement and rotation
+            if (selectedObject != null)
+            {
+                removeButton.SetActive(true);
+
+                // Move the object with the touch when dragging
+                if (touch.phase == TouchPhase.Moved && _isDragging)
+                {
+                    if (Physics.Raycast(ray, out var hit, Mathf.Infinity, placeableLayer))
                     {
-                        SetSelectedObject(selectedTransform);
-                        _isObjectSelected = true; // Mark the object as selected
-                        _isDragging = false; // Don't drag yet, only select
-                    }
+                        // Move object on the XZ plane (ignoring Y-axis)
+                        var newPosition = hit.point;
+                        selectedObject.parent.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
 
+                        if (hit.transform.parent?.GetComponent<SelectableObject>())
+                        {
+                            selectedObject.parent.transform.SetParent(hit.transform.parent);
+                        }
+                        else
+                        {
+                            selectedObject.parent.transform.parent = null;
+                        }
+
+                        // Update the distance calculation and line renderer
+                        if (distanceCalculator != null)
+                        {
+                            distanceCalculator.CalculateDistances(selectedObject.parent.gameObject);
+                        }
+                    }
+                }
+
+                // Rotate the object using arrow keys or other methods
+                if (Input.GetKey(KeyCode.LeftArrow))
+                {
+                    RotateObject(-rotationSpeed * Time.deltaTime); // Rotate left
+                }
+
+                if (Input.GetKey(KeyCode.RightArrow))
+                {
+                    RotateObject(rotationSpeed * Time.deltaTime); // Rotate right
+                }
+
+                // Stop dragging when the touch ends
+                if (touch.phase == TouchPhase.Ended)
+                {
+                    _isDragging = false; // Stop dragging
                 }
             }
             else
             {
-                //Debug.Log("Hashim Else");
-                // If click is outside of any object or UI, deselect the object
-                DeselectObject();
-                _isObjectSelected = false; // Reset selection state
+                removeButton.SetActive(false);
+                _isObjectSelected = false; // Reset selection state when no object is selected
             }
-        }
-
-        //...........Deal With Floor Button Selection ...............//
-        if (Input.GetMouseButtonDown(0) && isFloorSelected == true)
-        {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit) && hit.collider.gameObject.CompareTag("Floor"))
-            {
-                Debug.Log("Floor Selected");
-                var selectedTransform = hit.transform;
-                SelectedObjectForFloor(selectedTransform);
-                return;
-            }
-        }
-
-        // If an object is selected, handle its movement and rotation
-        if (selectedObject != null)
-        {
-            removeButton.SetActive(true);
-
-            // Move the object with the mouse when the left mouse button is held down
-            if (Input.GetMouseButton(0) && _isDragging)
-            {
-                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-                if (Physics.Raycast(ray, out var hit, Mathf.Infinity, placeableLayer))
-                {
-                    // Move object on the XZ plane (ignoring Y-axis)
-                    var newPosition = hit.point;
-                    selectedObject.parent.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
-
-                    if (hit.transform.parent?.GetComponent<SelectableObject>())
-                    {
-                        selectedObject.parent.transform.SetParent(hit.transform.parent);
-                    }
-                    else
-                    {
-                        selectedObject.parent.transform.parent = null;
-                    }
-
-                    // Update the distance calculation and line renderer
-                    if (distanceCalculator != null)
-                    {
-                        distanceCalculator.CalculateDistances(selectedObject.parent.gameObject);
-                    }
-                }
-            }
-            else if (selectedObject != null)
-            {
-
-            }
-
-            // Rotate the object using arrow keys or other methods
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                RotateObject(-rotationSpeed * Time.deltaTime); // Rotate left
-            }
-
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                RotateObject(rotationSpeed * Time.deltaTime); // Rotate right
-            }
-
-            // Stop dragging when the mouse button is released
-            if (Input.GetMouseButtonUp(0))
-            {
-                _isDragging = false; // Stop dragging
-            }
-        }
-        else
-        {
-            removeButton.SetActive(false);
-            _isObjectSelected = false; // Reset selection state when no object is selected
         }
     }
 
