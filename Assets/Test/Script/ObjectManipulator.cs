@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
+using Unity.VisualScripting;
 
 public class ObjectManipulator : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class ObjectManipulator : MonoBehaviour
             // Handle touch start (equivalent to MouseButtonDown)
             if (touch.phase == TouchPhase.Began && !IsClickOnSlider() && !IsClickOnRotationKnob() && !isFloorSelected /*&& !IsClickOnAnyRotationButton()*/)
             {
+                if(IsClickOnBottomPanel()) return;
                 // Use Raycast with LayerMask to only interact with objects on the selectable layer
                 if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
                 {
@@ -427,8 +429,16 @@ public class ObjectManipulator : MonoBehaviour
         scaleSlider.transform.parent.gameObject.SetActive(true);
         bottomPanel.SetActive(true);
     }
+   // public GameObject bottonPanel;
+    private bool IsClickOnBottomPanel()
+    {
+        Vector2 localMousePosition;
+        RectTransform bottomPanelRect = bottomPanel.GetComponent<RectTransform>();
 
-
+        // Check if the mouse click is within the bounds of the bottomPanel
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(bottomPanelRect, Input.mousePosition, null, out localMousePosition);
+        return bottomPanelRect.rect.Contains(localMousePosition);
+    }
 
     public void DeselectForFloor()
     {
