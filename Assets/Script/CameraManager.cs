@@ -15,8 +15,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float moveSpeed = 0.05f;   // Adjust this value to change movement speed
     [SerializeField] private float rotationSpeed = 5f; // Speed for camera rotation
     [SerializeField] private float zoomInSpeed = 0.05f;   // Speed of zooming in
-    [SerializeField] private float zoomOutSpeed = 0.2f;   // Speed of zooming out
-    [SerializeField] private float minZoom = 30.0f;    // Minimum zoom level
+    [SerializeField] private float zoomOutSpeed = 0.05f;   // Speed of zooming out
+    [SerializeField] private float minZoom = 20.0f;    // Minimum zoom level
     [SerializeField] private float maxZoom = 90.0f;   // Maximum zoom level
     [SerializeField] private float pitchTolerance = 1f; // Tolerance for pitching action
 
@@ -70,10 +70,19 @@ public class CameraManager : MonoBehaviour
             Touch touch2 = Input.GetTouch(2);
             RotateCameraWithThreeTouches(touch0, touch1, touch2);
         }
+       
         else
         {
             // Reset touch tracking if not using two fingers
         }
+
+#if UNITY_EDITOR
+        ZoomCameraEditor();
+#else
+ZoomCamera(touch0, touch1);
+
+# endif
+
     }
 
     // private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
@@ -91,7 +100,28 @@ public class CameraManager : MonoBehaviour
     //     // Update camera position
     //     mainCameraParent.transform.position = newPosition;
     // }
-    
+
+    private void ZoomCameraEditor()
+    {
+        // Simulate zoom using mouse scroll wheel
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+
+        // Check if there's any scroll input
+        if (Mathf.Abs(scrollInput) > 0f)
+        {
+            // Determine the zoom speed based on scroll direction
+            float speed = scrollInput > 0 ? zoomInSpeed : zoomOutSpeed;
+
+            // Zoom the camera's field of view based on scroll input
+            float newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView - scrollInput * speed;
+
+            // Clamp the field of view to the min and max values
+            mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
+        }
+    }
+
+
+
     private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
     {
         // Calculate the movement delta (average of the two touches' deltas)
