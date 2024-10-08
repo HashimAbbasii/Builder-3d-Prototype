@@ -45,35 +45,39 @@ public class CameraManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.touchCount == 2) // Handle two-finger touch for movement, rotation, and zoom
+        switch (Input.touchCount)
         {
-            Touch touch0 = Input.GetTouch(0);
-            Touch touch1 = Input.GetTouch(1);
+            // Handle two-finger touch for movement, rotation, and zoom
+            case 2:
+            {
+                var touch0 = Input.GetTouch(0);
+                var touch1 = Input.GetTouch(1);
 
-            // Call methods based on toggle states
-            //if (CameraPosition.isOn)
-            //{
-            MoveCameraWithTwoTouches(touch0, touch1);
-            //}
-            //if (CameraRotation.isOn)
-            //{
-            //    RotateCameraWithTwoTouches(touch0, touch1);
-            //}
-
-            // Handle zoom functionality
-            ZoomCamera(touch0, touch1);
-        }
-        else if (Input.touchCount == 3)
-        {
-            Touch touch0 = Input.GetTouch(0);
-            Touch touch1 = Input.GetTouch(1);
-            Touch touch2 = Input.GetTouch(2);
-            RotateCameraWithThreeTouches(touch0, touch1, touch2);
-        }
-       
-        else
-        {
-            // Reset touch tracking if not using two fingers
+                // Call methods based on toggle states
+                //if (CameraPosition.isOn)
+                //{
+                MoveCameraWithTwoTouches(touch0, touch1);
+                //}
+                //if (CameraRotation.isOn)
+                //{
+                //    RotateCameraWithTwoTouches(touch0, touch1);
+                //}
+                
+                // Handle zoom functionality
+                ZoomCamera(touch0, touch1);
+                break;
+            }
+            case 3:
+            {
+                var touch0 = Input.GetTouch(0);
+                var touch1 = Input.GetTouch(1);
+                var touch2 = Input.GetTouch(2);
+                RotateCameraWithThreeTouches(touch0, touch1, touch2);
+                break;
+            }
+            default:
+                // Reset touch tracking if not using two fingers
+                break;
         }
 
 #if UNITY_EDITOR
@@ -125,14 +129,14 @@ ZoomCamera(touch0, touch1);
     private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
     {
         // Calculate the movement delta (average of the two touches' deltas)
-        Vector2 touchDelta0 = touch0.deltaPosition;
-        Vector2 touchDelta1 = touch1.deltaPosition;
-        Vector2 averageDelta = (touchDelta0 + touchDelta1) / 2f;
+        var touchDelta0 = touch0.deltaPosition;
+        var touchDelta1 = touch1.deltaPosition;
+        var averageDelta = (touchDelta0 + touchDelta1) / 2f;
 
         // Calculate new camera position
-        Vector3 newPosition = mainCameraParent.transform.position;
-        newPosition += mainCameraParent.transform.right * -averageDelta.x * moveSpeed * Time.deltaTime; // Move along the camera's right axis
-        newPosition += mainCameraParent.transform.forward * -averageDelta.y * moveSpeed * Time.deltaTime; // Move along the camera's forward axis
+        var newPosition = mainCameraParent.transform.position;
+        newPosition += mainCameraParent.transform.right * (-averageDelta.x * moveSpeed * Time.deltaTime); // Move along the camera's right axis
+        newPosition += mainCameraParent.transform.forward * (-averageDelta.y * moveSpeed * Time.deltaTime); // Move along the camera's forward axis
         
         newPosition.x = Mathf.Clamp(newPosition.x, minXPosition, maxXPosition);
         newPosition.z = Mathf.Clamp(newPosition.z, minZPosition, maxZPosition);
@@ -172,6 +176,8 @@ ZoomCamera(touch0, touch1);
     //     previousTouch0Position = currentTouch0Position;
     //     previousTouch1Position = currentTouch1Position;
     // }
+    
+    
     
     private void RotateCameraWithThreeTouches(Touch touch0, Touch touch1, Touch touch2)
     {
@@ -214,30 +220,29 @@ ZoomCamera(touch0, touch1);
     private void ZoomCamera(Touch touch0, Touch touch1)
     {
         // Find the position in the previous frame of each touch
-        Vector2 touch1PrevPos = touch0.position - touch0.deltaPosition;
-        Vector2 touch2PrevPos = touch1.position - touch1.deltaPosition;
+        var touch1PrevPos = touch0.position - touch0.deltaPosition;
+        var touch2PrevPos = touch1.position - touch1.deltaPosition;
 
         // Find the magnitude of the vector (distance) between the touches in each frame
-        float prevTouchDeltaMag = (touch1PrevPos - touch2PrevPos).magnitude;
-        float touchDeltaMag = (touch0.position - touch1.position).magnitude;
+        var prevTouchDeltaMag = (touch1PrevPos - touch2PrevPos).magnitude;
+        var touchDeltaMag = (touch0.position - touch1.position).magnitude;
 
         // Find the difference in the distances between each frame
-        float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
+        var deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
         Debug.Log(deltaMagnitudeDiff);
 
         // Check if the delta magnitude difference exceeds the tolerance
-        if (Mathf.Abs(deltaMagnitudeDiff) > pitchTolerance)
-        {
-            // Determine the zoom speed based on whether we're zooming in or out
-            float speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
+        if (!(Mathf.Abs(deltaMagnitudeDiff) > pitchTolerance)) return;
+        
+        // Determine the zoom speed based on whether we're zooming in or out
+        var speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
 
-            // Zoom the camera's field of view based on the difference in distance between the touches
-            float newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
+        // Zoom the camera's field of view based on the difference in distance between the touches
+        var newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
 
-            // Clamp the field of view to the min and max values
-            mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
-        }
+        // Clamp the field of view to the min and max values
+        mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
     }
 
     // Called when the CameraPosition toggle is changed

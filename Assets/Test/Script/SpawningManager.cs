@@ -9,7 +9,6 @@ using TMPro;
 
 public class SpawningManager : MonoBehaviour
 {
-    public Text measurementText;
     public List<GameObject> modelPrefabs;
     public List<GameObject> furniturePrefabs;
     public List<GameObject> evidencePrefabs;
@@ -40,7 +39,7 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> floorsSpawned = new();
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
-    public TextMeshProUGUI _floorDimensionsText; // Reference to your UI Text element
+    // public TextMeshProUGUI _floorDimensionsText; // Reference to your UI Text element
 
     // private LineRenderer xLineRenderer;
     // private LineRenderer zLineRenderer;
@@ -299,7 +298,6 @@ public class SpawningManager : MonoBehaviour
                 _currentFloor = Instantiate(floorPrefab, _initialMousePos, Quaternion.identity);
                 floorsSpawned.Add(_currentFloor);
                 floorMaterialChanged = _currentFloor;
-                _floorDimensionsText = _currentFloor.GetComponentInChildren<TextMeshProUGUI>();
             }
         }
 
@@ -726,123 +724,5 @@ public class SpawningManager : MonoBehaviour
             Debug.LogWarning("Invalid materialIndex or floor materials not set.");
         }
     }
-
-    // private void UpdateFloorDimensionsText(Vector3 start, Vector3 end)
-    // {
-    //     if (start != end)
-    //     {
-    //         // Get the current scale of the floor based on drag
-    //         Vector3 actualScale = _currentFloor.transform.localScale;
-    //         
-    //         
-    //
-    //         // Calculate dynamic scale based on drag for x and z axes
-    //         float actualScaleX = Mathf.Abs(end.x - start.x); // Dynamic calculation based on drag
-    //         float actualScaleZ = Mathf.Abs(end.z - start.z); // Dynamic calculation based on drag
-    //
-    //         // Ensure the x-axis length starts at 1
-    //         float displayScaleX = Mathf.Max(1f, actualScaleX); // Set the minimum text value to 1
-    //         float displayScaleZ = actualScaleZ;
-    //       
-    //
-    //         // Convert to feet (if needed)
-    //         float lengthInFeetX = displayScaleX;
-    //         float lengthInFeetZ = displayScaleZ;
-    //
-    //         // Update the UI text, ensuring the x-axis starts at 1
-    //         xDimensionText.text = $"X Length: {displayScaleX:F2} m / {lengthInFeetX:F2} ft";
-    //         zDimensionText.text = $"Z Length: {displayScaleZ:F2} m / {lengthInFeetZ:F2} ft";
-    //        
-    //         // Update the positions for the dimension text labels
-    //         Vector3 midPointX = new Vector3((start.x + end.x) / 2, 0f, start.z);
-    //         Vector3 midPointZ = new Vector3(start.x+1f , 0.1f, (start.z + end.z) / 2);
-    //         xDimensionText.transform.position = midPointX;
-    //       
-    //         zDimensionText.transform.position = midPointZ;
-    //     }
-    //     else
-    //     {
-    //         // Clear the text when dragging is finished or not happening
-    //         xDimensionText.text = "";
-    //         zDimensionText.text = "";
-    //     }
-    // }
-
-
-
-
-    // private void UpdateFloorDimensionsTextForWall(Vector3 start, Vector3 end)
-    // {
-    //     if (start != end)
-    //     {
-    //         if (_wallAlongZAxis == false)
-    //         {
-    //
-    //             Debug.Log("Wall Text Update");
-    //             // Get actual scale of the floor
-    //             Vector3 actualScale = _currentWall.transform.localScale;
-    //
-    //             float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
-    //
-    //
-    //             // Convert to feet (optional)
-    //             float lengthInFeetX = actualScaleX;
-    //
-    //            // float lengthInFeetX = actualScaleX;
-    //             RectTransform rectTransform = wallDimensionText.GetComponent<RectTransform>();
-    //             rectTransform.transform.rotation = Quaternion.Euler(90, 0, 0);
-    //
-    //
-    //             // Update UI with actual dimensions
-    //             wallDimensionText.text = $"X Length: {actualScaleX:F2} m / {lengthInFeetX:F2} ft";
-    //
-    //
-    //             // Update positions for the text
-    //             Vector3 midPointX = new Vector3((start.x + end.x) / 2, 2f, start.z - 0f);
-    //
-    //             wallDimensionText.transform.position = midPointX;
-    //         }
-    //         else
-    //         {
-    //             Vector3 actualScale = _currentWall.transform.localScale;
-    //
-    //             float actualScaleX = Mathf.Abs(actualScale.x); // Actual scale on X-axis
-    //
-    //
-    //             // Convert to feet (optional)
-    //             float lengthInFeetX = actualScaleX;
-    //             RectTransform rectTransform = wallDimensionText.GetComponent<RectTransform>();
-    //             rectTransform.transform.rotation= Quaternion.Euler(90,0,90);
-    //             // Update UI with actual dimensions
-    //             wallDimensionText.text = $"X Length: {actualScaleX:F2} m / {lengthInFeetX:F2} ft";
-    //
-    //
-    //             // Update positions for the text
-    //             Vector3 midPointX = new Vector3((start.x + end.x)/2.2f , 1f, start.z - 1.24f);
-    //
-    //             wallDimensionText.transform.position = midPointX;
-    //
-    //         }
-    //        
-    //     }
-    //     else
-    //     {
-    //        ////////////// Clear the text when not dragging
-    //         wallDimensionText.text = "";
-    //
-    //     }
-    // }
-
-
-
-    private IEnumerator HideFloorDimensionsTextAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        if (_floorDimensionsText != null)
-        {
-            _floorDimensionsText.text = ""; // Clear text after delay
-        }
-    }
-
 
 }
