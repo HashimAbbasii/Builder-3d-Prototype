@@ -148,7 +148,7 @@ public class EssentialDistanceManager : MonoBehaviour
 						{
 							_endPointx.position = new Vector3(_startPointx.position.x, _startPointx.position.y, hit.point.z);
 						}
-                        //_endPointz.position = new Vector3(_startPointz.position.x, _startPointz.position.y, hit.point.z);
+                       
                     }
                 }
             }

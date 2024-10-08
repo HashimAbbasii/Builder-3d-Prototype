@@ -57,24 +57,7 @@ public class ObjectDistanceHandler : MonoBehaviour
 				to.gameObject.name = "LineEndPoint";
 			}
 
-			// GameObject mwParent = new GameObject("Line");
-			//
-			// mwParent.transform.SetParent(mw.lineParent);
-			// mwParent.transform.localPosition = Vector3.zero;
-			// mwParent.transform.localRotation = Quaternion.identity;
-			// mwParent.transform.localScale = Vector3.one;
-			//
-			// foreach (var child in mw.lineParent.GetComponentsInChildren<Transform>().Where(t=>t.name != "Line"))
-			// {
-			// 	child.parent = mwParent.transform;
-			// }
-			//
-			// mwParent.transform.localPosition = Vector3.zero;
-			// mwParent.transform.localRotation = Quaternion.identity;
-			// mwParent.transform.localScale = Vector3.one;
-
 			
-			// mwParent.transform.parent = transform;
 			
 			mw.lineRender.transform.parent = mwParent.transform;
 			mw.linkTexts[0].transform.parent.parent = mwParent.transform;

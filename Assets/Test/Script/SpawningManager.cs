@@ -39,23 +39,7 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> floorsSpawned = new();
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
-    // public TextMeshProUGUI _floorDimensionsText; // Reference to your UI Text element
-
-    // private LineRenderer xLineRenderer;
-    // private LineRenderer zLineRenderer;
-    // private LineRenderer wallLineRenderer;
-    //
-    //
-    // public TextMeshProUGUI xDimensionText; // Text for X-axis dimensions
-    // public TextMeshProUGUI zDimensionText; // Text for Z-axis dimensions
-    // public TextMeshProUGUI wallDimensionText;
-    //
-    // public Canvas uiCanvas; // Reference to the Canvas
-    // public Canvas uiCanvasZaxis;
-    // public Canvas uiCanvasWall;
-
-    // [FormerlySerializedAs("lineDistanceCreator")] public EssentialDistanceManager essentialDistanceManager;
-    // public GameObject lineHandler;
+ 
 
 
     [Space(5)]
@@ -66,49 +50,13 @@ public class SpawningManager : MonoBehaviour
     {
 
 
-        //if (uiCanvas == null)
-        //{
-        //    // Find or create a Canvas in the scene
-        //    uiCanvas = FindObjectOfType<Canvas>();
-        //    if (uiCanvas == null)
-        //    {
-        //        uiCanvas = new GameObject("UI Canvas").AddComponent<Canvas>();
-        //        uiCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        //        uiCanvas.gameObject.AddComponent<CanvasScaler>();
-        //        uiCanvas.gameObject.AddComponent<GraphicRaycaster>();
-        //    }
-        //}
+       
 
         // Create and configure the material for LineRenderers
         Material transparentMaterial = new Material(lineShader);
         transparentMaterial.color = new Color(1, 0, 0, 0.2f); // Red color with 50% transparency for XLine
-                                                              // X-axis line (representing X-scale)
-        // // xLineRenderer = new GameObject("XLine").AddComponent<LineRenderer>();
-        // xLineRenderer.startWidth = 0.025f;
-        // xLineRenderer.endWidth = 0.025f;
-        // xLineRenderer.material = transparentMaterial;
-
-        // // Z-axis line (representing Z-scale)
-        // zLineRenderer = new GameObject("ZLine").AddComponent<LineRenderer>();
-        // zLineRenderer.startWidth = 0.025f;
-        // zLineRenderer.endWidth = 0.025f;
-        // zLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
-
-
-        // wallLineRenderer = new GameObject("WallLine").AddComponent<LineRenderer>();
-        // wallLineRenderer.startWidth = 0.025f;
-        // wallLineRenderer.endWidth = 0.025f;
-        // wallLineRenderer.material = new Material(transparentMaterial) { color = new Color(0, 0, 1, 0.2f) }; // Blue color with 50% transparency
-        //
-        // xLineRenderer.positionCount = 2;
-        // zLineRenderer.positionCount = 2;
-        // wallLineRenderer.positionCount = 0;
-        //
-        // // Initially disable the lines
-        // xLineRenderer.enabled = false;
-        // zLineRenderer.enabled = false;
-        // wallLineRenderer.enabled = false;
-
+                                                             
+       
 
 
 
@@ -130,101 +78,7 @@ public class SpawningManager : MonoBehaviour
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
         SetupLineRenderers(); // Initialize the LineRenderers
 
-        // xDimensionText = new GameObject("XDimensionText").AddComponent<TextMeshProUGUI>();
-        // zDimensionText = new GameObject("ZDimensionText").AddComponent<TextMeshProUGUI>();
-        // wallDimensionText = new GameObject("WallDimensionText").AddComponent<TextMeshProUGUI>();
-
-        //......Set the Value By Default.........................................//
-        //
-
-        // xDimensionText.transform.SetParent(uiCanvas.transform, false);
-        // uiCanvas.transform.SetParent(xLineRenderer.transform, false);
-        //
-
-        // Vector2 currentPosition = xDimensionText.rectTransform.anchoredPosition;
-        // RectTransform rectTransform = xDimensionText.rectTransform;
-
-        // Access width and height
-        // float width = 10f;
-        // float height = 10f;
-        // rectTransform.sizeDelta = new Vector2(width, height);
-        //
-        //
-        // currentPosition.x = 0; // Set x to 0
-        // currentPosition.y = 1.06f; // Set y to 0
-        //
-        //
-        //
-        // xDimensionText.rectTransform.anchoredPosition = currentPosition;
-        //
-
-        // RectTransform rectTransformX = xDimensionText.rectTransform;
-        // rectTransformX.rotation = Quaternion.Euler(90, 0, 0);
-        //
-        // //..........................;;;;............................//
-        //
-        //
-        //
-        // zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
-        // uiCanvasZaxis.transform.SetParent(zLineRenderer.transform, false);
-        //
-        // //.....................Set Z Dimension...........................//
-        //
-        // Vector2 currentPositionZ = zDimensionText.rectTransform.anchoredPosition;
-        // RectTransform rectTransformZ = zDimensionText.rectTransform;
-        //
-        //
-        // float widthZ = 10f;
-        // float heightZ = 10f;
-        // rectTransformZ.sizeDelta = new Vector2(widthZ, heightZ);
-        //
-        //
-        // currentPositionZ.x = 5; // Set x to 0
-        // currentPositionZ.y = 1.06f; // Set y to 0
-        //
-        // zDimensionText.rectTransform.anchoredPosition = currentPositionZ;
-        // RectTransform rectTransformZe = zDimensionText.rectTransform;
-        // rectTransformZe.rotation = Quaternion.Euler(90, -90, 0);
-        //
-        //
-        //
-        //
-        // zDimensionText.transform.SetParent(uiCanvasZaxis.transform, false);
-        //
-        // //.........................,,,....................................//
-        // wallDimensionText.transform.SetParent(uiCanvasWall.transform, false);
-        // uiCanvasWall.transform.SetParent(wallLineRenderer.transform, false);
-        //
-        //
-        // Vector2 currentPositionwall = wallDimensionText.rectTransform.anchoredPosition;
-        // RectTransform rectTransformwall = wallDimensionText.rectTransform;
-        //
-        // // Access width and height
-        // float widthwall = 10f;
-        // float heightwall = 10f;
-        // wallDimensionText.rectTransform.sizeDelta = new Vector2(widthwall, heightwall);
-        //
-        //
-        // currentPositionwall.x = 0; // Set x to 0
-        // currentPositionwall.y = 1.06f; // Set y to 0
-        //
-        //
-        //
-        // wallDimensionText.rectTransform.anchoredPosition = currentPositionwall;
-        //
-        //
-        // RectTransform rectTransformWall = wallDimensionText.rectTransform;
-        // rectTransformWall.rotation = Quaternion.Euler(90, 0, 0);
-        //
-        //
-        //
-        // // Set text properties (position, font size, color, etc.)
-        // xDimensionText.fontSize = 1;
-        // xDimensionText.color = Color.red;
-        // zDimensionText.fontSize = 1;
-        // zDimensionText.color = Color.blue;
-        // wallDimensionText.fontSize = 1;
-        // wallDimensionText.color = Color.gray;
+       
 
         for (var i = 0; i < modelPrefabs.Count(); i++)
         {
@@ -317,8 +171,7 @@ public class SpawningManager : MonoBehaviour
                 float actualScaleX = Mathf.Abs(scale.x);  // Adjust scale calculation
                 float actualScaleZ = Mathf.Abs(scale.z);
 
-                // Debug.Log("Xactual Size: " + actualScaleX);
-                // Debug.Log("Zactual Size: " + actualScaleZ);
+               
             }
         }
 
@@ -440,33 +293,11 @@ public class SpawningManager : MonoBehaviour
     }
 #endif
     
-    // public void DeleteLinesForAll()
-    // {
-    //     MeasureLine_WorldCanvas.DeleteAllLines();
-    //     ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);    
-    // }
-
-    
-    
-    // private void UpdateLinePositions(Vector3 start, Vector3 end)
-    // {
-    //     // X-axis line
-    //     xLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
-    //     xLineRenderer.SetPosition(1, new Vector3(end.x, 0.01f, start.z)); // Draw along X-axis
-    //
-    //     // Z-axis line
-    //     zLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
-    //     zLineRenderer.SetPosition(1, new Vector3(start.x, 0.01f, end.z)); // Draw along Z-axis
-    // }
-    // private void UpdateLineForWall(Vector3 start, Vector3 end)
-    // {
-    //     wallLineRenderer.SetPosition(0, new Vector3(start.x, 0.01f, start.z));
-    //     wallLineRenderer.SetPosition(1, new Vector3(end.x, 0.01f, start.z)); // Draw along X-axis
-    // }
+   
 
     public void OnFloorButtonClick()
     {
-        //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+      
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
         _isCreatingFloor = true;
@@ -486,7 +317,7 @@ public class SpawningManager : MonoBehaviour
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 2;
 
-        //  ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+      
         _isCreatingWall = true;
         _isCreatingFloor = false; // Ensure floor creation is not active
         if (_previewObject != null)
@@ -527,7 +358,7 @@ public class SpawningManager : MonoBehaviour
             return;
         }
         
-        // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
+      
         // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Count)
         {
@@ -592,7 +423,7 @@ public class SpawningManager : MonoBehaviour
                         // Instantiate the object (e.g., knife) at the calculated position
                         var placedObject = Instantiate(prefab, placePosition1, Quaternion.identity);
 
-                        //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
+                     
 
                         modelsSpawned.Add(placedObject);
 
@@ -620,7 +451,7 @@ public class SpawningManager : MonoBehaviour
                         // Instantiate the object (e.g., knife) at the calculated position
                         var placedObject = Instantiate(prefab, placePosition2, Quaternion.identity);
 
-                        //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
+                       
                         modelsSpawned.Add(placedObject);
 
                         // Reset the material of the placed object to the original material
