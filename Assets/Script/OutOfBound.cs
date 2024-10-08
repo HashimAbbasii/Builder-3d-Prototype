@@ -18,16 +18,16 @@ public class OutOfBound : MonoBehaviour
         }
     }
 
-    private void OnMouseUp()
-    {
-        if (!EventSystem.current.IsPointerOverGameObject())
-        {
-            Debug.Log("OnMouseUp If");
-        }
-        else
-        {
-            Debug.Log("OnMouseUp Else");
-        }
-    }
+    //private void OnMouseUp()
+    //{
+    //    if (!EventSystem.current.IsPointerOverGameObject())
+    //    {
+    //        Debug.Log("OnMouseUp If");
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("OnMouseUp Else");
+    //    }
+    //}
     
 }
