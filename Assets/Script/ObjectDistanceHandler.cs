@@ -17,6 +17,20 @@ public class ObjectDistanceHandler : MonoBehaviour
 	public void ToggleScript()
 	{
 		enabled = !enabled;
+		if (!enabled)
+		{
+			foreach (var line in lineCanvasList) 
+			{ 
+				line.enabled = false;
+			}
+		}
+		else
+		{
+            foreach (var line in lineCanvasList)
+            {
+				line.enabled = true;
+			}
+		}
 	}
 	
 
