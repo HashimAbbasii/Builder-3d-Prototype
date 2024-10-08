@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +25,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float maxXPosition = 8f;        // Maximum X-axis position
     [SerializeField] private float minZPosition = -10f;      // Minimum Z-axis position
 
+    public TMP_Text tempText;
     
     private Vector3 startPos;                  // Initial camera position
     private Quaternion startRot;                  // Initial camera position
@@ -144,33 +146,39 @@ public class CameraManager : MonoBehaviour
     private void RotateCameraWithThreeTouches(Touch touch0, Touch touch1, Touch touch2)
     {
         // Calculate the current positions of the three touches
-        Vector2 currentTouch0Position = touch0.position;
-        Vector2 currentTouch1Position = touch1.position;
-        Vector2 currentTouch2Position = touch2.position;
+        var currentTouch0Position = touch0.position;
+        var currentTouch1Position = touch1.position;
+        var currentTouch2Position = touch2.position;
 
         // Calculate the previous positions of the three touches
-        Vector2 previousTouch0Position = touch0.position - touch0.deltaPosition;
-        Vector2 previousTouch1Position = touch1.position - touch1.deltaPosition;
-        Vector2 previousTouch2Position = touch2.position - touch2.deltaPosition;
+        var previousTouch0Position = touch0.position - touch0.deltaPosition;
+        var previousTouch1Position = touch1.position - touch1.deltaPosition;
+        var previousTouch2Position = touch2.position - touch2.deltaPosition;
 
         // Calculate the difference between the previous and current touch positions
-        Vector2 touch0Delta = currentTouch0Position - previousTouch0Position;
-        Vector2 touch1Delta = currentTouch1Position - previousTouch1Position;
-        Vector2 touch2Delta = currentTouch2Position - previousTouch2Position;
+        var touch0Delta = currentTouch0Position - previousTouch0Position;
+        var touch1Delta = currentTouch1Position - previousTouch1Position;
+        var touch2Delta = currentTouch2Position - previousTouch2Position;
 
         // Calculate the average touch delta
-        Vector2 averageDelta = (touch0Delta + touch1Delta + touch2Delta) / 3f;
+        var averageDelta = (touch0Delta + touch1Delta + touch2Delta) / 3f;
 
-        // Calculate the rotation delta
-        Vector3 rotationDelta = new Vector3(-averageDelta.y, averageDelta.x, 0f) * rotationSpeed * Time.deltaTime;
+        // Rotate the camera based on the average delta
+        if (Mathf.Abs(averageDelta.x) > Mathf.Abs(averageDelta.y))
+        {
+            // Horizontal movement, rotate around Y axis
+            mainCameraParent.transform.Rotate(Vector3.up, averageDelta.x * rotationSpeed * Time.deltaTime, Space.World);
+        }
+        else
+        {
+            // Vertical movement, rotate around X axis
+            var newXRotation = mainCameraParent.transform.eulerAngles.x - averageDelta.y * rotationSpeed * Time.deltaTime;
+            newXRotation = Mathf.Clamp(newXRotation, 16, 90);
+            mainCameraParent.transform.eulerAngles = new Vector3(newXRotation, mainCameraParent.transform.eulerAngles.y, mainCameraParent.transform.eulerAngles.z);
+            tempText.text = mainCameraParent.transform.eulerAngles.ToString();
+        }
 
-        // Rotate the camera based on the rotation delta
-        mainCameraParent.transform.Rotate(rotationDelta, Space.Self);
 
-        // Store the current touch positions for the next frame
-        previousTouch0Position = currentTouch0Position;
-        previousTouch1Position = currentTouch1Position;
-        previousTouch2Position = currentTouch2Position;
     }
 
     private void ZoomCamera(Touch touch0, Touch touch1)
