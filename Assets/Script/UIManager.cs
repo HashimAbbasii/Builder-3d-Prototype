@@ -28,10 +28,12 @@ public class UIManager : MonoBehaviour
     {
         GamePanelPause.gameObject.SetActive(false);
     }
+    
     public void Restart(int index)
     {
         SceneManager.LoadScene(index);
     }
+    
     public void Exit()
     {
         // Quit the application
@@ -42,5 +44,12 @@ public class UIManager : MonoBehaviour
             // If running in a standalone build
             Application.Quit();
 #endif
+    }
+
+    public void PauseButton()
+    {
+        GamePanelPause.SetActive(true);
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
+        ManagerHandler.Instance.spawningManager.Pausing();
     }
 }

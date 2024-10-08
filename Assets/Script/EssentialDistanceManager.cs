@@ -155,7 +155,7 @@ public class EssentialDistanceManager : MonoBehaviour
 
 		if (Input.GetKeyUp(KeyCode.Mouse0))
 		{
-			//Invoke(nameof(DeleteLines), 1f);
+			Invoke(nameof(DeleteLines), 0.5f);
 		}
 		
 	}
@@ -163,5 +163,6 @@ public class EssentialDistanceManager : MonoBehaviour
 	private void DeleteLines()
 	{
 		MeasureLine_WorldCanvas.DeleteAllLines();
+		gameObject.SetActive(false);    
 	}
 }

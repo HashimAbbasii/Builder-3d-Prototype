@@ -404,12 +404,12 @@ public class ObjectManipulator : MonoBehaviour
     public void DeselectObject()
     {
         Debug.Log("Deseleted");
-        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
-        {
-            Destroy(line.gameObject);
-        }
-
-        ManagerHandler.Instance.calculateDistance.lines.Clear();
+        // foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
+        // {
+        //     Destroy(line.gameObject);
+        // }
+        //
+        // ManagerHandler.Instance.calculateDistance.lines.Clear();
 
         RevertMaterial(); // Revert the material
         if (selectedObject)
@@ -439,12 +439,12 @@ public class ObjectManipulator : MonoBehaviour
     {
         if (selectedObject == null) return;
 
-        foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
-        {
-            Destroy(line.gameObject);
-        }
-
-        ManagerHandler.Instance.calculateDistance.lines.Clear();
+        // foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
+        // {
+        //     Destroy(line.gameObject);
+        // }
+        //
+        // ManagerHandler.Instance.calculateDistance.lines.Clear();
 
         // ManagerHandler.Instance.spawningManager.modelsSpawned.Remove(selectedObject.parent.gameObject);
         Destroy(selectedObject.parent.gameObject);

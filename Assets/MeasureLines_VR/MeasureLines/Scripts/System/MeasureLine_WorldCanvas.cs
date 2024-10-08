@@ -100,7 +100,7 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
     public bool AxisY_N = true;
     public bool AxisZ_P = true;
     public bool AxisZ_N = true;
-    private Transform lineParent;
+    public Transform lineParent;
     public float maxDistance = 100f;
     public LayerMask layerMask = -1;
     private Transform axisDummy = null;
@@ -216,6 +216,8 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
 	    }
 	    
 	     //Del all childs of lineCollection
+	     if (GameObject.Find("lineCollection") == null) return; 
+	     
 	     var lineCollection = GameObject.Find("lineCollection").transform;
 	     var childObjects = new List<GameObject>();
 	    

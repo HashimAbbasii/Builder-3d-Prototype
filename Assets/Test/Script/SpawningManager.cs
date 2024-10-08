@@ -317,8 +317,8 @@ public class SpawningManager : MonoBehaviour
                 float actualScaleX = Mathf.Abs(scale.x);  // Adjust scale calculation
                 float actualScaleZ = Mathf.Abs(scale.z);
 
-                Debug.Log("Xactual Size: " + actualScaleX);
-                Debug.Log("Zactual Size: " + actualScaleZ);
+                // Debug.Log("Xactual Size: " + actualScaleX);
+                // Debug.Log("Zactual Size: " + actualScaleZ);
             }
         }
 
@@ -327,7 +327,7 @@ public class SpawningManager : MonoBehaviour
             _isCreatingFloor = false;
             _currentFloor = null;
 
-            Invoke(nameof(DeleteLinesForAll), 0.3f);
+            // Invoke(nameof(DeleteLinesForAll), 0.3f);
         }
 
         // Wall creation logic
@@ -375,7 +375,7 @@ public class SpawningManager : MonoBehaviour
             _isCreatingWall = false;
             _currentWall = null;
 
-            Invoke(nameof(DeleteLinesForAll), 0.3f);
+            // Invoke(nameof(DeleteLinesForAll), 0.3f);
         }
 
         // Preview object logic
@@ -439,15 +439,15 @@ public class SpawningManager : MonoBehaviour
         }
     }
 #endif
+    
+    // public void DeleteLinesForAll()
+    // {
+    //     MeasureLine_WorldCanvas.DeleteAllLines();
+    //     ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);    
+    // }
 
-
-
-    public void DeleteLinesForAll()
-    {
-        MeasureLine_WorldCanvas.DeleteAllLines();
-        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);    
-    }
-
+    
+    
     // private void UpdateLinePositions(Vector3 start, Vector3 end)
     // {
     //     // X-axis line
@@ -484,7 +484,6 @@ public class SpawningManager : MonoBehaviour
     public void OnWallButtonClick()
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
-
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 2;
 
         //  ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
@@ -498,14 +497,37 @@ public class SpawningManager : MonoBehaviour
         _selectedObjectIndex = -1;
     }
 
+    public void Pausing()
+    {
+        _isCreatingWall = false;
+        _isCreatingFloor = false;
+        if (_previewObject != null)
+        {
+            Destroy(_previewObject);
+        }
+        _previewObject = null;
+        _selectedObjectIndex = -1;
+    }
+    
     // Called when an object button (like Chair, Table) is clicked
     public void SelectObject(int objectIndex)
     {
         _isCreatingWall = false;
         _isCreatingFloor = false;
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
 
-       // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
-        Debug.Log("SelectObject");
+        if (objectIndex == _selectedObjectIndex)
+        {
+            if (_previewObject != null)
+            {
+                Destroy(_previewObject);
+            }
+            _previewObject = null;
+            _selectedObjectIndex = -1;
+            return;
+        }
+        
+        // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Count)
         {
@@ -639,10 +661,6 @@ public class SpawningManager : MonoBehaviour
                         _previewObject = null; // Reset previewObject to avoid repeated placements
                         _selectedObjectIndex = -1; // Reset selection after placement
                     }
-
-
-
-
                     break;
 
                 case SurfaceType.Models:
