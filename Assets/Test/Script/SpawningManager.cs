@@ -750,7 +750,11 @@ public class SpawningManager : MonoBehaviour
     //to change the object model
     public void ChangeModel(int number)
     {
-       
+       foreach(var models in selectableObject.ModelVariants)
+       {
+            models.SetActive(false);
+       }
+        selectableObject.ModelVariants[number].SetActive(true);
     }
 
 }
