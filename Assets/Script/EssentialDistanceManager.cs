@@ -103,6 +103,7 @@ public class EssentialDistanceManager : MonoBehaviour
 							if (_lastHitTransform != null)
 							{
 								MeasureLine_WorldCanvas.EndDrawLine();
+								//Hashim Here
 								_lastHitTransform = null;
 							}
 							else
