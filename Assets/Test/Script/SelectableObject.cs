@@ -10,7 +10,7 @@ public class SelectableObject : ObjectType
     public bool canBePlacedOnObject;
     public float heightOffset = 0.0f; // The height offset to place objects on this surface
     public Renderer objectRenderer;
-    
+    public List<GameObject> ModelVariants;
     public Vector3 OriginalScale { get; private set; }
 
 

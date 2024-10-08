@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 2402936684389165097}
   - component: {fileID: 2402936684390132457}
   - component: {fileID: 4307339904682994838}
-  - component: {fileID: 659977757956640930}
   m_Layer: 11
   m_Name: Old Chair
   m_TagString: Floor
@@ -99,18 +98,3 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 5acd2d82c9358bb4a89ba07849d89c81, type: 3}
---- !u!114 &659977757956640930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2402936684392395817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d1014ce0feb73fe4daf1ad48fd9be41c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  surfaceType: 3
-  canPlaceObjectsOnIt: 1
-  heightOffset: 0.1
