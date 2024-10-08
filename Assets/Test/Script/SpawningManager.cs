@@ -58,6 +58,9 @@ public class SpawningManager : MonoBehaviour
     // public GameObject lineHandler;
 
 
+    [Space(5)]
+    private SelectableObject selectableObject;
+
 
     private void SetupLineRenderers()
     {
@@ -723,6 +726,13 @@ public class SpawningManager : MonoBehaviour
         {
             Debug.LogWarning("Invalid materialIndex or floor materials not set.");
         }
+    }
+
+
+    //to change the object model
+    public void ChangeModel(int number)
+    {
+       
     }
 
 }
