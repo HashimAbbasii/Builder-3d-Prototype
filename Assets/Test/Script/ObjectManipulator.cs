@@ -20,9 +20,6 @@ public class ObjectManipulator : MonoBehaviour
 
     // Store a list of RectTransforms for the rotation buttons
     public RectTransform rotationKnob;
-    public List<Button> rotationButtons = new();
-    public RectTransform rotationImage;
-    private List<RectTransform> _rotationButtonRects = new();
     public bool _isObjectSelected; // Track if the object is currently selected
     public bool isFloorSelected = false;
 
@@ -36,12 +33,6 @@ public class ObjectManipulator : MonoBehaviour
     public GameObject TableChangePanel;
     private void Start()
     {
-        // Get the RectTransform of each rotation button and store it
-        // foreach (var button in rotationButtons)
-        // {
-        //     _rotationButtonRects.Add(button.GetComponent<RectTransform>());
-        // }
-
         // Get the RectTransform of the slider to detect interaction
         _sliderRect = scaleSlider.GetComponent<RectTransform>();
 
@@ -67,7 +58,7 @@ public class ObjectManipulator : MonoBehaviour
             var ray = Camera.main.ScreenPointToRay(touch.position);
 
             // Handle touch start (equivalent to MouseButtonDown)
-            if (touch.phase == TouchPhase.Began && !IsClickOnAnyRotationButton() && !IsClickOnSlider() && !IsClickOnRotationKnob() && !isFloorSelected)
+            if (touch.phase == TouchPhase.Began && !IsClickOnSlider() && !IsClickOnRotationKnob() && !isFloorSelected /*&& !IsClickOnAnyRotationButton()*/)
             {
                 // Use Raycast with LayerMask to only interact with objects on the selectable layer
                 if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
@@ -327,25 +318,27 @@ public class ObjectManipulator : MonoBehaviour
 
 
     // Check if the click is on any rotation button by checking mouse position against the RectTransforms
-    private bool IsClickOnAnyRotationButton()
-    {
-        Vector2 localMousePosition;
-
-        // Loop through each rotation button and check if the mouse is over any
-        foreach (var rectTransform in _rotationButtonRects)
-        {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null,
-                out localMousePosition);
-            if (rectTransform.rect.Contains(localMousePosition))
-            {
-                return true; // Mouse is over one of the rotation buttons
-            }
-        }
-
-        return false; // Mouse is not over any rotation buttons
-    }
+    // private bool IsClickOnAnyRotationButton()
+    // {
+    //     Vector2 localMousePosition;
+    //
+    //     // Loop through each rotation button and check if the mouse is over any
+    //     foreach (var rectTransform in _rotationButtonRects)
+    //     {
+    //         RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null,
+    //             out localMousePosition);
+    //         if (rectTransform.rect.Contains(localMousePosition))
+    //         {
+    //             return true; // Mouse is over one of the rotation buttons
+    //         }
+    //     }
+    //
+    //     return false; // Mouse is not over any rotation buttons
+    // }
 
     // Check if the click is on the slider by checking mouse position against the slider RectTransform
+    
+    
     private bool IsClickOnSlider()
     {
         Vector2 localMousePosition;

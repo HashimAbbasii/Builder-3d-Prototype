@@ -14,6 +14,11 @@ public class ObjectDistanceHandler : MonoBehaviour
 	private bool prevIsDrawLine = true;
 	private bool showSubAxis = false;
 
+	public void ToggleScript()
+	{
+		enabled = !enabled;
+	}
+	
 
 	[ContextMenu("ListLines")]
 	public void ListLinesFunction()

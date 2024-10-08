@@ -54,8 +54,8 @@ public class SpawningManager : MonoBehaviour
     // public Canvas uiCanvasZaxis;
     // public Canvas uiCanvasWall;
 
-    [FormerlySerializedAs("lineDistanceCreator")] public EssentialDistanceManager essentialDistanceManager;
-    public GameObject lineHandler;
+    // [FormerlySerializedAs("lineDistanceCreator")] public EssentialDistanceManager essentialDistanceManager;
+    // public GameObject lineHandler;
 
 
 
@@ -124,7 +124,7 @@ public class SpawningManager : MonoBehaviour
 
     private void Start()
     {
-        lineHandler.gameObject.SetActive(false);
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
         SetupLineRenderers(); // Initialize the LineRenderers
 
         // xDimensionText = new GameObject("XDimensionText").AddComponent<TextMeshProUGUI>();
@@ -442,7 +442,7 @@ public class SpawningManager : MonoBehaviour
     public void DeleteLinesForAll()
     {
         MeasureLine_WorldCanvas.DeleteAllLines();
-        lineHandler.gameObject.SetActive(false);    
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);    
     }
 
     // private void UpdateLinePositions(Vector3 start, Vector3 end)
@@ -464,8 +464,8 @@ public class SpawningManager : MonoBehaviour
     public void OnFloorButtonClick()
     {
         //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
-        lineHandler.gameObject.SetActive(true);
-        essentialDistanceManager.lines = 4;
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
         _isCreatingFloor = true;
         _isCreatingWall = false; // Ensure wall creation is not active
         if (_previewObject != null)
@@ -480,9 +480,9 @@ public class SpawningManager : MonoBehaviour
     // Called when the wall button is clicked
     public void OnWallButtonClick()
     {
-        lineHandler.gameObject.SetActive(true);
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
 
-        essentialDistanceManager.lines = 2;
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 2;
 
         //  ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Selectable", "Selected");
         _isCreatingWall = true;

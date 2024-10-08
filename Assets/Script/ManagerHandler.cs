@@ -29,7 +29,7 @@ public class ManagerHandler : MonoBehaviour
     public SpawningManager spawningManager;
     public CalculateDistance calculateDistance;
     public StarterManagement starterManagement;
-
+    public CollectiveDistanceManager collectiveDistanceManager;
     public UIManager uiManager;
     #endregion
 
