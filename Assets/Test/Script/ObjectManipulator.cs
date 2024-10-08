@@ -46,7 +46,7 @@ public class ObjectManipulator : MonoBehaviour
     public void FloorSelection()
     {
         isFloorSelected = true;
-        floorButton.buttonText.color = Color.black;
+        floorButton.buttonText.color = ManagerHandler.Instance.uiManager.canvasHandler.textSelectedColor;
     }
 
     private void Update()
@@ -305,7 +305,7 @@ public class ObjectManipulator : MonoBehaviour
         }
 
         isFloorSelected = false;
-        floorButton.buttonText.color = Color.white;
+        floorButton.buttonText.color = ManagerHandler.Instance.uiManager.canvasHandler.textUnselectedColor;
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Floor");
 
         foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
