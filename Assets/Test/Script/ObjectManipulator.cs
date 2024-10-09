@@ -54,6 +54,7 @@ public class ObjectManipulator : MonoBehaviour
 
     private void Update()
     {
+
         // Ensure that there's only one touch on the screen
         if(spawningManager.pauseCondition==true) return;
         if (Input.touchCount == 1)
@@ -66,7 +67,10 @@ public class ObjectManipulator : MonoBehaviour
             {
                 if(IsClickOnBottomPanel()) return;
                 // Use Raycast with LayerMask to only interact with objects on the selectable layer
-                if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
+                float sphereRadius = 0.5f; // Adjust this value based on your needs
+
+                // Perform the sphere cast
+                if (Physics.SphereCast(ray, sphereRadius, out var hit, Mathf.Infinity, selectableLayer))
                 {
                     var selectedTransform = hit.transform;
                     Debug.Log("Selected Transform: " + selectedTransform.name);

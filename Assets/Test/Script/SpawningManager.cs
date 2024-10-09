@@ -183,6 +183,7 @@ public class SpawningManager : MonoBehaviour
             _isCreatingFloor = false;
             _currentFloor = null;
 
+
              Invoke(nameof(DeleteLinesForAll), 0.5f);
         }
 
@@ -592,7 +593,9 @@ public class SpawningManager : MonoBehaviour
     }
     public void DeleteLinesForAll()
     {
-        MeasureLine_WorldCanvas.DeleteAllLines();
-        gameObject.SetActive(false);
+        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.DeleteLines();
+        //MeasureLine_WorldCanvas.DeleteAllLines();
+        // gameObject.SetActive(false);
+
     }
 }

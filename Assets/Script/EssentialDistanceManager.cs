@@ -165,7 +165,7 @@ public class EssentialDistanceManager : MonoBehaviour
 
 	}
 
-	private void DeleteLines()
+	public void DeleteLines()
 	{
 		MeasureLine_WorldCanvas.DeleteAllLines();
 		gameObject.SetActive(false);    
