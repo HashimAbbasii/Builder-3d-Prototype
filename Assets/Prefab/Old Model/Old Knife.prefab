@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3230900895662197951}
   - component: {fileID: -3813560259420856507}
   - component: {fileID: 6111767532017041802}
+  - component: {fileID: 565211996089277955}
   m_Layer: 11
   m_Name: Old Knife
   m_TagString: Untagged
@@ -194,7 +195,7 @@ MeshCollider:
   m_GameObject: {fileID: 7307159741337974493}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Convex: 0
   m_CookingOptions: 30
@@ -211,6 +212,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1014ce0feb73fe4daf1ad48fd9be41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: 0
   surfaceType: 3
+  modelType: 0
   canPlaceObjectsOnIt: 0
+  canBePlacedOnObject: 0
   heightOffset: 0
+  objectRenderer: {fileID: 0}
+  ModelVariants: []
+--- !u!65 &565211996089277955
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7307159741337974493}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.20918752, y: 0.058042504, z: 0.017688004}
+  m_Center: {x: 0.005156513, y: -0.0006881313, z: -6.264057e-19}
