@@ -56,7 +56,8 @@ public class ObjectManipulator : MonoBehaviour
     {
 
         // Ensure that there's only one touch on the screen
-        if(spawningManager.pauseCondition==true) return;
+        if (spawningManager.pauseCondition == true) return;
+
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);

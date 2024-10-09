@@ -301,7 +301,7 @@ public class SpawningManager : MonoBehaviour
 
     public void OnFloorButtonClick()
     {
-      
+       
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
         _isCreatingFloor = true;

@@ -98,17 +98,15 @@ public class EssentialDistanceManager : MonoBehaviour
 							}
 							
 							hitDummy.transform.SetParent(hitObj.transform);
-							MeasureLine_WorldCanvas.DrawLine(hitDummy.transform, false, false, onSurface, 6f,
-								showSubAxis);
+							MeasureLine_WorldCanvas.DrawLine(hitDummy.transform, false, false, onSurface, 6f, showSubAxis);
+
 							if (_lastHitTransform != null)
 							{
 								MeasureLine_WorldCanvas.EndDrawLine();
 								//Hashim Here
 								_lastHitTransform = null;
                               //  Invoke(nameof(DeleteLines), 0.5f); // Or adjust the time as per your needs
-                                                                   
-
-
+                                          
                             }
 							else
 							{

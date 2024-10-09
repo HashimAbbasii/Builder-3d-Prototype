@@ -96,6 +96,7 @@ public class ObjectDistanceHandler : MonoBehaviour
 				position = hitObj.transform.position
 			}
 		};
+
 		hitDummy.transform.SetParent(hitObj.transform);
 						
 		MeasureLine_WorldCanvas.DrawLine(hitDummy.transform, false, false, true, 6f, showSubAxis);
