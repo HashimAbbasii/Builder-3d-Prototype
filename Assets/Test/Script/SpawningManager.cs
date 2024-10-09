@@ -30,6 +30,7 @@ public class SpawningManager : MonoBehaviour
     private bool _isCreatingFloor = false;
     private bool _isCreatingWall = false;
     public bool _wallAlongZAxis = false;
+    public bool pauseCondition = false;
     private int _selectedObjectIndex = -1;
 
     public GameObject floorMaterialChanged;
@@ -75,6 +76,7 @@ public class SpawningManager : MonoBehaviour
 
     private void Start()
     {
+        pauseCondition = false;
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
         SetupLineRenderers(); // Initialize the LineRenderers
 
@@ -143,6 +145,7 @@ public class SpawningManager : MonoBehaviour
 
     private void ProcessTouch(Touch touch)
     {
+        if(pauseCondition==true) return;
         var ray = Camera.main.ScreenPointToRay(touch.position);
 
         // Floor creation logic
@@ -180,7 +183,7 @@ public class SpawningManager : MonoBehaviour
             _isCreatingFloor = false;
             _currentFloor = null;
 
-            // Invoke(nameof(DeleteLinesForAll), 0.3f);
+             Invoke(nameof(DeleteLinesForAll), 0.5f);
         }
 
         // Wall creation logic
@@ -228,7 +231,7 @@ public class SpawningManager : MonoBehaviour
             _isCreatingWall = false;
             _currentWall = null;
 
-            // Invoke(nameof(DeleteLinesForAll), 0.3f);
+            Invoke(nameof(DeleteLinesForAll), 0.5f);
         }
 
         // Preview object logic
@@ -587,5 +590,9 @@ public class SpawningManager : MonoBehaviour
        }
         selectableObject.ModelVariants[number].SetActive(true);
     }
-
+    public void DeleteLinesForAll()
+    {
+        MeasureLine_WorldCanvas.DeleteAllLines();
+        gameObject.SetActive(false);
+    }
 }

@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     
     public GameObject startPanel;
     public GameObject GamePanelPause;
-    
+    public SpawningManager spawningManager; 
     private void Start()
     {
         // startPanel.SetActive(true);  
@@ -26,6 +26,7 @@ public class UIManager : MonoBehaviour
 
     public void Return()
     {
+        spawningManager.pauseCondition = false;
         GamePanelPause.gameObject.SetActive(false);
     }
     
@@ -48,6 +49,7 @@ public class UIManager : MonoBehaviour
 
     public void PauseButton()
     {
+        spawningManager.pauseCondition = true;
         GamePanelPause.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
         ManagerHandler.Instance.spawningManager.Pausing();

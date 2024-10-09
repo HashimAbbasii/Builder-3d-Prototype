@@ -105,7 +105,11 @@ public class EssentialDistanceManager : MonoBehaviour
 								MeasureLine_WorldCanvas.EndDrawLine();
 								//Hashim Here
 								_lastHitTransform = null;
-							}
+                              //  Invoke(nameof(DeleteLines), 0.5f); // Or adjust the time as per your needs
+                                                                   
+
+
+                            }
 							else
 							{
 								_lastHitTransform = hitObj.transform;
@@ -154,11 +158,11 @@ public class EssentialDistanceManager : MonoBehaviour
             }
 		}
 
-		if (Input.GetKeyUp(KeyCode.Mouse0))
-		{
-			Invoke(nameof(DeleteLines), 0.5f);
-		}
-		
+		//if (Input.GetKeyUp(KeyCode.Mouse0))
+		//{
+		//	Invoke(nameof(DeleteLines), 0.5f);
+		//}
+
 	}
 
 	private void DeleteLines()

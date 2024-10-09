@@ -24,6 +24,8 @@ public class ObjectManipulator : MonoBehaviour
     public bool _isObjectSelected; // Track if the object is currently selected
     public bool isFloorSelected = false;
 
+    public SpawningManager spawningManager;
+
     private RectTransform _sliderRect; // RectTransform of the slider
 
     public GameObject bottomPanel;
@@ -53,6 +55,7 @@ public class ObjectManipulator : MonoBehaviour
     private void Update()
     {
         // Ensure that there's only one touch on the screen
+        if(spawningManager.pauseCondition==true) return;
         if (Input.touchCount == 1)
         {
             Touch touch = Input.GetTouch(0);
