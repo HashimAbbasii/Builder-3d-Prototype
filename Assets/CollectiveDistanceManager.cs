@@ -31,4 +31,15 @@ public class CollectiveDistanceManager : MonoBehaviour
         objectDistanceHandlerButton.buttonText.color = _currentTextColor;
         objectDistanceHandler.ToggleScript();
     }
+    
+    public void ToggleObjectDistanceHandlerScript(bool value)
+    {
+        _currentTextColor = value ? 
+            ManagerHandler.Instance.uiManager.canvasHandler.textSelectedColor : 
+            ManagerHandler.Instance.uiManager.canvasHandler.textUnselectedColor;
+        objectDistanceHandlerButton.buttonText.color = _currentTextColor;
+        objectDistanceHandler.ToggleScript(value);
+    }
+    
+    
 }

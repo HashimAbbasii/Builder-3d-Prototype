@@ -46,22 +46,16 @@ public class SpawningManager : MonoBehaviour
     [Space(5)]
     private SelectableObject selectableObject;
 
+    
+    public bool IsCreatingWall => _isCreatingWall;
+    public bool IsCreatingFloor => _isCreatingFloor;
 
     private void SetupLineRenderers()
     {
-
-
-       
-
         // Create and configure the material for LineRenderers
         Material transparentMaterial = new Material(lineShader);
         transparentMaterial.color = new Color(1, 0, 0, 0.2f); // Red color with 50% transparency for XLine
-                                                             
-       
-
-
-
-}
+    }
 
 
     private void OnValidate()
@@ -297,13 +291,26 @@ public class SpawningManager : MonoBehaviour
     }
 #endif
     
-   
+    public void Pausing()
+    {
+        ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
+        _isCreatingWall = false;
+        _isCreatingFloor = false;
+        if (_previewObject != null)
+        {
+            Destroy(_previewObject);
+        }
+        _previewObject = null;
+        _selectedObjectIndex = -1;
+    }
 
     public void OnFloorButtonClick()
     {
-       
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
+        
+        ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
+        
         _isCreatingFloor = true;
         _isCreatingWall = false; // Ensure wall creation is not active
         if (_previewObject != null)
@@ -313,15 +320,16 @@ public class SpawningManager : MonoBehaviour
         _previewObject = null;
         _selectedObjectIndex = -1;
     }
-
-
+    
+    
     // Called when the wall button is clicked
     public void OnWallButtonClick()
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 2;
-
-      
+        
+        ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
+        
         _isCreatingWall = true;
         _isCreatingFloor = false; // Ensure floor creation is not active
         if (_previewObject != null)
@@ -331,18 +339,7 @@ public class SpawningManager : MonoBehaviour
         _previewObject = null;
         _selectedObjectIndex = -1;
     }
-
-    public void Pausing()
-    {
-        _isCreatingWall = false;
-        _isCreatingFloor = false;
-        if (_previewObject != null)
-        {
-            Destroy(_previewObject);
-        }
-        _previewObject = null;
-        _selectedObjectIndex = -1;
-    }
+    
     
     // Called when an object button (like Chair, Table) is clicked
     public void SelectObject(int objectIndex)
@@ -351,6 +348,8 @@ public class SpawningManager : MonoBehaviour
         _isCreatingFloor = false;
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
 
+        ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
+        
         if (objectIndex == _selectedObjectIndex)
         {
             if (_previewObject != null)
@@ -362,7 +361,7 @@ public class SpawningManager : MonoBehaviour
             return;
         }
         
-      
+        
         // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Count)
         {
@@ -402,7 +401,6 @@ public class SpawningManager : MonoBehaviour
     // Place the selected object on a valid surface
     private void PlaceObjectOnSurface()
     {
-
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.SphereCast(ray, 0.1f, out var hit)) return;

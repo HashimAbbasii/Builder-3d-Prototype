@@ -35,11 +35,31 @@ public class ObjectDistanceHandler : MonoBehaviour
 			}
 		}
 	}
-	
+
+	public void ToggleScript(bool value)
+	{
+		enabled = value;
+		if (!enabled)
+		{
+			foreach (var line in lineCanvasList)
+			{
+				line.enabled = false;
+			}
+		}
+		else
+		{
+			foreach (var line in lineCanvasList)
+			{
+				line.enabled = true;
+			}
+		}
+	}
+
 
 	[ContextMenu("ListLines")]
 	public void ListLinesFunction()
 	{
+		// Debug.LogWarning("List Line Function Called");
 		lineCanvasList.Clear();
 		var mws = FindObjectsOfType<MeasureLine_WorldCanvas>();
 	    
@@ -56,16 +76,25 @@ public class ObjectDistanceHandler : MonoBehaviour
 			{
 				to.gameObject.name = "LineEndPoint";
 			}
-
 			
-			
-			mw.lineRender.transform.parent = mwParent.transform;
-			mw.linkTexts[0].transform.parent.parent = mwParent.transform;
+			mw.lineRender.transform.SetParent(mwParent.transform, false);
+			mw.linkTexts[0].transform.parent.SetParent(mwParent.transform, false);
 			
 			foreach (var child in mw.lineParent.GetComponentsInChildren<Transform>().Where(t=>t.name != "Line"))
 			{
-				child.parent = mwParent.transform;
+				child.SetParent(mwParent.transform, false);
 			}
+			
+			
+			
+			
+			// mw.lineRender.transform.parent = mwParent.transform;
+			// mw.linkTexts[0].transform.parent.parent = mwParent.transform;
+			//
+			// foreach (var child in mw.lineParent.GetComponentsInChildren<Transform>().Where(t=>t.name != "Line"))
+			// {
+			// 	child.parent = mwParent.transform;
+			// }
 		}
 	}
 	
@@ -84,9 +113,9 @@ public class ObjectDistanceHandler : MonoBehaviour
 		}
 
 		var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out hitPos, layerMask);
-
+		
 		if (hitObj == null) return;
-
+		
 		if (!isDrawLine) return;
 
 		var hitDummy = new GameObject("SurfaceLineDummy")
@@ -104,13 +133,9 @@ public class ObjectDistanceHandler : MonoBehaviour
 		if (lastHitTransform != null)
 		{
 			MeasureLine_WorldCanvas.EndDrawLine();
-			mwParent = new GameObject("Line")
-			{
-				transform =
-				{
-					parent = transform
-				}
-			};
+			mwParent = new GameObject("Line");
+			mwParent.transform.parent = transform;
+			mwParent.transform.localScale = Vector3.one;
 			Invoke(nameof(ListLinesFunction),0.1f);
 			lastHitTransform = null;
 		}

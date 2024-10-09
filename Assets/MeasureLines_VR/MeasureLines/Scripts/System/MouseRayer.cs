@@ -10,9 +10,8 @@ public class MouseRayer : MonoBehaviour {
         Ray ray = cameras.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-
-
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask))
+        
+        if (Physics.SphereCast(ray, 0.5f, out hit, Mathf.Infinity, layerMask))
         {
             Debug.Log(hit);
 

@@ -48,6 +48,7 @@ public class ObjectManipulator : MonoBehaviour
 
     public void FloorSelection()
     {
+        ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
         isFloorSelected = true;
         floorButton.buttonText.color = ManagerHandler.Instance.uiManager.canvasHandler.textSelectedColor;
     }
@@ -57,9 +58,11 @@ public class ObjectManipulator : MonoBehaviour
 
         // Ensure that there's only one touch on the screen
         if (spawningManager.pauseCondition == true) return;
-
+        
         if (Input.touchCount == 1)
         {
+            if (ManagerHandler.Instance.spawningManager.IsCreatingFloor || ManagerHandler.Instance.spawningManager.IsCreatingWall) return;
+            
             Touch touch = Input.GetTouch(0);
             var ray = Camera.main.ScreenPointToRay(touch.position);
 
@@ -469,10 +472,16 @@ public class ObjectManipulator : MonoBehaviour
 
         Invoke(nameof(DeleteMissingSpawnedModels), 0.1f);
 
+        // Invoke(nameof(TurnOffRemoveButton), 0.125f);
         scaleSlider.transform.parent.gameObject.SetActive(false);
         _isDragging = false; // Stop dragging when deselected
     }
 
+    private void TurnOffRemoveButton()
+    {
+        removeButton.SetActive(false);
+    }
+    
     private bool IsMissing(GameObject obj)
     {
         // The object is missing if it's null or destroyed
