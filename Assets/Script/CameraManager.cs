@@ -58,9 +58,16 @@ public class CameraManager : MonoBehaviour
                 
                 MoveCameraWithTwoTouches(touch0, touch1);
 
-                // Handle zoom functionality
-                ZoomCamera(touch0, touch1);
-                break;
+                    // Handle zoom functionality
+                    //ZoomCamera(touch0, touch1);
+
+#if UNITY_EDITOR
+                    ZoomCameraEditor();
+#else
+ZoomCamera(touch0, touch1);
+
+#endif
+                    break;
             }
             case 3:
             {
@@ -68,19 +75,25 @@ public class CameraManager : MonoBehaviour
                 var touch1 = Input.GetTouch(1);
                 var touch2 = Input.GetTouch(2);
                 RotateCameraWithThreeTouches(touch0, touch1, touch2);
-                break;
+
+//#if UNITY_EDITOR
+//                    ZoomCameraEditor();
+//#else
+//ZoomCamera(touch0, touch1);
+
+//#endif
+
+
+                    break;
             }
             default:
                 // Reset touch tracking if not using two fingers
                 break;
+
+
         }
 
-#if UNITY_EDITOR
-        ZoomCameraEditor();
-#else
-ZoomCamera(touch0, touch1);
 
-# endif
 
     }
 
