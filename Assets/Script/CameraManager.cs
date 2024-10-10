@@ -6,19 +6,21 @@ using UnityEngine.UI;
 
 public class CameraManager : MonoBehaviour
 {
-    public VariableJoystick joystick;          // Reference to your joystick
-    public GameObject mainCameraParent;        // Reference to the camera parent
-    public Toggle CameraPosition;              // Toggle for camera position
-    public Toggle CameraRotation;              // Toggle for camera rotation
+    public VariableJoystick joystick;           // Reference to your joystick
+    public GameObject mainCameraParent;         // Reference to the camera parent
+    public Toggle CameraPosition;               // Toggle for camera position
+    public Toggle CameraRotation;               // Toggle for camera rotation
     public SpawningManager spawningManager;
 
-    [SerializeField] private float moveSpeed = 0.05f;   // Adjust this value to change movement speed
-    [SerializeField] private float rotationSpeed = 5f; // Speed for camera rotation
-    [SerializeField] private float zoomInSpeed = 0.05f;   // Speed of zooming in
-    [SerializeField] private float zoomOutSpeed = 0.05f;   // Speed of zooming out
-    [SerializeField] private float minZoom = 20.0f;    // Minimum zoom level
-    [SerializeField] private float maxZoom = 90.0f;   // Maximum zoom level
-    [SerializeField] private float pitchTolerance = 1f; // Tolerance for pitching action
+    [SerializeField] private float moveSpeed = 0.05f;     // Movement speed
+    [SerializeField] private float rotationSpeed = 5f;    // Speed for camera rotation
+    [SerializeField] private float zoomInSpeed = 0.05f;   // Zooming in speed
+    [SerializeField] private float zoomOutSpeed = 0.05f;  // Zooming out speed
+    [SerializeField] private float minZoom = 20.0f;       // Minimum zoom level
+    [SerializeField] private float maxZoom = 90.0f;       // Maximum zoom level
+    [SerializeField] private float zoomTolerance = 10f;   // Tolerance for zoom gestures
+    [SerializeField] private float moveTolerance = 0.8f;  // Tolerance for movement similarity
+    [SerializeField] private float pitchTolerance = 0.05f;// Tolerance for distinguishing gestures
 
     [SerializeField] private float maxZPosition = 10.38793f; // Maximum Z-axis position
     [SerializeField] private float minXPosition = -8f;       // Minimum X-axis position
@@ -26,15 +28,17 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float minZPosition = -10f;      // Minimum Z-axis position
 
     public TMP_Text tempText;
-    
-    private Vector3 startPos;                  // Initial camera position
-    private Quaternion startRot;                  // Initial camera position
-    private Vector2 previousTouch0Position = Vector2.zero;
-    private Vector2 previousTouch1Position = Vector2.zero;
+
+    private Vector3 startPos;                // Initial camera position
+    private Quaternion startRot;             // Initial camera rotation
+
+    // Gesture state management
+    private enum GestureState { None, Zooming, Moving, Rotating }
+    private GestureState currentGesture = GestureState.None;
 
     void Start()
     {
-        // Set the initial camera position
+        // Set the initial camera position and rotation
         startPos = mainCameraParent.transform.position;
         startRot = mainCameraParent.transform.rotation;
 
@@ -45,167 +49,112 @@ public class CameraManager : MonoBehaviour
 
     void Update()
     {
-        switch (Input.touchCount)
+        if (Input.touchCount == 2)
         {
-            // Handle two-finger touch for movement, rotation, and zoom
-            case 2:
-            {
-                var touch0 = Input.GetTouch(0);
-                var touch1 = Input.GetTouch(1);
+            var touch0 = Input.GetTouch(0);
+            var touch1 = Input.GetTouch(1);
 
-                // Call methods based on toggle states
-               
-                
+            if (currentGesture == GestureState.None)
+            {
+                // Determine the type of gesture and lock in the state
+                if (IsZoomGesture(touch0, touch1))
+                {
+                    currentGesture = GestureState.Zooming;
+                }
+                else if (IsMovementGesture(touch0, touch1))
+                {
+                    currentGesture = GestureState.Moving;
+                }
+                else if (IsRotationGesture(touch0, touch1))
+                {
+                    currentGesture = GestureState.Rotating;
+                }
+            }
+
+            // Execute the appropriate gesture based on the current state
+            if (currentGesture == GestureState.Zooming)
+            {
+                ZoomCamera(touch0, touch1);
+            }
+            else if (currentGesture == GestureState.Moving)
+            {
                 MoveCameraWithTwoTouches(touch0, touch1);
-
-                    // Handle zoom functionality
-                    //ZoomCamera(touch0, touch1);
-
-#if UNITY_EDITOR
-                    ZoomCameraEditor();
-#else
-ZoomCamera(touch0, touch1);
-
-#endif
-                    break;
             }
-            case 3:
+            else if (currentGesture == GestureState.Rotating)
             {
-                var touch0 = Input.GetTouch(0);
-                var touch1 = Input.GetTouch(1);
-                var touch2 = Input.GetTouch(2);
-                RotateCameraWithThreeTouches(touch0, touch1, touch2);
-
-//#if UNITY_EDITOR
-//                    ZoomCameraEditor();
-//#else
-//ZoomCamera(touch0, touch1);
-
-//#endif
-
-
-                    break;
+                RotateCameraWithTwoTouches(touch0, touch1);
             }
-            default:
-                // Reset touch tracking if not using two fingers
-                break;
-
-
-        }
-
-
-
-    }
-
- 
-
-    private void ZoomCameraEditor()
-    {
-        // Simulate zoom using mouse scroll wheel
-        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
-
-        // Check if there's any scroll input
-        if (Mathf.Abs(scrollInput) > 0f)
-        {
-            // Determine the zoom speed based on scroll direction
-            float speed = scrollInput > 0 ? zoomInSpeed : zoomOutSpeed;
-
-            // Zoom the camera's field of view based on scroll input
-            float newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView - scrollInput * speed;
-
-            // Clamp the field of view to the min and max values
-            mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
-        }
-    }
-
-
-
-    private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
-    {
-        // Calculate the movement delta (average of the two touches' deltas)
-        var touchDelta0 = touch0.deltaPosition;
-        var touchDelta1 = touch1.deltaPosition;
-        var averageDelta = (touchDelta0 + touchDelta1) / 2f;
-
-        // Calculate new camera position
-        var newPosition = mainCameraParent.transform.position;
-        newPosition += mainCameraParent.transform.right * (-averageDelta.x * moveSpeed * Time.deltaTime); // Move along the camera's right axis
-        newPosition += mainCameraParent.transform.forward * (-averageDelta.y * moveSpeed * Time.deltaTime); // Move along the camera's forward axis
-        
-        newPosition.x = Mathf.Clamp(newPosition.x, minXPosition, maxXPosition);
-        newPosition.z = Mathf.Clamp(newPosition.z, minZPosition, maxZPosition);
-        
-        // Update camera position
-        mainCameraParent.transform.position = newPosition;
-    }
-
-  
-    
-    
-    
-    private void RotateCameraWithThreeTouches(Touch touch0, Touch touch1, Touch touch2)
-    {
-        // Calculate the current positions of the three touches
-        var currentTouch0Position = touch0.position;
-        var currentTouch1Position = touch1.position;
-        var currentTouch2Position = touch2.position;
-
-        // Calculate the previous positions of the three touches
-        var previousTouch0Position = touch0.position - touch0.deltaPosition;
-        var previousTouch1Position = touch1.position - touch1.deltaPosition;
-        var previousTouch2Position = touch2.position - touch2.deltaPosition;
-
-        // Calculate the difference between the previous and current touch positions
-        var touch0Delta = currentTouch0Position - previousTouch0Position;
-        var touch1Delta = currentTouch1Position - previousTouch1Position;
-        var touch2Delta = currentTouch2Position - previousTouch2Position;
-
-        // Calculate the average touch delta
-        var averageDelta = (touch0Delta + touch1Delta + touch2Delta) / 3f;
-
-        // Rotate the camera based on the average delta
-        if (Mathf.Abs(averageDelta.x) > Mathf.Abs(averageDelta.y))
-        {
-            // Horizontal movement, rotate around Y axis
-            mainCameraParent.transform.Rotate(Vector3.up, averageDelta.x * rotationSpeed * Time.deltaTime, Space.World);
         }
         else
         {
-            // Vertical movement, rotate around X axis
-            var newXRotation = mainCameraParent.transform.eulerAngles.x - averageDelta.y * rotationSpeed * Time.deltaTime;
-            newXRotation = Mathf.Clamp(newXRotation, 16, 90);
-            mainCameraParent.transform.eulerAngles = new Vector3(newXRotation, mainCameraParent.transform.eulerAngles.y, mainCameraParent.transform.eulerAngles.z);
-            tempText.text = mainCameraParent.transform.eulerAngles.ToString();
+            // Reset the gesture state when all touches are released
+            currentGesture = GestureState.None;
         }
-
-
     }
 
+    // Check if the gesture is a zoom gesture
+    private bool IsZoomGesture(Touch touch0, Touch touch1)
+    {
+        float currentDistance = Vector2.Distance(touch0.position, touch1.position);
+        float previousDistance = Vector2.Distance(touch0.position - touch0.deltaPosition, touch1.position - touch1.deltaPosition);
+
+        float distanceDelta = Mathf.Abs(currentDistance - previousDistance);
+
+        // Require a larger difference in the distance to trigger zoom
+        return distanceDelta > zoomTolerance;
+    }
+
+    // Check if the gesture is a movement gesture
+    private bool IsMovementGesture(Touch touch0, Touch touch1)
+    {
+        // Ensure both fingers move in almost the same direction for it to be considered movement
+        return Vector2.Dot(touch0.deltaPosition.normalized, touch1.deltaPosition.normalized) > moveTolerance;
+    }
+
+    // Check if the gesture is a rotation gesture
+    private bool IsRotationGesture(Touch touch0, Touch touch1)
+    {
+        float angleDelta = Vector2.SignedAngle(touch0.deltaPosition, touch1.deltaPosition);
+
+        // If the fingers move in opposite directions with significant angular difference, it's a rotation gesture
+        return Mathf.Abs(angleDelta) > pitchTolerance * 100;
+    }
+
+    // Move the camera with two touches
+    private void MoveCameraWithTwoTouches(Touch touch0, Touch touch1)
+    {
+        Vector2 averageDelta = (touch0.deltaPosition + touch1.deltaPosition) / 2f;
+
+        Vector3 newPosition = mainCameraParent.transform.position;
+        newPosition += mainCameraParent.transform.right * (-averageDelta.x * moveSpeed * Time.deltaTime);
+        newPosition += mainCameraParent.transform.forward * (-averageDelta.y * moveSpeed * Time.deltaTime);
+
+        newPosition.x = Mathf.Clamp(newPosition.x, minXPosition, maxXPosition);
+        newPosition.z = Mathf.Clamp(newPosition.z, minZPosition, maxZPosition);
+
+        mainCameraParent.transform.position = newPosition;
+    }
+
+    // Rotate the camera with two touches
+    private void RotateCameraWithTwoTouches(Touch touch0, Touch touch1)
+    {
+        float angleDelta = Vector2.SignedAngle(touch0.deltaPosition, touch1.deltaPosition);
+
+        // Rotate the camera horizontally around the Y-axis based on the angle delta
+        mainCameraParent.transform.Rotate(Vector3.up, angleDelta * rotationSpeed * Time.deltaTime, Space.World);
+
+        tempText.text = $"Camera Rotation: {mainCameraParent.transform.rotation.eulerAngles}";
+    }
+
+    // Zoom the camera
     private void ZoomCamera(Touch touch0, Touch touch1)
     {
-        // Find the position in the previous frame of each touch
-        var touch1PrevPos = touch0.position - touch0.deltaPosition;
-        var touch2PrevPos = touch1.position - touch1.deltaPosition;
+        float currentDistance = Vector2.Distance(touch0.position, touch1.position);
+        float previousDistance = Vector2.Distance(touch0.position - touch0.deltaPosition, touch1.position - touch1.deltaPosition);
 
-        // Find the magnitude of the vector (distance) between the touches in each frame
-        var prevTouchDeltaMag = (touch1PrevPos - touch2PrevPos).magnitude;
-        var touchDeltaMag = (touch0.position - touch1.position).magnitude;
+        float deltaMagnitude = previousDistance - currentDistance;
 
-        // Find the difference in the distances between each frame
-        var deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
-
-        Debug.Log(deltaMagnitudeDiff);
-
-        // Check if the delta magnitude difference exceeds the tolerance
-        if (!(Mathf.Abs(deltaMagnitudeDiff) > pitchTolerance)) return;
-        
-        // Determine the zoom speed based on whether we're zooming in or out
-        var speed = deltaMagnitudeDiff > 0 ? zoomOutSpeed : zoomInSpeed;
-
-        // Zoom the camera's field of view based on the difference in distance between the touches
-        var newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView + deltaMagnitudeDiff * speed;
-
-        // Clamp the field of view to the min and max values
+        float newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView + deltaMagnitude * (deltaMagnitude > 0 ? zoomOutSpeed : zoomInSpeed);
         mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
     }
 
@@ -214,7 +163,7 @@ ZoomCamera(touch0, touch1);
     {
         if (isOn)
         {
-            CameraRotation.isOn = false; // Ensure the other toggle is off
+            CameraRotation.isOn = false;
         }
     }
 
@@ -223,13 +172,12 @@ ZoomCamera(touch0, touch1);
     {
         if (isOn)
         {
-            CameraPosition.isOn = false; // Ensure the other toggle is off
+            CameraPosition.isOn = false;
         }
     }
 
     private void OnDestroy()
     {
-        // Clean up the listeners when the object is destroyed
         CameraPosition.onValueChanged.RemoveListener(OnCameraPositionToggleChanged);
         CameraRotation.onValueChanged.RemoveListener(OnCameraRotationToggleChanged);
     }
@@ -239,5 +187,4 @@ ZoomCamera(touch0, touch1);
         mainCameraParent.transform.position = startPos;
         mainCameraParent.transform.rotation = startRot;
     }
-    
 }
