@@ -13,7 +13,7 @@ public class CameraManager : MonoBehaviour
     public SpawningManager spawningManager;
 
     [SerializeField] private float moveSpeed = 0.05f;     // Movement speed
-    [SerializeField] private float rotationSpeed = 5f;    // Speed for camera rotation
+    [SerializeField] private float rotationSpeed = 0.5f;    // Speed for camera rotation
     [SerializeField] private float zoomInSpeed = 0.05f;   // Zooming in speed
     [SerializeField] private float zoomOutSpeed = 0.05f;  // Zooming out speed
     [SerializeField] private float minZoom = 20.0f;       // Minimum zoom level

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.86009043, g: 0.8367843, b: 0.84097904, a: 1}
+  m_IndirectSpecularColor: {r: 0.8600787, g: 0.83677375, b: 0.8409715, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -812,6 +812,7 @@ MonoBehaviour:
   FloorTextureChangePanel: {fileID: 0}
   ChairChangePanel: {fileID: 0}
   TableChangePanel: {fileID: 0}
+  circularRangeControl: {fileID: 1710733262}
 --- !u!1 &109009996
 GameObject:
   m_ObjectHideFlags: 0
@@ -3060,7 +3061,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -53.000183}
+  m_AnchoredPosition: {x: 0, y: -53.000244}
   m_SizeDelta: {x: 283.656, y: 0.000030517578}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &383399142
@@ -5841,11 +5842,13 @@ MonoBehaviour:
   CameraRotation: {fileID: 1279661727}
   spawningManager: {fileID: 0}
   moveSpeed: 0.25
-  rotationSpeed: 5
+  rotationSpeed: 0.5
   zoomInSpeed: 0.05
   zoomOutSpeed: 0.2
   minZoom: 30
   maxZoom: 90
+  zoomTolerance: 10
+  moveTolerance: 0.8
   pitchTolerance: 1
   maxZPosition: 10
   minXPosition: -8
@@ -14688,6 +14691,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1705520984}
   m_CullTransparentMesh: 1
+--- !u!114 &1710733262 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6682506210898955868, guid: 81b69dd850723c4429f0d19e7babf247, type: 3}
+  m_PrefabInstance: {fileID: 602617665}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 829a050c41b4b734e8ca6c01ff173235, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1726211686
 GameObject:
   m_ObjectHideFlags: 0
@@ -14955,8 +14969,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 806938421}
   m_HandleRect: {fileID: 806938420}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -16157,7 +16171,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Three fingers touch for Camera Rotation
+  m_text: Two fingers touch for Camera Rotation.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3199409928624324999b9336dd1ed8f3, type: 2}
   m_sharedMaterial: {fileID: 21032597133445202, guid: 3199409928624324999b9336dd1ed8f3, type: 2}
@@ -16273,7 +16287,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -53.000183}
+  m_AnchoredPosition: {x: 0, y: -53.000244}
   m_SizeDelta: {x: 283.656, y: 0.000030517578}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1873112219
@@ -17622,7 +17636,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -53.000183}
+  m_AnchoredPosition: {x: 0, y: -53.000244}
   m_SizeDelta: {x: 283.656, y: 0.000030517578}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &2083276829

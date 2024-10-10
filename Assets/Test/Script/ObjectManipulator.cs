@@ -414,6 +414,8 @@ public class ObjectManipulator : MonoBehaviour
     }
 
     // Method to deselect the currently selected object
+    
+    public CircularRangeControl circularRangeControl;
     public void DeselectObject()
     {
         Debug.Log("Deseleted");
@@ -439,6 +441,9 @@ public class ObjectManipulator : MonoBehaviour
         _isDragging = false; // Stop dragging when deselected
         scaleSlider.transform.parent.gameObject.SetActive(true);
         bottomPanel.SetActive(true);
+        circularRangeControl.imageSelected.fillAmount = 0;
+        circularRangeControl._currentValue = 0;
+        circularRangeControl.angle.text = "".ToString();
     }
    // public GameObject bottonPanel;
     private bool IsClickOnBottomPanel()

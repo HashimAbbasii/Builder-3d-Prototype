@@ -21,7 +21,7 @@ public class CircularRangeControl : MonoBehaviour
 
     public int scaleValue = 360; //value scale to use
 
-    private int _currentValue;
+    public int _currentValue;
     
     
     public enum State
