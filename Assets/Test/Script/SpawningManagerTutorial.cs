@@ -216,7 +216,7 @@ public class SpawningManagerTutorial : MonoBehaviour
     // Called when the floor button is clicked
     public void OnFloorButtonClick()
     {
-        if (arrowControl.FloorButton == true)
+      //  if (arrowControl.FloorButton == true)
         {
             //Arrow.gameObject.SetActive(false);
 

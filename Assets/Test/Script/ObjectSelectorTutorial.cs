@@ -1,0 +1,48 @@
+using UnityEngine;
+
+public class ObjectSelectorTutorial : MonoBehaviour
+{
+    public ObjectManipulatorTutorial manipulator;
+    public LayerMask surfaceLayer;
+
+    void Start()
+    {
+        if (manipulator == null)
+        {
+            manipulator = FindObjectOfType<ObjectManipulatorTutorial>();
+            if (manipulator == null)
+            {
+                Debug.LogError("ObjectManipulator script not found in the scene.");
+            }
+        }
+    }
+
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0)) // Left mouse button clicked
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, surfaceLayer))
+            {
+                Debug.Log("Selected");
+                SelectableObject selectable = hit.collider.GetComponent<SelectableObject>();
+
+                if (selectable != null)
+                {
+                    
+                    Debug.Log("Object selected: " + hit.collider.name);
+                    manipulator.SetSelectedObject(hit.collider.transform);
+                }
+                else
+                {
+                    //Debug.Log("Object deselected");
+                    manipulator.SetSelectedObject(null); // Deselect if not a selectable object
+                }
+            }
+        }
+    }
+
+   
+}
