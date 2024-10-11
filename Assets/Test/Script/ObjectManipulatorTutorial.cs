@@ -60,15 +60,15 @@ public class ObjectManipulatorTutorial : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !IsClickOnAnyRotationButton() && !IsClickOnSlider() &&
             isFloorSelected == false)
         {
-            Debug.Log("Hashim In");
+          //  Debug.Log("Hashim In");
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
             // Use Raycast with LayerMask to only interact with objects on the selectable layer
             if (Physics.Raycast(ray, out var hit, Mathf.Infinity, selectableLayer))
             {
-                Debug.Log("Hashim If");
+            //    Debug.Log("Hashim If");
                 var selectedTransform = hit.transform;
-                Debug.Log("selected Transform" + selectedTransform.name);
+              //  Debug.Log("selected Transform" + selectedTransform.name);
                 // If the object is already selected and clicked again, start dragging
                 if (_isObjectSelected && selectedObject == selectedTransform)
                 {
@@ -91,7 +91,7 @@ public class ObjectManipulatorTutorial : MonoBehaviour
             else
             {
 
-                Debug.Log("Hashim Else");
+                //Debug.Log("Hashim Else");
                 // If click is outside of any object or UI, deselect the object
                 DeselectObject();
                 _isObjectSelected = false; // Reset selection state
@@ -99,7 +99,7 @@ public class ObjectManipulatorTutorial : MonoBehaviour
         }
         else
         {
-            Debug.Log("Hashim Out");
+           // Debug.Log("Hashim Out");
         }
 
         //...........Deal With Floor Button Selection ...............//

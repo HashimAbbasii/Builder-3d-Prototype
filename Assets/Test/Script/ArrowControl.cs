@@ -15,7 +15,7 @@ public class ArrowControl : MonoBehaviour
     public float speed = 2f; // Movement speed of the arrow
     private float currentSpeed = 0f; // Current speed of the arrow
     public float acceleration = 1f; // Rate of acceleration
-    private bool isMoving = false; // Is the arrow currently moving
+    public bool isMoving = false; // Is the arrow currently moving
 
     private int movementPhase = 0; // To track movement between different phases
 
@@ -36,12 +36,15 @@ public class ArrowControl : MonoBehaviour
             switch (movementPhase)
             {
                 case 0:
+                    Debug.Log("phase 0 ");
                     MoveTowardsPoint(floorButton.transform.position);
                     break;
                 case 1:
+                    Debug.Log("phase 1 ");
                     MoveTowardsPoint(targetObject1.transform.position);
                     break;
                 case 2:
+                    Debug.Log("phase 2 ");
                     MoveTowardsPoint(targetObject2.transform.position);
                     break;
                 case 3:
@@ -52,6 +55,7 @@ public class ArrowControl : MonoBehaviour
                     break;
             }
         }
+
     }
 
     private void MoveTowardsPoint(Vector3 targetPosition)
@@ -72,6 +76,7 @@ public class ArrowControl : MonoBehaviour
         else
         {
             // When the arrow reaches the target, trigger the next action
+
             OnReachedTarget();
         }
     }
@@ -91,9 +96,9 @@ public class ArrowControl : MonoBehaviour
             case 1:
                 // Arrow reached targetObject1, automatically move to targetObject2
                 Debug.Log("Reached TargetObject1.");
-                 // Move to next phase (targetObject2)
+                // Move to next phase (targetObject2)
                 DragandThanMove();
-              //  MoveToTargetObject2();
+                //  MoveToTargetObject2();
                 break;
 
             case 2:
@@ -134,34 +139,74 @@ public class ArrowControl : MonoBehaviour
     }
     private void DragandThanMove()
     {
-        Debug.Log("End Touch");
+#if UNITY_EDITOR
+        isMoving = true;
+        Debug.Log("Get mouse up");
+        if (Input.GetMouseButton(0))
+        {
+            Debug.Log("Get mouse up 1");
+            // Simulate touch phase for editor (mouse input)
+            //  Vector3 mousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.nearClipPlane));
+            // transform.position = new Vector3(mousePosition.x, mousePosition.y, transform.position.z);
+            // movementPhase = 2;
+            MoveToTargetObject2();
+
+
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            // Get the mouse position in screen coordinates
+            Vector3 mousePosition = Input.mousePosition;
+
+            // Create a ray from the camera through the mouse position
+            Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+            RaycastHit hit;
+
+            // Perform a raycast
+            if (Physics.Raycast(ray, out hit))
+            {
+                // Get the point where the ray hit a collider
+                Vector3 hitPoint = hit.point;
+
+                // Assign the hit point to the UI element's position
+                if (targetObject2 != null)
+                {
+                    // Convert the world position to the UI canvas space
+                    Vector3 uiPosition = Camera.main.WorldToScreenPoint(hitPoint);
+
+                    // Update the position of the UI element
+                    targetObject2.transform.position = uiPosition;
+
+                    // Log the new UI position
+                    Debug.Log("Assigned UI element to position: " + uiPosition);
+                    movementPhase = 2;
+                }
+            }
+            else
+            {
+                Debug.Log("No hit detected.");
+            }
+        }
+#else
+        // Mobile device input
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
 
-
-
-            // Check if the touch phase is "Moved"
             if (touch.phase == TouchPhase.Moved)
             {
-                // Calculate touch movement (convert touch position to world position)
                 Vector3 touchPosition = Camera.main.ScreenToWorldPoint(new Vector3(touch.position.x, touch.position.y, Camera.main.nearClipPlane));
-
-                // Update the position of the object being dragged (assuming this is attached to the object)
                 transform.position = new Vector3(touchPosition.x, touchPosition.y, transform.position.z);
             }
 
-            // Add logic to move toward the next target after dragging
             if (touch.phase == TouchPhase.Ended)
             {
-
                 movementPhase = 2;
                 MoveToTargetObject2();
-                // Example: Move toward the next GameObject target
-                //   MoveToNextTarget();
             }
         }
-    } 
+#endif
+    }
 
     // Method to move the arrow to targetObject1 after clicking the floor button
     private void MoveToTargetObject1()
