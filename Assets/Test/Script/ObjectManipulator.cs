@@ -11,6 +11,7 @@ public class ObjectManipulator : MonoBehaviour
     public Material _originalMaterial; // To store the original material of the object
     public Material selectedMaterial; // Material to apply when the object is selected
     private bool _isDragging; // To track if the object is being dragged
+    public GameObject sliderParent;
     public Slider scaleSlider; // Slider to control the object's scale
     public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
     public LayerMask selectableLayer; // Layer mask for selectable objects
@@ -51,6 +52,8 @@ public class ObjectManipulator : MonoBehaviour
         ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
         isFloorSelected = true;
         floorButton.buttonText.color = ManagerHandler.Instance.uiManager.canvasHandler.textSelectedColor;
+        rotationKnob.gameObject.SetActive(false);
+        sliderParent.SetActive(false);
     }
 
     private void Update()
@@ -174,6 +177,12 @@ public class ObjectManipulator : MonoBehaviour
     // Set the object to be manipulated
     public void SetSelectedObject(Transform obj)
     {
+        if (obj != null)
+        {
+            rotationKnob.gameObject.SetActive(true);
+            sliderParent.SetActive(true);
+        }
+        
         // Check if the same object is clicked again to toggle selection
         if (selectedObject == obj)
         {

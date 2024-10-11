@@ -32,6 +32,7 @@ public class CameraManager : MonoBehaviour
 
     private Vector3 startPos;                // Initial camera position
     private Quaternion startRot;             // Initial camera rotation
+    private float startFOV;
 
     // Gesture state management
     private enum GestureState { None, Zooming, Moving, Rotating }
@@ -42,7 +43,7 @@ public class CameraManager : MonoBehaviour
         // Set the initial camera position and rotation
         startPos = mainCameraParent.transform.position;
         startRot = mainCameraParent.transform.rotation;
-
+        startFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView;
         // Set up listeners for the toggles
         CameraPosition.onValueChanged.AddListener(OnCameraPositionToggleChanged);
         CameraRotation.onValueChanged.AddListener(OnCameraRotationToggleChanged);
@@ -55,33 +56,33 @@ public class CameraManager : MonoBehaviour
             var touch0 = Input.GetTouch(0);
             var touch1 = Input.GetTouch(1);
 
-            if (currentGesture == GestureState.None)
-            {
-                // Determine the type of gesture and lock in the state
-                if (IsZoomGesture(touch0, touch1))
-                {
-                    currentGesture = GestureState.Zooming;
-                }
-                else if (IsMovementGesture(touch0, touch1))
-                {
-                    currentGesture = GestureState.Moving;
-                }
-                else if (IsRotationGesture(touch0, touch1))
-                {
-                    currentGesture = GestureState.Rotating;
-                }
-            }
+            // if (currentGesture == GestureState.None)
+            // {
+            //     // Determine the type of gesture and lock in the state
+            //     if (IsZoomGesture(touch0, touch1))
+            //     {
+            //         currentGesture = GestureState.Zooming;
+            //     }
+            //     if (IsMovementGesture(touch0, touch1))
+            //     {
+            //         currentGesture = GestureState.Moving;
+            //     }
+            //     if (IsRotationGesture(touch0, touch1))
+            //     {
+            //         currentGesture = GestureState.Rotating;
+            //     }
+            // }
 
             // Execute the appropriate gesture based on the current state
-            if (currentGesture == GestureState.Zooming)
+            // if (currentGesture == GestureState.Zooming)
             {
                 ZoomCamera(touch0, touch1);
             }
-            else if (currentGesture == GestureState.Moving)
+            // if (currentGesture == GestureState.Moving)
             {
                 MoveCameraWithTwoTouches(touch0, touch1);
             }
-            else if (currentGesture == GestureState.Rotating)
+            // if (currentGesture == GestureState.Rotating)
             {
                 RotateCameraWithTwoTouches(touch0, touch1);
             }
@@ -136,6 +137,7 @@ public class CameraManager : MonoBehaviour
         mainCameraParent.transform.position = newPosition;
     }
 
+    
     private Vector2 prevTouchDelta;
 
     // Rotate the camera with two touches
@@ -161,12 +163,12 @@ public class CameraManager : MonoBehaviour
     // Zoom the camera
     private void ZoomCamera(Touch touch0, Touch touch1)
     {
-        float currentDistance = Vector2.Distance(touch0.position, touch1.position);
-        float previousDistance = Vector2.Distance(touch0.position - touch0.deltaPosition, touch1.position - touch1.deltaPosition);
+        var currentDistance = Vector2.Distance(touch0.position, touch1.position);
+        var previousDistance = Vector2.Distance(touch0.position - touch0.deltaPosition, touch1.position - touch1.deltaPosition);
 
-        float deltaMagnitude = previousDistance - currentDistance;
+        var deltaMagnitude = previousDistance - currentDistance;
 
-        float newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView + deltaMagnitude * (deltaMagnitude > 0 ? zoomOutSpeed : zoomInSpeed);
+        var newFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView + deltaMagnitude * (deltaMagnitude > 0 ? zoomOutSpeed : zoomInSpeed);
         mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
     }
 
@@ -198,5 +200,6 @@ public class CameraManager : MonoBehaviour
     {
         mainCameraParent.transform.position = startPos;
         mainCameraParent.transform.rotation = startRot;
+        mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = startFOV;
     }
 }
