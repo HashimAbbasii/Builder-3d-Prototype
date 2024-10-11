@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static uMouseLook;
 
 public class CameraManager : MonoBehaviour
 {
@@ -135,12 +136,23 @@ public class CameraManager : MonoBehaviour
         mainCameraParent.transform.position = newPosition;
     }
 
+    private Vector2 prevTouchDelta;
+
     // Rotate the camera with two touches
     private void RotateCameraWithTwoTouches(Touch touch0, Touch touch1)
     {
-        float angleDelta = Vector2.SignedAngle(touch0.deltaPosition, touch1.deltaPosition);
+        var touch0PrevPos = touch0.position - touch0.deltaPosition;
+        var touch1PrevPos = touch1.position - touch1.deltaPosition;
+
+        prevTouchDelta = touch0PrevPos - touch1PrevPos;
+        var touchDelta = touch0.position - touch1.position;
+
+        var angleDelta = Vector2.SignedAngle(prevTouchDelta, touchDelta);
+
+        //float angleDelta = Vector2.SignedAngle(touch0.deltaPosition, touch1.deltaPosition);
 
         // Rotate the camera horizontally around the Y-axis based on the angle delta
+
         mainCameraParent.transform.Rotate(Vector3.up, angleDelta * rotationSpeed * Time.deltaTime, Space.World);
 
         tempText.text = $"Camera Rotation: {mainCameraParent.transform.rotation.eulerAngles}";

@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI; // For Button interactions
 
-public class ArrowControl : MonoBehaviour
+public class ArrowControl : MonoBehaviour, IPointerClickHandler
 {
     public GameObject arrow; // Reference to the arrow GameObject
     public Button floorButton; // Reference to the floor button's Button component
@@ -15,7 +16,7 @@ public class ArrowControl : MonoBehaviour
     public float speed = 2f; // Movement speed of the arrow
     private float currentSpeed = 0f; // Current speed of the arrow
     public float acceleration = 1f; // Rate of acceleration
-    public bool isMoving = false; // Is the arrow currently moving
+    public bool pointerIsMoving = false; // Is the arrow currently moving
 
     private int movementPhase = 0; // To track movement between different phases
 
@@ -28,23 +29,27 @@ public class ArrowControl : MonoBehaviour
         MoveToFloorButton();
     }
 
+    private void MoveToFloorButton()
+    {
+        movementPhase = 0;
+        pointerIsMoving = true;
+    }
+
+
     void Update()
     {
         // Keep the arrow moving during the various phases of movement
-        if (isMoving)
+        if (pointerIsMoving)
         {
             switch (movementPhase)
             {
                 case 0:
-                    Debug.Log("phase 0 ");
                     MoveTowardsPoint(floorButton.transform.position);
                     break;
                 case 1:
-                    Debug.Log("phase 1 ");
                     MoveTowardsPoint(targetObject1.transform.position);
                     break;
                 case 2:
-                    Debug.Log("phase 2 ");
                     MoveTowardsPoint(targetObject2.transform.position);
                     break;
                 case 3:
@@ -83,7 +88,7 @@ public class ArrowControl : MonoBehaviour
 
     private void OnReachedTarget()
     {
-        isMoving = false;
+        pointerIsMoving = false;
         currentSpeed = 0f;
 
         switch (movementPhase)
@@ -97,7 +102,7 @@ public class ArrowControl : MonoBehaviour
                 // Arrow reached targetObject1, automatically move to targetObject2
                 Debug.Log("Reached TargetObject1.");
                 // Move to next phase (targetObject2)
-                DragandThanMove();
+                DragAndThanMove();
                 //  MoveToTargetObject2();
                 break;
 
@@ -124,11 +129,7 @@ public class ArrowControl : MonoBehaviour
     }
 
     // Method to start moving the arrow to the floor button
-    private void MoveToFloorButton()
-    {
-        movementPhase = 0;
-        isMoving = true;
-    }
+    
 
     // Method triggered when the floor button is clicked
     private void OnFloorButtonClick()
@@ -137,10 +138,10 @@ public class ArrowControl : MonoBehaviour
         movementPhase = 1; // Move to the first target after button click
         MoveToTargetObject1();
     }
-    private void DragandThanMove()
+    private void DragAndThanMove()
     {
 #if UNITY_EDITOR
-        isMoving = true;
+        pointerIsMoving = true;
         Debug.Log("Get mouse up");
         if (Input.GetMouseButton(0))
         {
@@ -211,24 +212,29 @@ public class ArrowControl : MonoBehaviour
     // Method to move the arrow to targetObject1 after clicking the floor button
     private void MoveToTargetObject1()
     {
-        isMoving = true;
+        pointerIsMoving = true;
     }
 
     // Method to move the arrow to targetObject2 after reaching targetObject1
     private void MoveToTargetObject2()
     {
-        isMoving = true;
+        pointerIsMoving = true;
     }
 
     // Method to move the arrow towards the wall button after dragging mouse
     public void MoveToWallButton()
     {
-        isMoving = true;
+        pointerIsMoving = true;
     }
 
     // Method to move the arrow towards the wall and drag it
     private void MoveToWall()
     {
-        isMoving = true;
+        pointerIsMoving = true;
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        
     }
 }
