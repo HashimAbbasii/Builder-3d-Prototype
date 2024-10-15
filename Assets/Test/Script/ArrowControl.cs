@@ -7,7 +7,9 @@ using UnityEngine.UI; // For Button interactions
 public class ArrowControl : MonoBehaviour, IPointerClickHandler
 {
     public GameObject arrow; // Reference to the arrow GameObject
+    public GameObject arrowForWallIndicate;
     public Button floorButton; // Reference to the floor button's Button component
+    public Button wallButtonPos; // Reference to the wall button's Button component
     public GameObject targetObject1; // First target object after floor button
     public GameObject targetObject2; // Second target object after reaching first
     public RectTransform wallButton; // Reference to the wall button's RectTransform
@@ -20,14 +22,31 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
 
     private int movementPhase = 0; // To track movement between different phases
 
+
+    public Button ModelIndicate;
+
     void Start()
     {
         // Set up button click listener for the floor button
         floorButton.onClick.AddListener(OnFloorButtonClick);
+         wallButtonPos.onClick.AddListener(WallButtonClickPos);
 
         // Start by moving the arrow to the floor button
         MoveToFloorButton();
+        
     }
+
+    public void ArrowIndicateForWall()
+    {
+       
+    }
+
+    public void WallButtonClickPos()
+    {
+        ToCheckFloorClick = true;
+        arrowForWallIndicate.SetActive(true);
+    }
+
 
     private void MoveToFloorButton()
     {
@@ -35,11 +54,37 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
         pointerIsMoving = true;
     }
 
+    public void MoveToModelButton()
+    {
+        movementPhase = 5;
+        pointerIsMoving = true;
+    }
+    public bool ToCheckFloorClick = false;
+    public int GrassLayer ;
 
     void Update()
     {
         // Keep the arrow moving during the various phases of movement
-        if (pointerIsMoving)
+        if (ToCheckFloorClick == true)
+        {
+            if(Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    // Check if the hit GameObject has the "Floor" tag
+                    if (hit.collider.gameObject.CompareTag("Floor"))
+                    {
+                        //arrowForWallIndicate.SetActive(false);
+                        ToCheckFloorClick = false;
+                    }
+                }
+
+            }
+            
+        }
+       else if (pointerIsMoving)
         {
             switch (movementPhase)
             {
@@ -57,6 +102,9 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
                     break;
                 case 4:
                     MoveTowardsPoint(wall.transform.position);
+                    break;
+                case 5:
+                    MoveTowardsPoint(ModelIndicate.transform.position);
                     break;
             }
         }
@@ -124,6 +172,10 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
                 // Arrow reached the wall and will drag it
                 Debug.Log("Reached Wall, dragging...");
                 // Implement your wall dragging logic here
+                break;
+
+            case 5:
+                Debug.Log("Reached Model Indicate");
                 break;
         }
     }
@@ -230,7 +282,13 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
     // Method to move the arrow towards the wall and drag it
     private void MoveToWall()
     {
+       // pointerIsMoving = true;
+    }
+
+    public void MovetotheModelInterior()
+    {
         pointerIsMoving = true;
+        movementPhase = 5;
     }
 
     public void OnPointerClick(PointerEventData eventData)

@@ -39,6 +39,8 @@ public class SpawningManagerTutorial : MonoBehaviour
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
 
+   // public ArrowControl arrowControl;
+
     private void OnValidate()
     {
         for (var i = 0; i < modelPrefabs.Count(); i++)
@@ -183,6 +185,8 @@ public class SpawningManagerTutorial : MonoBehaviour
         {
             _isCreatingWall = false; // Reset the wall creation process
             _currentWall = null; // Reset the current wall object
+            arrowControl.arrowForWallIndicate.gameObject.SetActive(false);
+            arrowControl.MovetotheModelInterior();
 
            // ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
             Debug.Log("Wall Up");
