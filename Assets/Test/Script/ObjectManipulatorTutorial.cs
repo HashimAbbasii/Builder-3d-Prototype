@@ -16,6 +16,7 @@ public class ObjectManipulatorTutorial : MonoBehaviour
     public LayerMask placeableLayer; // Layer mask for selected objects
 
     public Button floorButton;
+
     public GameObject removeButton; // Button for removing the selected object
 
     // Store a list of RectTransforms for the rotation buttons

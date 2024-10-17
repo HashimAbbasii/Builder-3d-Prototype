@@ -10,8 +10,12 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
     public GameObject arrowForWallIndicate;
     public Button floorButton; // Reference to the floor button's Button component
     public Button wallButtonPos; // Reference to the wall button's Button component
+    public Button FurnitureButton;
+    public Button ChairButton;
+    public Button EvidenceButton;
     public GameObject targetObject1; // First target object after floor button
     public GameObject targetObject2; // Second target object after reaching first
+    public GameObject targetObject3; // Third target object after reaching second
     public RectTransform wallButton; // Reference to the wall button's RectTransform
     public GameObject wall; // Reference to the wall GameObject
 
@@ -30,15 +34,28 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
         // Set up button click listener for the floor button
         floorButton.onClick.AddListener(OnFloorButtonClick);
          wallButtonPos.onClick.AddListener(WallButtonClickPos);
+        FurnitureButton.onClick.AddListener(FurnitureButtonClick);
+        ChairButton.onClick.AddListener(ChairButtonListener);
 
         // Start by moving the arrow to the floor button
         MoveToFloorButton();
         
     }
-
-    public void ArrowIndicateForWall()
+    public void EvidenceButtonMoves()
     {
-       
+        movementPhase = 8;
+        pointerIsMoving = true;
+    }
+    public void ChairButtonListener()
+    {
+        movementPhase = 7;
+        pointerIsMoving = true;
+    }
+
+    public void FurnitureButtonClick()
+    {
+        movementPhase = 6;
+        pointerIsMoving = true;
     }
 
     public void WallButtonClickPos()
@@ -105,6 +122,15 @@ public class ArrowControl : MonoBehaviour, IPointerClickHandler
                     break;
                 case 5:
                     MoveTowardsPoint(ModelIndicate.transform.position);
+                    break;
+                 case 6:
+                    MoveTowardsPoint(ChairButton.transform.position);
+                    break;
+                case 7:
+                    MoveTowardsPoint(targetObject3.transform.position);
+                    break;
+                case 8:
+                    MoveTowardsPoint(EvidenceButton.transform.position);
                     break;
             }
         }

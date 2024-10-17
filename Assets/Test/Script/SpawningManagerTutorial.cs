@@ -213,6 +213,7 @@ public class SpawningManagerTutorial : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && _selectedObjectIndex != -1 && _previewObject != null) // Place object on mouse button release
         {
             PlaceObjectOnSurface();
+            //arrowControl.EvidenceButtonMoves();
         }
     }
     public bool ArrowIndicate = false;
@@ -280,6 +281,7 @@ public class SpawningManagerTutorial : MonoBehaviour
                 Destroy(_previewObject);
             }
             _previewObject = Instantiate(modelPrefabs[objectIndex]);
+            arrowControl.EvidenceButtonMoves();
             _originalMaterial = _previewObject.GetComponentInChildren<SelectableObject>().objectRenderer.material; // Store the original material
             ApplyMaterial(_previewObject, previewMaterial);
         }
@@ -336,6 +338,8 @@ public class SpawningManagerTutorial : MonoBehaviour
                         //ManagerHandler.Instance.objectManipulator.selectableLayer = LayerMask.GetMask("Floor", "Selectable", "Selected");
 
                         modelsSpawned.Add(placedObject);
+                       // arrowControl.EvidenceButtonMoves();
+                        Debug.Log("EvidenceButtonMoves");
 
                         // Reset the material of the placed object to the original material
                         var renderers = placedObject.GetComponentsInChildren<Renderer>();
