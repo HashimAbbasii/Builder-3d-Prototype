@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 360463830539496967}
   - component: {fileID: 360463830539496964}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Chair_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,13 +45,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1014ce0feb73fe4daf1ad48fd9be41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectID: 0
+  objectID: 8
   surfaceType: 3
   modelType: 0
-  canPlaceObjectsOnIt: 0
+  furnitureType: 1
+  evidenceType: 0
+  canPlaceObjectsOnIt: 1
   canBePlacedOnObject: 0
   heightOffset: 0
   objectRenderer: {fileID: 4916722545177121626}
+  ModelVariants: []
 --- !u!1 &703113634876892033
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,7 +64,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 183001120571029819}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Chair_03_new
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +98,8 @@ GameObject:
   - component: {fileID: 9042251462256408304}
   - component: {fileID: 3819230247874330850}
   - component: {fileID: 4916722545177121626}
-  m_Layer: 0
+  - component: {fileID: 1991668230000238720}
+  m_Layer: 11
   m_Name: model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -168,3 +172,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &1991668230000238720
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1086427143794184948}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -915712872417006085, guid: 256b3deca7afe9240a31f5aeee910959, type: 3}

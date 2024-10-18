@@ -48,10 +48,12 @@ MonoBehaviour:
   objectID: 1
   surfaceType: 2
   modelType: 0
+  objectType: 3
   canPlaceObjectsOnIt: 0
   canBePlacedOnObject: 0
   heightOffset: 0
   objectRenderer: {fileID: 5370340957823723512}
+  ModelVariants: []
 --- !u!1 &5370340957823723517
 GameObject:
   m_ObjectHideFlags: 0

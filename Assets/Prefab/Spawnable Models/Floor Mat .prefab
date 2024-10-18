@@ -143,10 +143,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1014ce0feb73fe4daf1ad48fd9be41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectID: 7
+  objectID: 9
   surfaceType: 3
   modelType: 0
+  furnitureType: 3
+  evidenceType: 0
   canPlaceObjectsOnIt: 1
   canBePlacedOnObject: 0
   heightOffset: 0.1
   objectRenderer: {fileID: 3327705405757100690}
+  ModelVariants: []

@@ -6,6 +6,8 @@ using UnityEngine.UIElements;
 public class SelectableObject : ObjectType
 {
     public ModelType modelType;
+    public FurnitureType furnitureType;
+    public EvidenceType evidenceType;
     public bool canPlaceObjectsOnIt;
     public bool canBePlacedOnObject;
     public float heightOffset = 0.0f; // The height offset to place objects on this surface
@@ -25,4 +27,21 @@ public enum ModelType
 {
     Furniture,
     Evidence
+}
+
+public enum FurnitureType
+{
+    None,
+    Chair,
+    Table,
+    Bed,
+    Carpet
+}
+
+public enum EvidenceType
+{
+    None,
+    Blood,
+    DeadBody,
+    Knife
 }

@@ -51,6 +51,8 @@ MonoBehaviour:
   objectID: 0
   surfaceType: 3
   modelType: 0
+  furnitureType: 1
+  evidenceType: 0
   canPlaceObjectsOnIt: 1
   canBePlacedOnObject: 0
   heightOffset: 0.1

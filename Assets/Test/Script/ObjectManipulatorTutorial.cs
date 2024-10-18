@@ -135,6 +135,7 @@ public class ObjectManipulatorTutorial : MonoBehaviour
                     if (hit.transform.parent?.GetComponent<SelectableObject>())
                     {
                         selectedObject.parent.transform.SetParent(hit.transform.parent);
+                        Debug.Log("Mouse Up") ;
                     }
                     else
                     {

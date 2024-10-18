@@ -45,12 +45,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1014ce0feb73fe4daf1ad48fd9be41c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectID: 0
   surfaceType: 3
   modelType: 1
+  furnitureType: 0
+  evidenceType: 3
   canPlaceObjectsOnIt: 0
   canBePlacedOnObject: 0
   heightOffset: 0
   objectRenderer: {fileID: 7111664384275121473}
+  ModelVariants: []
 --- !u!1001 &3641505614813427577
 PrefabInstance:
   m_ObjectHideFlags: 0

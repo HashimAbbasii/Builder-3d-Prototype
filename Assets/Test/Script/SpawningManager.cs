@@ -27,8 +27,8 @@ public class SpawningManager : MonoBehaviour
     private GameObject _currentWall;
     private GameObject _previewObject;
     private Material _originalMaterial; // To store the original material of the model
-    private bool _isCreatingFloor = false;
-    private bool _isCreatingWall = false;
+    public  bool _isCreatingFloor = false;
+    public bool _isCreatingWall = false;
     public bool _wallAlongZAxis = false;
     public bool pauseCondition = false;
     private int _selectedObjectIndex = -1;
@@ -40,7 +40,24 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> floorsSpawned = new();
     public List<GameObject> wallsSpawned = new();
     public List<GameObject> modelsSpawned = new();
- 
+
+    public GameObject categoryButtonPrefab;   // Prefab for the category button
+    public Transform categoryListParent;      // Parent for category buttons (Scroll View's Content)
+    public GameObject subPanel;               // UI panel for model selection
+    public GameObject modelButtonPrefab;      // Prefab for each model button
+    public Transform modelListParent;         // Parent for model buttons (Scroll View's Content)
+
+
+    public List<GameObject> chairModelPrefabs = new();
+    public List<GameObject> tableModelPrefabs = new();
+    public List<GameObject> bedModelPrefabs = new();
+
+    private List<GameObject> currentCategoryModels;  // Currently selected category models
+    private int currentPage = 0;
+    private int modelsPerPage = 20;
+   
+
+
 
 
     [Space(5)]
@@ -74,7 +91,7 @@ public class SpawningManager : MonoBehaviour
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
         SetupLineRenderers(); // Initialize the LineRenderers
 
-       
+
 
         for (var i = 0; i < modelPrefabs.Count(); i++)
         {
@@ -90,6 +107,42 @@ public class SpawningManager : MonoBehaviour
                 case ModelType.Evidence:
                     evidencePrefabs.Add(model);
                     break;
+            }
+        }
+
+        foreach (var model in modelPrefabs)
+        {
+            if (model.GetComponent<SelectableObject>().modelType != ModelType.Furniture || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
+            
+            switch (model.GetComponent<SelectableObject>().furnitureType)
+            {
+                case FurnitureType.Chair:
+                    chairModelPrefabs.Add(model);
+                    break;
+
+                case FurnitureType.Table:
+                    tableModelPrefabs.Add(model);
+                    break;
+
+                case FurnitureType.Bed:
+                    bedModelPrefabs.Add(model);
+                    break;
+
+                case FurnitureType.Carpet:
+
+                    break;
+
+            }
+        }
+
+        foreach (var model in modelPrefabs)
+        {
+            if (model.GetComponent<SelectableObject>().modelType != ModelType.Evidence || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
+
+            switch (model.GetComponent<SelectableObject>().evidenceType)
+            {
+               
+
             }
         }
 
@@ -115,8 +168,106 @@ public class SpawningManager : MonoBehaviour
             eb.button.onClick.AddListener(() =>
                 SelectObject(modelPrefabs.FirstOrDefault(x => x == ep)!.GetComponent<SelectableObject>().objectID - 2));
         }
+
+        subPanel.SetActive(false);  // Hide sub-panel initially
+
+        // Create category buttons dynamically
+        CreateCategoryButton("Chair");
+        CreateCategoryButton("Table");
+        CreateCategoryButton("Bed");
+
+        // Set initial category (for example, Chairs)
+        SetCurrentCategory("Chair");
+
         // UpdateFloorDimensionsText(Vector3.zero, Vector3.zero); // Initialize with zero dimensions
     }
+
+
+    private void CreateCategoryButton(string categoryName)
+    {
+        GameObject button = Instantiate(categoryButtonPrefab, categoryListParent);
+        button.name = categoryName;
+        button.GetComponentInChildren<TextMeshProUGUI>().text = categoryName;
+        button.GetComponent<Button>().onClick.AddListener(() => OnCategorySelected(categoryName));
+    }
+
+    public GameObject categoryPanelScrollView;
+    public GameObject canvasEssential;
+    private void OnCategorySelected(string category)
+    {
+        SetCurrentCategory(category);
+        categoryPanelScrollView.SetActive(false);
+        subPanel.SetActive(true);
+
+    }
+
+    private void SetCurrentCategory(string category)
+    {
+        currentPage = 0;
+
+        switch (category)
+        {
+            case "Chair":
+                currentCategoryModels = chairModelPrefabs;
+                break;
+            case "Table":
+                currentCategoryModels = tableModelPrefabs;
+                break;
+            case "Bed":
+                currentCategoryModels = bedModelPrefabs;
+                break;
+        }
+
+        LoadModels(currentPage);
+    }
+
+
+
+    public void NextPage()
+    {
+        if ((currentPage + 1) * modelsPerPage < currentCategoryModels.Count)
+        {
+            currentPage++;
+            LoadModels(currentPage);
+        }
+    }
+
+    public void PreviousPage()
+    {
+        if (currentPage > 0)
+        {
+            currentPage--;
+            LoadModels(currentPage);
+        }
+    }
+
+
+
+
+    private void LoadModels(int page)
+    {
+      //  subPanel.SetActive(true);
+        // Clear previous buttons
+        foreach (Transform child in modelListParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Calculate the range of models to display on this page
+        int startIndex = page * modelsPerPage;
+        int endIndex = Mathf.Min(startIndex + modelsPerPage, currentCategoryModels.Count);
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            GameObject button = Instantiate(modelButtonPrefab, modelListParent);
+            int index = i;
+            button.GetComponentInChildren<TextMeshProUGUI>().text = "Model " + (i + 1);
+            button.GetComponent<Button>().onClick.AddListener(() => SelectModel(index));
+        }
+    }
+
+
+
 
     private void Update()
     {
@@ -339,8 +490,38 @@ public class SpawningManager : MonoBehaviour
         _previewObject = null;
         _selectedObjectIndex = -1;
     }
-    
-    
+
+
+
+    private void SelectModel(int objectIndex)
+    {
+       // subPanel.SetActive(true);
+        if (_selectedObjectIndex == objectIndex)
+        {
+            //if (_previewObject != null)
+            //{
+            //    Destroy(_previewObject);
+            //}
+            _selectedObjectIndex = -1;
+            return;
+        }
+
+        _selectedObjectIndex = objectIndex;
+
+        //if (_previewObject != null)
+        //{
+        //    Destroy(_previewObject);
+        //}
+
+        _previewObject = Instantiate(currentCategoryModels[objectIndex]);
+        subPanel.SetActive(false);  // Hide sub-panel after selection
+        canvasEssential.gameObject.SetActive(true); 
+    }
+
+
+
+
+
     // Called when an object button (like Chair, Table) is clicked
     public void SelectObject(int objectIndex)
     {

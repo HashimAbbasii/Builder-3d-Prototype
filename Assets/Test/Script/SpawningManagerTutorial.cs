@@ -204,6 +204,7 @@ public class SpawningManagerTutorial : MonoBehaviour
 
                 // Check if the object is being placed on a valid surface
                 var surface = hit.collider.GetComponent<ObjectType>();
+                Debug.Log("Place");
                 ApplyMaterial(_previewObject, surface != null ? validPlacementMaterial : invalidPlacementMaterial); // Invalid surface
                 // Valid surface
             }
@@ -213,6 +214,7 @@ public class SpawningManagerTutorial : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && _selectedObjectIndex != -1 && _previewObject != null) // Place object on mouse button release
         {
             PlaceObjectOnSurface();
+            Debug.Log("Model prefab");
             //arrowControl.EvidenceButtonMoves();
         }
     }

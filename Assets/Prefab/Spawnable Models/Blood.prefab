@@ -48,10 +48,13 @@ MonoBehaviour:
   objectID: 0
   surfaceType: 3
   modelType: 1
+  furnitureType: 0
+  evidenceType: 1
   canPlaceObjectsOnIt: 0
   canBePlacedOnObject: 0
   heightOffset: 0
   objectRenderer: {fileID: 5014133755673851622}
+  ModelVariants: []
 --- !u!1 &9199293526325564602
 GameObject:
   m_ObjectHideFlags: 0

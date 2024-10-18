@@ -45,8 +45,8 @@ public class CameraManager : MonoBehaviour
         startRot = mainCameraParent.transform.rotation;
         startFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView;
         // Set up listeners for the toggles
-        CameraPosition.onValueChanged.AddListener(OnCameraPositionToggleChanged);
-        CameraRotation.onValueChanged.AddListener(OnCameraRotationToggleChanged);
+        //CameraPosition.onValueChanged.AddListener(OnCameraPositionToggleChanged);
+       // CameraRotation.onValueChanged.AddListener(OnCameraRotationToggleChanged);
     }
 
     void Update()
