@@ -42,10 +42,22 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> modelsSpawned = new();
 
     public GameObject categoryButtonPrefab;   // Prefab for the category button
+    public GameObject EvidenceButtonPrefab;   // UI panel for category selection
+
+
     public Transform categoryListParent;      // Parent for category buttons (Scroll View's Content)
+    public Transform EvidenceListParent;      // Parent for category buttons (Scroll View's Content)
+
     public GameObject subPanel;               // UI panel for model selection
+    public GameObject EvidenceSubPanel;       // UI panel for evidence selection
+
+
     public GameObject modelButtonPrefab;      // Prefab for each model button
+    public GameObject EvidenceModelButtonPrefab;
+
     public Transform modelListParent;         // Parent for model buttons (Scroll View's Content)
+    public Transform EvidenceModelListParent; // Parent for model buttons (Scroll View's Content)
+
 
 
     public List<GameObject> chairModelPrefabs = new();
@@ -777,4 +789,23 @@ public class SpawningManager : MonoBehaviour
         // gameObject.SetActive(false);
 
     }
+
+     public void CreateEvidence()
+    {
+        CreateEvidenceButton("Dead Body");
+        CreateEvidenceButton("Blood");
+        CreateEvidenceButton("Knife");
+
+
+    }
+
+    private void CreateEvidenceButton(string categoryName)
+    {
+        GameObject button = Instantiate(EvidenceButtonPrefab, EvidenceListParent);
+        button.name = categoryName;
+        button.GetComponentInChildren<TextMeshProUGUI>().text = categoryName;
+        button.GetComponent<Button>().onClick.AddListener(() => OnCategorySelected(categoryName));
+    }
+
+
 }
