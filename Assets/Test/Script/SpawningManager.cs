@@ -52,7 +52,7 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> tableModelPrefabs = new();
     public List<GameObject> bedModelPrefabs = new();
 
-    private List<GameObject> currentCategoryModels;  // Currently selected category models
+    public List<GameObject> currentCategoryModels;  // Currently selected category models
     private int currentPage = 0;
     private int modelsPerPage = 20;
    
@@ -396,7 +396,7 @@ public class SpawningManager : MonoBehaviour
 
         if (touch.phase == TouchPhase.Ended && _selectedObjectIndex != -1 && _previewObject != null)
         {
-            PlaceObjectOnSurface();
+          //  PlaceObjectOnSurface();
         }
     }
 
