@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using TMPro;
+using Unity.IO.LowLevel.Unsafe;
+using System.Xml.Serialization;
 
 public class SpawningManager : MonoBehaviour
 {
@@ -64,7 +66,15 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> tableModelPrefabs = new();
     public List<GameObject> bedModelPrefabs = new();
 
+    [Header("Evidence")]
+
+    public List <GameObject> deadBodyPrefabs = new();
+    public List <GameObject> bloodPrefabs = new();
+
+
     public List<GameObject> currentCategoryModels;  // Currently selected category models
+
+    public List<GameObject> currentEvidenceModels;  // Currently selected evidence models
     private int currentPage = 0;
     private int modelsPerPage = 20;
    
@@ -99,6 +109,7 @@ public class SpawningManager : MonoBehaviour
 
     private void Start()
     {
+        //canvasEssential.gameObject.SetActive(true);
         pauseCondition = false;
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
         SetupLineRenderers(); // Initialize the LineRenderers
@@ -153,7 +164,12 @@ public class SpawningManager : MonoBehaviour
 
             switch (model.GetComponent<SelectableObject>().evidenceType)
             {
-               
+                case EvidenceType.Blood:
+                    bloodPrefabs.Add(model);
+                    break;
+                case EvidenceType.DeadBody:
+                    deadBodyPrefabs.Add(model);
+                    break;
 
             }
         }
@@ -187,9 +203,14 @@ public class SpawningManager : MonoBehaviour
         CreateCategoryButton("Chair");
         CreateCategoryButton("Table");
         CreateCategoryButton("Bed");
+        //EvidencPanel.SetActive(true);
 
         // Set initial category (for example, Chairs)
         SetCurrentCategory("Chair");
+
+        CreateEvidence();
+
+
 
         // UpdateFloorDimensionsText(Vector3.zero, Vector3.zero); // Initialize with zero dimensions
     }
@@ -203,15 +224,42 @@ public class SpawningManager : MonoBehaviour
         button.GetComponent<Button>().onClick.AddListener(() => OnCategorySelected(categoryName));
     }
 
-    public GameObject categoryPanelScrollView;
-    public GameObject canvasEssential;
+   // public GameObject categoryPanelScrollView;
+   // public GameObject canvasEssential;
     private void OnCategorySelected(string category)
     {
+        canvasFurniture.SetActive(false);
         SetCurrentCategory(category);
-        categoryPanelScrollView.SetActive(false);
+        //categoryPanelScrollView.SetActive(false);
         subPanel.SetActive(true);
 
     }
+    private void OnEvidenceSelected(string category)
+    {
+        Debug.Log("Evidence Selected: " + category);
+        EvidenceScrollView.SetActive(false);
+        SetEvidenceCategory(category);
+        //categoryPanelScrollView.SetActive(false);
+        EvidenceSubPanel.SetActive(true);
+    }
+
+    //public GameObject EvidenceSubPanel;
+    //private void OnEvidenceSelected(string category)
+    //{
+    //    //EvidenceSubPanel.SetActive(true);
+    //    currentPage = 0;
+    //    switch (category)
+    //    {
+    //        case "Dead Body":
+    //            currentEvidenceModels= deadBodyPrefabs;
+    //            break;
+    //        case "Blood":
+    //            currentEvidenceModels = bloodPrefabs;
+    //            break;
+
+    //    }
+    //    LoadModelEvidence(currentPage);
+    //}
 
     private void SetCurrentCategory(string category)
     {
@@ -232,6 +280,26 @@ public class SpawningManager : MonoBehaviour
 
         LoadModels(currentPage);
     }
+
+    private void SetEvidenceCategory(string category)
+    {
+        currentPage = 0;
+
+        switch (category)
+        {
+            case "Dead Body":
+                Debug.Log("Dead Body");
+                currentEvidenceModels = deadBodyPrefabs;
+                break;
+            case "Blood":
+                currentEvidenceModels = bloodPrefabs;
+                break;
+            
+        }
+
+        LoadModelEvidence(currentPage);
+    }
+
 
 
 
@@ -275,6 +343,27 @@ public class SpawningManager : MonoBehaviour
             int index = i;
             button.GetComponentInChildren<TextMeshProUGUI>().text = "Model " + (i + 1);
             button.GetComponent<Button>().onClick.AddListener(() => SelectModel(index));
+        }
+    }
+
+
+    public void LoadModelEvidence(int page)
+    {
+        foreach (Transform child in modelListParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Calculate the range of models to display on this page
+        int startIndex = page * modelsPerPage;
+        int endIndex = Mathf.Min(startIndex + modelsPerPage, currentEvidenceModels.Count);
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            GameObject button = Instantiate(EvidenceModelButtonPrefab, EvidenceModelListParent);
+            int index = i;
+            button.GetComponentInChildren<TextMeshProUGUI>().text = "Model " + (i + 1);
+            button.GetComponent<Button>().onClick.AddListener(() => SelectModelEvidence(index));
         }
     }
 
@@ -478,7 +567,7 @@ public class SpawningManager : MonoBehaviour
         _isCreatingWall = false; // Ensure wall creation is not active
         if (_previewObject != null)
         {
-            Destroy(_previewObject);
+            //Destroy(_previewObject);
         }
         _previewObject = null;
         _selectedObjectIndex = -1;
@@ -497,17 +586,22 @@ public class SpawningManager : MonoBehaviour
         _isCreatingFloor = false; // Ensure floor creation is not active
         if (_previewObject != null)
         {
-            Destroy(_previewObject);
+           // Destroy(_previewObject);
         }
         _previewObject = null;
         _selectedObjectIndex = -1;
     }
 
 
+    public GameObject canvasFurniture;
+    public GameObject EvidenceScrollView;
+    
+    //public GameObject scrollViewFurniture;
 
     private void SelectModel(int objectIndex)
     {
-       // subPanel.SetActive(true);
+        // subPanel.SetActive(true);
+       // canvasFurniture.SetActive(false);
         if (_selectedObjectIndex == objectIndex)
         {
             //if (_previewObject != null)
@@ -526,9 +620,39 @@ public class SpawningManager : MonoBehaviour
         //}
 
         _previewObject = Instantiate(currentCategoryModels[objectIndex]);
-        subPanel.SetActive(false);  // Hide sub-panel after selection
-        canvasEssential.gameObject.SetActive(true); 
+        Debug.Log("CLCIK");
+       // subPanel.SetActive(false);  // Hide sub-panel after selection
+        //canvasEssential.gameObject.SetActive(true); 
     }
+
+
+    private void SelectModelEvidence(int objectIndex)
+    {
+        // subPanel.SetActive(true);
+        EvidenceSubPanel.SetActive(true);
+        if (_selectedObjectIndex == objectIndex)
+        {
+            //if (_previewObject != null)
+            //{
+            //    Destroy(_previewObject);
+            //}
+            _selectedObjectIndex = -1;
+            return;
+        }
+
+        _selectedObjectIndex = objectIndex;
+
+        //if (_previewObject != null)
+        //{
+        //    Destroy(_previewObject);
+        //}
+
+        _previewObject = Instantiate(currentEvidenceModels[objectIndex]);
+        //EvidenceSubPanel.SetActive(false);  // Hide sub-panel after selection
+        //canvasEssential.gameObject.SetActive(true);
+    }
+
+
 
 
 
@@ -790,22 +914,51 @@ public class SpawningManager : MonoBehaviour
 
     }
 
+    public bool EvidenceButtonClick = true;
      public void CreateEvidence()
     {
+
+     
+        //categoryPanelScrollView.SetActive(false);
+        //EvidencPanel.gameObject.SetActive(true);
         CreateEvidenceButton("Dead Body");
         CreateEvidenceButton("Blood");
         CreateEvidenceButton("Knife");
+        Debug.Log("Evidence created");
+        //canvasEssential.gameObject.SetActive(false);
+        //OnEvidenceSelected("Dead Body");
+      
 
 
     }
-
+    public GameObject EvidencPanel;
     private void CreateEvidenceButton(string categoryName)
     {
         GameObject button = Instantiate(EvidenceButtonPrefab, EvidenceListParent);
         button.name = categoryName;
         button.GetComponentInChildren<TextMeshProUGUI>().text = categoryName;
-        button.GetComponent<Button>().onClick.AddListener(() => OnCategorySelected(categoryName));
+        button.GetComponent<Button>().onClick.AddListener(() => OnEvidenceSelected(categoryName));
     }
 
-
+    public GameObject essentialPanel;
+    public GameObject FurniturePanel;
+    public GameObject EvidencePanel;
+    public void EssentialPanelClick()
+    {
+        essentialPanel.gameObject.SetActive(true);
+        FurniturePanel.gameObject.SetActive(false);
+        EvidencePanel.gameObject.SetActive(false);
+    }
+    public void FurniturePanelClick()
+    {
+        essentialPanel.gameObject.SetActive(false);
+        FurniturePanel.gameObject.SetActive(true);
+        EvidencePanel.gameObject.SetActive(false);
+    }
+    public void EvidencePanelClick()
+    {
+        essentialPanel.gameObject.SetActive(false);
+        FurniturePanel.gameObject.SetActive(false);
+        EvidencePanel.gameObject.SetActive(true);
+    }
 }
