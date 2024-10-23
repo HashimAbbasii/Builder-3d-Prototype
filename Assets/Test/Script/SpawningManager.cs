@@ -206,7 +206,7 @@ public class SpawningManager : MonoBehaviour
         //EvidencPanel.SetActive(true);
 
         // Set initial category (for example, Chairs)
-        SetCurrentCategory("Chair");
+       // SetCurrentCategory("Chair");
 
         CreateEvidence();
 
