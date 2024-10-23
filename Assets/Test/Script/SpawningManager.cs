@@ -349,7 +349,7 @@ public class SpawningManager : MonoBehaviour
 
     public void LoadModelEvidence(int page)
     {
-        foreach (Transform child in modelListParent)
+        foreach (Transform child in EvidenceModelListParent)
         {
             Destroy(child.gameObject);
         }

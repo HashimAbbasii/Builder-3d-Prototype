@@ -286,6 +286,7 @@ public class ObjectManipulator : MonoBehaviour
         if (selectedObject == null) return;
 
         var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
+        Debug.Log("Mesh Renderer");
         if (meshRenderer != null)
         {
             _originalMaterial = meshRenderer.material; // Store the original material

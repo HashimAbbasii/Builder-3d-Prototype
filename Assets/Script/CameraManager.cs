@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static uMouseLook;
 
 public class CameraManager : MonoBehaviour
 {
@@ -14,7 +13,7 @@ public class CameraManager : MonoBehaviour
     public SpawningManager spawningManager;
 
     [SerializeField] private float moveSpeed = 0.05f;     // Movement speed
-    [SerializeField] private float rotationSpeed = 0.5f;    // Speed for camera rotation
+    [SerializeField] private float rotationSpeed = 0.5f;  // Speed for camera rotation
     [SerializeField] private float zoomInSpeed = 0.05f;   // Zooming in speed
     [SerializeField] private float zoomOutSpeed = 0.05f;  // Zooming out speed
     [SerializeField] private float minZoom = 20.0f;       // Minimum zoom level
@@ -27,12 +26,15 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float minXPosition = -8f;       // Minimum X-axis position
     [SerializeField] private float maxXPosition = 8f;        // Maximum X-axis position
     [SerializeField] private float minZPosition = -10f;      // Minimum Z-axis position
+    [SerializeField] private float minPitch = 10f;          // Minimum pitch angle (downward limit)
+    [SerializeField] private float maxPitch = 90f;           // Maximum pitch angle (upward limit)
 
     public TMP_Text tempText;
 
     private Vector3 startPos;                // Initial camera position
     private Quaternion startRot;             // Initial camera rotation
     private float startFOV;
+    private float currentPitch = 0f;         // Current pitch of the camera
 
     // Gesture state management
     private enum GestureState { None, Zooming, Moving, Rotating }
@@ -44,82 +46,36 @@ public class CameraManager : MonoBehaviour
         startPos = mainCameraParent.transform.position;
         startRot = mainCameraParent.transform.rotation;
         startFOV = mainCameraParent.GetComponentInChildren<Camera>().fieldOfView;
-        // Set up listeners for the toggles
-        //CameraPosition.onValueChanged.AddListener(OnCameraPositionToggleChanged);
-       // CameraRotation.onValueChanged.AddListener(OnCameraRotationToggleChanged);
+        currentPitch = mainCameraParent.transform.eulerAngles.x;
     }
 
     void Update()
     {
+        // Handle touch input based on the number of touches
         if (Input.touchCount == 2)
         {
+            // Handle two-finger gestures for zooming and moving
             var touch0 = Input.GetTouch(0);
             var touch1 = Input.GetTouch(1);
 
-            // if (currentGesture == GestureState.None)
-            // {
-            //     // Determine the type of gesture and lock in the state
-            //     if (IsZoomGesture(touch0, touch1))
-            //     {
-            //         currentGesture = GestureState.Zooming;
-            //     }
-            //     if (IsMovementGesture(touch0, touch1))
-            //     {
-            //         currentGesture = GestureState.Moving;
-            //     }
-            //     if (IsRotationGesture(touch0, touch1))
-            //     {
-            //         currentGesture = GestureState.Rotating;
-            //     }
-            // }
+            // Handle zoom and move with two touches
+            ZoomCamera(touch0, touch1);
+            MoveCameraWithTwoTouches(touch0, touch1);
+        }
+        else if (Input.touchCount == 3)
+        {
+            // Handle rotation with three fingers
+            var touch0 = Input.GetTouch(0);
+            var touch1 = Input.GetTouch(1);
+            var touch2 = Input.GetTouch(2);
 
-            // Execute the appropriate gesture based on the current state
-            // if (currentGesture == GestureState.Zooming)
-            {
-                ZoomCamera(touch0, touch1);
-            }
-            // if (currentGesture == GestureState.Moving)
-            {
-                MoveCameraWithTwoTouches(touch0, touch1);
-            }
-            // if (currentGesture == GestureState.Rotating)
-            {
-                RotateCameraWithTwoTouches(touch0, touch1);
-            }
+            RotateCameraWithThreeTouches(touch0, touch1, touch2);
         }
         else
         {
-            // Reset the gesture state when all touches are released
+            // Reset the gesture state when not enough touches are active
             currentGesture = GestureState.None;
         }
-    }
-
-    // Check if the gesture is a zoom gesture
-    private bool IsZoomGesture(Touch touch0, Touch touch1)
-    {
-        float currentDistance = Vector2.Distance(touch0.position, touch1.position);
-        float previousDistance = Vector2.Distance(touch0.position - touch0.deltaPosition, touch1.position - touch1.deltaPosition);
-
-        float distanceDelta = Mathf.Abs(currentDistance - previousDistance);
-
-        // Require a larger difference in the distance to trigger zoom
-        return distanceDelta > zoomTolerance;
-    }
-
-    // Check if the gesture is a movement gesture
-    private bool IsMovementGesture(Touch touch0, Touch touch1)
-    {
-        // Ensure both fingers move in almost the same direction for it to be considered movement
-        return Vector2.Dot(touch0.deltaPosition.normalized, touch1.deltaPosition.normalized) > moveTolerance;
-    }
-
-    // Check if the gesture is a rotation gesture
-    private bool IsRotationGesture(Touch touch0, Touch touch1)
-    {
-        float angleDelta = Vector2.SignedAngle(touch0.deltaPosition, touch1.deltaPosition);
-
-        // If the fingers move in opposite directions with significant angular difference, it's a rotation gesture
-        return Mathf.Abs(angleDelta) > pitchTolerance * 100;
     }
 
     // Move the camera with two touches
@@ -137,25 +93,23 @@ public class CameraManager : MonoBehaviour
         mainCameraParent.transform.position = newPosition;
     }
 
-    
-    private Vector2 prevTouchDelta;
-
-    // Rotate the camera with two touches
-    private void RotateCameraWithTwoTouches(Touch touch0, Touch touch1)
+    // Rotate the camera with three touches
+    private void RotateCameraWithThreeTouches(Touch touch0, Touch touch1, Touch touch2)
     {
-        var touch0PrevPos = touch0.position - touch0.deltaPosition;
-        var touch1PrevPos = touch1.position - touch1.deltaPosition;
+        // Average the delta positions of all three touches
+        Vector2 averageDelta = (touch0.deltaPosition + touch1.deltaPosition + touch2.deltaPosition) / 3f;
 
-        prevTouchDelta = touch0PrevPos - touch1PrevPos;
-        var touchDelta = touch0.position - touch1.position;
+        // Rotate the camera horizontally around the Y-axis based on the average delta
+        float rotationAmount = averageDelta.x * rotationSpeed * Time.deltaTime;
+        mainCameraParent.transform.Rotate(Vector3.up, rotationAmount, Space.World);
 
-        var angleDelta = Vector2.SignedAngle(prevTouchDelta, touchDelta);
+        // Rotate vertically (pitch) based on Y-axis movement (tilt), with clamping
+        float pitchAmount = -averageDelta.y * rotationSpeed * Time.deltaTime;
+        currentPitch += pitchAmount;
 
-        //float angleDelta = Vector2.SignedAngle(touch0.deltaPosition, touch1.deltaPosition);
-
-        // Rotate the camera horizontally around the Y-axis based on the angle delta
-
-        mainCameraParent.transform.Rotate(Vector3.up, angleDelta * rotationSpeed * Time.deltaTime, Space.World);
+        // Clamp the pitch angle to avoid extreme tilting
+        currentPitch = Mathf.Clamp(currentPitch, minPitch, maxPitch);
+        mainCameraParent.transform.localEulerAngles = new Vector3(currentPitch, mainCameraParent.transform.localEulerAngles.y, mainCameraParent.transform.localEulerAngles.z);
 
         tempText.text = $"Camera Rotation: {mainCameraParent.transform.rotation.eulerAngles}";
     }
@@ -172,34 +126,11 @@ public class CameraManager : MonoBehaviour
         mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = Mathf.Clamp(newFOV, minZoom, maxZoom);
     }
 
-    // Called when the CameraPosition toggle is changed
-    private void OnCameraPositionToggleChanged(bool isOn)
-    {
-        if (isOn)
-        {
-            CameraRotation.isOn = false;
-        }
-    }
-
-    // Called when the CameraRotation toggle is changed
-    private void OnCameraRotationToggleChanged(bool isOn)
-    {
-        if (isOn)
-        {
-            CameraPosition.isOn = false;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        CameraPosition.onValueChanged.RemoveListener(OnCameraPositionToggleChanged);
-        CameraRotation.onValueChanged.RemoveListener(OnCameraRotationToggleChanged);
-    }
-
     public void ResetCamera()
     {
         mainCameraParent.transform.position = startPos;
         mainCameraParent.transform.rotation = startRot;
         mainCameraParent.GetComponentInChildren<Camera>().fieldOfView = startFOV;
+        currentPitch = startRot.eulerAngles.x; // Reset the pitch angle
     }
 }
