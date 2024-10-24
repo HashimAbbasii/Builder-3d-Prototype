@@ -45,6 +45,7 @@ public class ObjectManipulator : MonoBehaviour
 
         scaleSlider.transform.parent.gameObject.SetActive(false);
         floorButton.onClick.AddListener(FloorSelection);
+        bottomPanel.gameObject.SetActive(true);
     }
 
     public void FloorSelection()
