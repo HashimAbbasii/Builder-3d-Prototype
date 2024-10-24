@@ -543,7 +543,9 @@ public class MeasureLine_WorldCanvas : MonoBehaviour {
 	static private void AddTarget(MeasureLine_WorldCanvas mw, Transform obj)
 	{
 		Transform[] targetObjs = mw.targetObjects;
-		if (targetObjs == null) {
+        obj.gameObject.AddComponent<EndPointReference>();
+        obj.gameObject.GetComponent<EndPointReference>().startPoint = mw;
+        if (targetObjs == null) {
 			targetObjs = new Transform[]{ obj };
 		}
 		else 

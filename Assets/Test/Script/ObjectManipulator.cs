@@ -484,6 +484,34 @@ public class ObjectManipulator : MonoBehaviour
         // ManagerHandler.Instance.calculateDistance.lines.Clear();
 
         // ManagerHandler.Instance.spawningManager.modelsSpawned.Remove(selectedObject.parent.gameObject);
+
+        var startPoint = selectedObject.GetComponentsInChildren<MeasureLine_WorldCanvas>();
+        var endPoint = selectedObject.GetComponentsInChildren<EndPointReference>();
+
+        for (int i = 0; i < startPoint.Length; i++)
+        {
+            MeasureLine_WorldCanvas line = startPoint[i];
+            ManagerHandler.Instance.collectiveDistanceManager.objectDistanceHandler.lineCanvasList.Remove(line);
+            foreach (var end in line.targetObjects)
+            {
+                Destroy(end.gameObject);
+            }
+
+            Destroy(line.gameObject);
+        }
+
+        for (int i = 0; i < endPoint.Length; i++)
+        {
+            MeasureLine_WorldCanvas line = endPoint[i].startPoint;
+            ManagerHandler.Instance.collectiveDistanceManager.objectDistanceHandler.lineCanvasList.Remove(line);
+            foreach (var end in line.targetObjects)
+            {
+                Destroy(end.gameObject);
+            }
+
+            Destroy(line.gameObject);
+        }
+
         Destroy(selectedObject.parent.gameObject);
 
         Invoke(nameof(DeleteMissingSpawnedModels), 0.1f);
