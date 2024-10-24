@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.IO.LowLevel.Unsafe;
 using System.Xml.Serialization;
+using Random = System.Random;
 
 public class SpawningManager : MonoBehaviour
 {
@@ -608,6 +609,7 @@ public class SpawningManager : MonoBehaviour
 
     public GameObject canvasFurniture;
     public GameObject EvidenceScrollView;
+    public Transform[] RandomPointSpawn;
     
     //public GameObject scrollViewFurniture;
 
@@ -631,8 +633,10 @@ public class SpawningManager : MonoBehaviour
         //{
         //    Destroy(_previewObject);
         //}
+        int RandomPoint =UnityEngine.Random.Range(0, RandomPointSpawn.Length);
 
-        _previewObject = Instantiate(currentCategoryModels[objectIndex]);
+        _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position,Quaternion.identity);
+           
         Debug.Log("CLCIK");
        // subPanel.SetActive(false);  // Hide sub-panel after selection
         //canvasEssential.gameObject.SetActive(true); 
@@ -660,7 +664,9 @@ public class SpawningManager : MonoBehaviour
         //    Destroy(_previewObject);
         //}
 
-        _previewObject = Instantiate(currentEvidenceModels[objectIndex]);
+        int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
+        _previewObject = Instantiate(currentEvidenceModels[objectIndex], RandomPointSpawn[RandomPoint].position,Quaternion.identity);
+        
         //EvidenceSubPanel.SetActive(false);  // Hide sub-panel after selection
         //canvasEssential.gameObject.SetActive(true);
     }
