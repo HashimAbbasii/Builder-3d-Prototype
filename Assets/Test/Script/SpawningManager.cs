@@ -617,15 +617,15 @@ public class SpawningManager : MonoBehaviour
     {
         // subPanel.SetActive(true);
        // canvasFurniture.SetActive(false);
-        if (_selectedObjectIndex == objectIndex)
-        {
+      //  if (_selectedObjectIndex == objectIndex)
+     //   {
             //if (_previewObject != null)
             //{
             //    Destroy(_previewObject);
             //}
-            _selectedObjectIndex = -1;
-            return;
-        }
+          //  _selectedObjectIndex = -1;
+          //  return;
+    //    }
 
         _selectedObjectIndex = objectIndex;
 
@@ -637,7 +637,7 @@ public class SpawningManager : MonoBehaviour
 
         _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position,Quaternion.identity);
            
-        Debug.Log("CLCIK");
+      
        // subPanel.SetActive(false);  // Hide sub-panel after selection
         //canvasEssential.gameObject.SetActive(true); 
     }
@@ -645,31 +645,23 @@ public class SpawningManager : MonoBehaviour
 
     private void SelectModelEvidence(int objectIndex)
     {
-        // subPanel.SetActive(true);
-        EvidenceSubPanel.SetActive(true);
-        if (_selectedObjectIndex == objectIndex)
+        EvidenceSubPanel.SetActive(true); // Display the sub-panel when a model is selected
+
+        // Destroy the previous object if it exists
+        if (_previewObject != null)
         {
-            //if (_previewObject != null)
-            //{
-            //    Destroy(_previewObject);
-            //}
-            _selectedObjectIndex = -1;
-            return;
+            //Destroy(_previewObject);
         }
 
         _selectedObjectIndex = objectIndex;
 
-        //if (_previewObject != null)
-        //{
-        //    Destroy(_previewObject);
-        //}
-
+        // Instantiate the selected model at a random spawn point
         int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
-        _previewObject = Instantiate(currentEvidenceModels[objectIndex], RandomPointSpawn[RandomPoint].position,Quaternion.identity);
+        _previewObject = Instantiate(currentEvidenceModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
+
         
-        //EvidenceSubPanel.SetActive(false);  // Hide sub-panel after selection
-        //canvasEssential.gameObject.SetActive(true);
     }
+
 
 
 
