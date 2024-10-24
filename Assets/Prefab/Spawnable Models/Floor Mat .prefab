@@ -146,7 +146,7 @@ MonoBehaviour:
   objectID: 9
   surfaceType: 3
   modelType: 0
-  furnitureType: 3
+  furnitureType: 4
   evidenceType: 0
   canPlaceObjectsOnIt: 1
   canBePlacedOnObject: 0

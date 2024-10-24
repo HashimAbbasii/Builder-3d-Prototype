@@ -51,7 +51,7 @@ MonoBehaviour:
   furnitureType: 0
   evidenceType: 3
   canPlaceObjectsOnIt: 0
-  canBePlacedOnObject: 0
+  canBePlacedOnObject: 1
   heightOffset: 0
   objectRenderer: {fileID: 7111664384275121473}
   ModelVariants: []

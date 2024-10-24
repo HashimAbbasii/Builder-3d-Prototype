@@ -65,11 +65,13 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> chairModelPrefabs = new();
     public List<GameObject> tableModelPrefabs = new();
     public List<GameObject> bedModelPrefabs = new();
+    public List<GameObject> carpetModelPrefabs = new();
 
     [Header("Evidence")]
 
     public List <GameObject> deadBodyPrefabs = new();
     public List <GameObject> bloodPrefabs = new();
+    public List <GameObject> knifePrefabs = new();
 
 
     public List<GameObject> currentCategoryModels;  // Currently selected category models
@@ -152,7 +154,7 @@ public class SpawningManager : MonoBehaviour
                     break;
 
                 case FurnitureType.Carpet:
-
+                    carpetModelPrefabs.Add(model);
                     break;
 
             }
@@ -169,6 +171,10 @@ public class SpawningManager : MonoBehaviour
                     break;
                 case EvidenceType.DeadBody:
                     deadBodyPrefabs.Add(model);
+                    break;
+                    
+                case EvidenceType.Knife:
+                    knifePrefabs.Add(model);
                     break;
 
             }
@@ -203,6 +209,7 @@ public class SpawningManager : MonoBehaviour
         CreateCategoryButton("Chair");
         CreateCategoryButton("Table");
         CreateCategoryButton("Bed");
+        CreateCategoryButton("Carpet");
         //EvidencPanel.SetActive(true);
 
         // Set initial category (for example, Chairs)
@@ -276,6 +283,9 @@ public class SpawningManager : MonoBehaviour
             case "Bed":
                 currentCategoryModels = bedModelPrefabs;
                 break;
+            case "Carpet":
+                currentCategoryModels = carpetModelPrefabs;
+                break;
         }
 
         LoadModels(currentPage);
@@ -293,6 +303,9 @@ public class SpawningManager : MonoBehaviour
                 break;
             case "Blood":
                 currentEvidenceModels = bloodPrefabs;
+                break;
+                case "Knife":
+                currentEvidenceModels = knifePrefabs;
                 break;
             
         }
