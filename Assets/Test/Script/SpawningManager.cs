@@ -402,7 +402,7 @@ public class SpawningManager : MonoBehaviour
     // Called when the floor button is clicked
 
     //.........Procrss Touch ....//
-
+    public Vector3 scaleTest;
     private void ProcessTouch(Touch touch)
     {
         if(pauseCondition==true) return;
@@ -428,19 +428,24 @@ public class SpawningManager : MonoBehaviour
                 _finalMousePos = hit.point;
                 _finalMousePos.y = 0f;
 
-                // Calculate the midpoint between initial and final positions for correct placement
-                Vector3 centerPosition = (_initialMousePos + _finalMousePos) / 2;
+                Vector3 scale = _finalMousePos - _initialMousePos;
 
-                // Calculate scale with minimum thickness constraint on the x-axis
-                float adjustedXScale = Mathf.Max(Mathf.Abs(_finalMousePos.x - _initialMousePos.x), 0.5f);
-                float adjustedZScale = Mathf.Abs(_finalMousePos.z - _initialMousePos.z);
+                if (Mathf.Abs(scale.x) < 1f)
+                {
+                    if (scale.x > 0) scale.x = 1f;
+                    else scale.x = -1f;
+                }
 
-                _currentFloor.transform.position = centerPosition;
-                _currentFloor.transform.localScale = new Vector3(
-                    adjustedXScale, // Enforce minimum thickness on x-axis
-                    0.1f,           // Fixed thickness on y-axis
-                    adjustedZScale  // Adjust z-axis scale
-                );
+                if (Mathf.Abs(scale.z) < 1f)
+                {
+                    if (scale.z > 0) scale.z = 1f;
+                    else scale.z = -1f;
+                }
+                
+                _currentFloor.transform.localScale = new Vector3(scale.x, 0.01f, scale.z);
+
+                var actualScaleX = Mathf.Abs(scale.x); // Adjust scale calculation
+                var actualScaleZ = Mathf.Abs(scale.z);
             }
         }
 

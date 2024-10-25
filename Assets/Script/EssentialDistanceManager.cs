@@ -129,8 +129,18 @@ public class EssentialDistanceManager : MonoBehaviour
 					if (Physics.Raycast(ray, out var hit))
 					{
 						hitPoint = hit.point;
-						_endPointx.position = new Vector3(hit.point.x, _startPointx.position.y, _startPointx.position.z);
-						_endPointz.position = new Vector3(_startPointz.position.x, _startPointz.position.y, hit.point.z);
+
+						// lDis = hitPoint - _startPointx.position;
+						// wDis = hitPoint - _startPointz.position;
+						//
+						// if (Mathf.Abs(lDis.x) < 1f)
+						// {
+						// 	if (lDis.x > 0) hitPoint.x = 1f;
+						// 	else hitPoint.x = -1f;
+						// }
+						
+						_endPointx.position = new Vector3(hitPoint.x, _startPointx.position.y, _startPointx.position.z);
+						_endPointz.position = new Vector3(_startPointz.position.x, _startPointz.position.y, hitPoint.z);
 					}
 				}
 			}
@@ -144,11 +154,11 @@ public class EssentialDistanceManager : MonoBehaviour
                         hitPoint = hit.point;
 						if (Mathf.Abs((hit.point - _startPointx.position).x) > Mathf.Abs((hit.point - _startPointx.position).z))
 						{
-							_endPointx.position = new Vector3(hit.point.x, _startPointx.position.y, _startPointx.position.z);
+							_endPointx.position = new Vector3(hitPoint.x, _startPointx.position.y, _startPointx.position.z);
 						}
 						else
 						{
-							_endPointx.position = new Vector3(_startPointx.position.x, _startPointx.position.y, hit.point.z);
+							_endPointx.position = new Vector3(_startPointx.position.x, _startPointx.position.y, hitPoint.z);
 						}
                        
                     }
@@ -163,6 +173,9 @@ public class EssentialDistanceManager : MonoBehaviour
 
 	}
 
+	public Vector3 lDis;
+	public Vector3 wDis;
+	
 	public void DeleteLines()
 	{
 		MeasureLine_WorldCanvas.DeleteAllLines();
