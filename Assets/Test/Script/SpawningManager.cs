@@ -428,13 +428,19 @@ public class SpawningManager : MonoBehaviour
                 _finalMousePos = hit.point;
                 _finalMousePos.y = 0f;
 
-                Vector3 scale = _finalMousePos - _initialMousePos;
-                _currentFloor.transform.localScale = new Vector3(scale.x, 0.1f, scale.z);
+                // Calculate the midpoint between initial and final positions for correct placement
+                Vector3 centerPosition = (_initialMousePos + _finalMousePos) / 2;
 
-                float actualScaleX = Mathf.Abs(scale.x);  // Adjust scale calculation
-                float actualScaleZ = Mathf.Abs(scale.z);
+                // Calculate scale with minimum thickness constraint on the x-axis
+                float adjustedXScale = Mathf.Max(Mathf.Abs(_finalMousePos.x - _initialMousePos.x), 0.5f);
+                float adjustedZScale = Mathf.Abs(_finalMousePos.z - _initialMousePos.z);
 
-               
+                _currentFloor.transform.position = centerPosition;
+                _currentFloor.transform.localScale = new Vector3(
+                    adjustedXScale, // Enforce minimum thickness on x-axis
+                    0.1f,           // Fixed thickness on y-axis
+                    adjustedZScale  // Adjust z-axis scale
+                );
             }
         }
 

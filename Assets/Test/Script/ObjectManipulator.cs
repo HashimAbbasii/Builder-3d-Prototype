@@ -122,6 +122,7 @@ public class ObjectManipulator : MonoBehaviour
             // If an object is selected, handle its movement and rotation
             if (selectedObject != null)
             {
+                Debug.Log("Selected Object");
                 removeButton.SetActive(true);
 
                 // Move the object with the touch when dragging
@@ -519,6 +520,8 @@ public class ObjectManipulator : MonoBehaviour
         // Invoke(nameof(TurnOffRemoveButton), 0.125f);
         scaleSlider.transform.parent.gameObject.SetActive(false);
         _isDragging = false; // Stop dragging when deselected
+        removeButton.SetActive(false);
+        Debug.Log("Remove");
     }
 
     private void TurnOffRemoveButton()
