@@ -9,9 +9,12 @@ using TMPro;
 using Unity.IO.LowLevel.Unsafe;
 using System.Xml.Serialization;
 using Random = System.Random;
+using Unity.VisualScripting;
 
 public class SpawningManager : MonoBehaviour
 {
+    public ModelsSO modelsScriptableOject;
+
     public List<GameObject> modelPrefabs;
     public List<GameObject> furniturePrefabs;
     public List<GameObject> evidencePrefabs;
@@ -110,6 +113,32 @@ public class SpawningManager : MonoBehaviour
         }
     }
 
+    [ContextMenu("Distinguish Category")]
+    public void DistinguishCategory()
+    {
+        var models = modelsScriptableOject.models;
+        foreach (var model in models) 
+        {
+            if(model.modelType != ModelType.Furniture || model.surfaceType != SurfaceType.Models)continue;
+
+            switch (model.furnitureType)
+            {
+                case FurnitureType.Chair:
+                    chairModelPrefabs.Add(model.gameModel);
+                    break;
+                case FurnitureType.Table:
+                    tableModelPrefabs.Add(model.gameModel);
+                    break;
+                case FurnitureType.Bed:
+                    bedModelPrefabs.Add(model.gameModel);
+                    break;
+                case FurnitureType.Carpet:
+                    carpetModelPrefabs.Add(model.gameModel);
+                    break;
+            }
+        }
+    }
+
     private void Start()
     {
         //canvasEssential.gameObject.SetActive(true);
@@ -117,70 +146,72 @@ public class SpawningManager : MonoBehaviour
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
         SetupLineRenderers(); // Initialize the LineRenderers
 
+        ScriptableObjectFetch();
+        DistinguishCategory();
 
+        //for (var i = 0; i < modelPrefabs.Count(); i++)
+        //{
+        //    var model = modelPrefabs[i];
 
-        for (var i = 0; i < modelPrefabs.Count(); i++)
-        {
-            var model = modelPrefabs[i];
+        //    model.GetComponent<SelectableObject>().objectID = i + 2;
 
-            model.GetComponent<SelectableObject>().objectID = i + 2;
+        //    switch (model.GetComponent<SelectableObject>().modelType)
+        //    {
+        //        case ModelType.Furniture:
+        //            furniturePrefabs.Add(model);
+        //            break;
+        //        case ModelType.Evidence:
+        //            evidencePrefabs.Add(model);
+        //            break;
+        //    }
+        //}
 
-            switch (model.GetComponent<SelectableObject>().modelType)
-            {
-                case ModelType.Furniture:
-                    furniturePrefabs.Add(model);
-                    break;
-                case ModelType.Evidence:
-                    evidencePrefabs.Add(model);
-                    break;
-            }
-        }
+        //foreach (var model in modelPrefabs)
+        //{
+        //    if (model.GetComponent<SelectableObject>().modelType != ModelType.Furniture || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
 
-        foreach (var model in modelPrefabs)
-        {
-            if (model.GetComponent<SelectableObject>().modelType != ModelType.Furniture || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
-            
-            switch (model.GetComponent<SelectableObject>().furnitureType)
-            {
-                case FurnitureType.Chair:
-                    chairModelPrefabs.Add(model);
-                    break;
+        //    switch (model.GetComponent<SelectableObject>().furnitureType)
+        //    {
+        //        case FurnitureType.Chair:
+        //            chairModelPrefabs.Add(model);
+        //            break;
 
-                case FurnitureType.Table:
-                    tableModelPrefabs.Add(model);
-                    break;
+        //        case FurnitureType.Table:
+        //            tableModelPrefabs.Add(model);
+        //            break;
 
-                case FurnitureType.Bed:
-                    bedModelPrefabs.Add(model);
-                    break;
+        //        case FurnitureType.Bed:
+        //            bedModelPrefabs.Add(model);
+        //            break;
 
-                case FurnitureType.Carpet:
-                    carpetModelPrefabs.Add(model);
-                    break;
+        //        case FurnitureType.Carpet:
+        //            carpetModelPrefabs.Add(model);
+        //            break;
 
-            }
-        }
+        //    }
+        //}
 
-        foreach (var model in modelPrefabs)
-        {
-            if (model.GetComponent<SelectableObject>().modelType != ModelType.Evidence || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
+        //foreach (var model in modelPrefabs)
+        //{
+        //    if (model.GetComponent<SelectableObject>().modelType != ModelType.Evidence || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
 
-            switch (model.GetComponent<SelectableObject>().evidenceType)
-            {
-                case EvidenceType.Blood:
-                    bloodPrefabs.Add(model);
-                    break;
-                case EvidenceType.DeadBody:
-                    deadBodyPrefabs.Add(model);
-                    break;
-                    
-                case EvidenceType.Knife:
-                    knifePrefabs.Add(model);
-                    break;
+        //    switch (model.GetComponent<SelectableObject>().evidenceType)
+        //    {
+        //        case EvidenceType.Blood:
+        //            bloodPrefabs.Add(model);
+        //            break;
+        //        case EvidenceType.DeadBody:
+        //            deadBodyPrefabs.Add(model);
+        //            break;
 
-            }
-        }
+        //        case EvidenceType.Knife:
+        //            knifePrefabs.Add(model);
+        //            break;
 
+        //    }
+        //}
+
+        DistinguishEvidence();
         var fch = ManagerHandler.Instance.uiManager.canvasHandler.furnitureButtonsContentHolder;
         var ech = ManagerHandler.Instance.uiManager.canvasHandler.evidenceButtonsContentHolder;
         var buttonPrefab = ManagerHandler.Instance.uiManager.modelButtonPrefab;
@@ -221,6 +252,48 @@ public class SpawningManager : MonoBehaviour
 
 
         // UpdateFloorDimensionsText(Vector3.zero, Vector3.zero); // Initialize with zero dimensions
+    }
+    public void DistinguishEvidence()
+    {
+        var models = modelsScriptableOject.models;
+        foreach (var model in models)
+        {
+            if (model.modelType != ModelType.Evidence || model.surfaceType != SurfaceType.Models) continue;
+
+            switch (model.evidenceType)
+            {
+                case EvidenceType.Blood:
+                    bloodPrefabs.Add(model.gameModel);
+                    break;
+                case EvidenceType.DeadBody:
+                    deadBodyPrefabs.Add(model.gameModel);
+                    break;
+                case EvidenceType.Knife:
+                    knifePrefabs.Add(model.gameModel);
+                    break;
+
+            }
+        }
+    }
+    //[ContextMenu("FPrefabs")]
+    public void ScriptableObjectFetch()
+    {
+        for (int i = 0; i < modelsScriptableOject.models.Count; i++)
+        {
+            var modesFetch= modelsScriptableOject.models[i];
+            var convertIntoGameObject = modesFetch.gameModel;
+            switch (modesFetch.modelType)
+            {
+                case ModelType.Furniture:
+                   // GameObject ConvertintoGameObject=GameObject(modesFetch);
+                    furniturePrefabs.Add(convertIntoGameObject);
+                    break;
+
+                 case ModelType.Evidence:
+                 evidencePrefabs.Add(convertIntoGameObject);
+                  break;
+            }
+        }
     }
 
 
@@ -647,7 +720,6 @@ public class SpawningManager : MonoBehaviour
         int RandomPoint =UnityEngine.Random.Range(0, RandomPointSpawn.Length);
 
         _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position,Quaternion.identity);
-           
       
        // subPanel.SetActive(false);  // Hide sub-panel after selection
         //canvasEssential.gameObject.SetActive(true); 

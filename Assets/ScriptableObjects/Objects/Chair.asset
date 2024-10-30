@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afba7a3bc46b0c740a5c5c28ebf07291, type: 3}
+  m_Name: Chair
+  m_EditorClassIdentifier: 
+  gameModel: {fileID: 1258782013648802562, guid: a0ffba371deca804eaa618cf7886fead, type: 3}
+  surfaceType: 3
+  modelType: 0
+  furnitureType: 1
+  evidenceType: 0
+  heightOffset: 0.5
+  canPlaceObjectsOnIt: 1
+  canBePlacedOnObject: 0

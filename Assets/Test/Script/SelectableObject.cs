@@ -43,5 +43,6 @@ public enum EvidenceType
     None,
     Blood,
     DeadBody,
-    Knife
+    Knife,
+    Pen
 }
