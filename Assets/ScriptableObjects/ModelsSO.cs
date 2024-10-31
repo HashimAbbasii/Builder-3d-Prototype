@@ -10,6 +10,7 @@ public class ModelsSO : ScriptableObject
 {
     public List<ObjectSO> models;
 
+#if UNITY_EDITOR
     [ContextMenu("Fill Models")]
     public void FillModels()
     {
@@ -30,4 +31,5 @@ public class ModelsSO : ScriptableObject
 
         Debug.Log("Total ScriptableObjects found: " + models.Count);
     }
+#endif
 }
