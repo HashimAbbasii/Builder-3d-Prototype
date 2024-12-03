@@ -220,11 +220,7 @@ public class ObjectManipulator : MonoBehaviour
             // For other objects, show the slider
             scaleSlider.transform.parent.gameObject.SetActive(true);
         }
-        //if (selectedObject.CompareTag("Floor")) 
-        //{
-        //    bottomPanel.SetActive(false);
-
-        //}
+       
 
         if (selectedObject.parent != null)
         {
@@ -253,31 +249,7 @@ public class ObjectManipulator : MonoBehaviour
                     //Debug.LogError("SelectableObject component not found on the parent.");
                 }
             }
-            //else if (!selectedObject.CompareTag("Floor"))
-            //{
-            //    SelectableObject selectableObject = selectedObject.parent.GetComponent<SelectableObject>();
-
-            //    if (selectableObject != null)
-            //    {
-            //        Vector3 originalScale = selectableObject.OriginalScale;
-
-            //        // Check for zero in OriginalScale to avoid division by zero
-            //        if (originalScale.x != 0 && originalScale.y != 0 && originalScale.z != 0)
-            //        {
-            //            var scaleValue = selectedObject.parent.localScale.x / originalScale.x;
-            //            scaleSlider.value = scaleValue;
-            //            // Use scaleValue as needed
-            //        }
-            //        else
-            //        {
-            //            Debug.LogError("OriginalScale cannot be zero for any component.");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        //Debug.LogError("SelectableObject component not found on the parent.");
-            //    }
-            //}
+           
             else
             {
                 // Debug.LogError("Selected object's parent is null.");
@@ -342,26 +314,7 @@ public class ObjectManipulator : MonoBehaviour
     }
 
 
-    // Check if the click is on any rotation button by checking mouse position against the RectTransforms
-    // private bool IsClickOnAnyRotationButton()
-    // {
-    //     Vector2 localMousePosition;
-    //
-    //     // Loop through each rotation button and check if the mouse is over any
-    //     foreach (var rectTransform in _rotationButtonRects)
-    //     {
-    //         RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, Input.mousePosition, null,
-    //             out localMousePosition);
-    //         if (rectTransform.rect.Contains(localMousePosition))
-    //         {
-    //             return true; // Mouse is over one of the rotation buttons
-    //         }
-    //     }
-    //
-    //     return false; // Mouse is not over any rotation buttons
-    // }
-
-    // Check if the click is on the slider by checking mouse position against the slider RectTransform
+    
     
     
     private bool IsClickOnSlider()
@@ -431,12 +384,7 @@ public class ObjectManipulator : MonoBehaviour
     public void DeselectObject()
     {
         Debug.Log("Deseleted");
-        // foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
-        // {
-        //     Destroy(line.gameObject);
-        // }
-        //
-        // ManagerHandler.Instance.calculateDistance.lines.Clear();
+        
 
         RevertMaterial(); // Revert the material
         if (selectedObject)
@@ -547,11 +495,5 @@ public class ObjectManipulator : MonoBehaviour
         DeselectObject(); // Call the method to deselect the object
     }
 
-    //public void RemoveObject()
-    //{
-    //    if (selectedObject == null) return;
-
-    //    Destroy(selectedObject.parent.gameObject);
-    //    _isDragging = false; // Stop dragging when deselected
-    //}
+    
 }

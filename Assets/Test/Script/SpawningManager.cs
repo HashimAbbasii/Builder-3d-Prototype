@@ -1003,8 +1003,7 @@ public class SpawningManager : MonoBehaviour
     public void DeleteLinesForAll()
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.DeleteLines();
-        //MeasureLine_WorldCanvas.DeleteAllLines();
-        // gameObject.SetActive(false);
+       
 
     }
 
@@ -1013,14 +1012,12 @@ public class SpawningManager : MonoBehaviour
     {
 
      
-        //categoryPanelScrollView.SetActive(false);
-        //EvidencPanel.gameObject.SetActive(true);
+       
         CreateEvidenceButton("Dead Body");
         CreateEvidenceButton("Blood");
         CreateEvidenceButton("Knife");
         Debug.Log("Evidence created");
-        //canvasEssential.gameObject.SetActive(false);
-        //OnEvidenceSelected("Dead Body");
+       
       
 
 
