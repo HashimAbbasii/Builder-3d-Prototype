@@ -5,6 +5,9 @@ public class ObjectSelector : MonoBehaviour
     public ObjectManipulator manipulator;
     public LayerMask surfaceLayer;
 
+    // Public flag to indicate if an object is selected
+    public bool isObjectSelected { get; private set; }
+
     void Start()
     {
         if (manipulator == null)
@@ -26,23 +29,21 @@ public class ObjectSelector : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, surfaceLayer))
             {
-                Debug.Log("Selected");
                 SelectableObject selectable = hit.collider.GetComponent<SelectableObject>();
 
                 if (selectable != null)
                 {
-                    
                     Debug.Log("Object selected: " + hit.collider.name);
+                    isObjectSelected = true; // Set flag when an object is selected
                     manipulator.SetSelectedObject(hit.collider.transform);
                 }
                 else
                 {
-                    //Debug.Log("Object deselected");
-                    manipulator.SetSelectedObject(null); // Deselect if not a selectable object
+                    Debug.Log("Object deselected");
+                    isObjectSelected = false; // Clear flag when deselecting
+                    manipulator.SetSelectedObject(null);
                 }
             }
         }
     }
-
-   
 }

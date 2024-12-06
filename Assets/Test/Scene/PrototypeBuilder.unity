@@ -870,26 +870,27 @@ MonoBehaviour:
   selectedObject: {fileID: 0}
   _originalMaterial: {fileID: 0}
   selectedMaterial: {fileID: 2100000, guid: 5d0c01fc481cbfc4d9248e7e039169ac, type: 2}
+  _isDragging: 0
+  _isObjectSelected: 0
+  isFloorSelected: 0
   sliderParent: {fileID: 2060290258}
   scaleSlider: {fileID: 686655859}
-  distanceCalculator: {fileID: 0}
+  floorButton: {fileID: 281768695}
+  removeButton: {fileID: 342026671}
+  rotationKnob: {fileID: 714885389}
+  bottomPanel: {fileID: 64651016}
   selectableLayer:
     serializedVersion: 2
     m_Bits: 6144
   placeableLayer:
     serializedVersion: 2
     m_Bits: 2120
-  floorButton: {fileID: 281768695}
-  removeButton: {fileID: 342026671}
-  rotationKnob: {fileID: 714885389}
-  _isObjectSelected: 0
-  isFloorSelected: 0
   spawningManager: {fileID: 833281651}
-  bottomPanel: {fileID: 64651016}
+  distanceCalculator: {fileID: 0}
+  circularRangeControl: {fileID: 934056694}
   FloorTextureChangePanel: {fileID: 0}
   ChairChangePanel: {fileID: 0}
   TableChangePanel: {fileID: 0}
-  circularRangeControl: {fileID: 934056694}
 --- !u!1 &109009996
 GameObject:
   m_ObjectHideFlags: 0
@@ -20923,7 +20924,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 806938421}
   m_HandleRect: {fileID: 806938420}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

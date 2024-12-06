@@ -6,46 +6,189 @@ using Unity.VisualScripting;
 
 public class ObjectManipulator : MonoBehaviour
 {
-    public float rotationSpeed = 100f; // Speed for rotating the object
-    public Transform selectedObject; // The currently selected object
-    public Material _originalMaterial; // To store the original material of the object
-    public Material selectedMaterial; // Material to apply when the object is selected
-    private bool _isDragging; // To track if the object is being dragged
-    public GameObject sliderParent;
-    public Slider scaleSlider; // Slider to control the object's scale
-    public CalculateDistance distanceCalculator; // Reference to CalculateDistance script
-    public LayerMask selectableLayer; // Layer mask for selectable objects
-    public LayerMask placeableLayer; // Layer mask for selected objects
+    [Header("Object Selection Settings")]
+    public float rotationSpeed = 100f;
+    public Transform selectedObject;
+    public Material _originalMaterial;
+    public Material selectedMaterial;
 
-    public ButtonWithTextTMP floorButton;
-    public GameObject removeButton; // Button for removing the selected object
-
-    // Store a list of RectTransforms for the rotation buttons
-    public RectTransform rotationKnob;
-    public bool _isObjectSelected; // Track if the object is currently selected
+    [Header("Interaction States")]
+    public bool _isDragging = false;
+    public bool _isObjectSelected = false;
     public bool isFloorSelected = false;
 
-    public SpawningManager spawningManager;
-
-    private RectTransform _sliderRect; // RectTransform of the slider
-
+    [Header("UI References")]
+    public GameObject sliderParent;
+    public Slider scaleSlider;
+    public ButtonWithTextTMP floorButton;
+    public GameObject removeButton;
+    public RectTransform rotationKnob;
     public GameObject bottomPanel;
-    [Space(2)]
-    [Header("Model Selection Panel")]
+
+    [Header("Layer Masks")]
+    public LayerMask selectableLayer;
+    public LayerMask placeableLayer;
+
+    [Header("Component References")]
+    public SpawningManager spawningManager;
+    public CalculateDistance distanceCalculator;
+    public CircularRangeControl circularRangeControl;
+
+    [Header("Panel References")]
     public GameObject FloorTextureChangePanel;
     public GameObject ChairChangePanel;
     public GameObject TableChangePanel;
+
+    private RectTransform _sliderRect;
+
     private void Start()
     {
-        // Get the RectTransform of the slider to detect interaction
         _sliderRect = scaleSlider.GetComponent<RectTransform>();
-
-        // Optionally, set up an event listener for the slider
         scaleSlider.onValueChanged.AddListener(ScaleObject);
-
         scaleSlider.transform.parent.gameObject.SetActive(false);
         floorButton.onClick.AddListener(FloorSelection);
         bottomPanel.gameObject.SetActive(true);
+    }
+
+    private void Update()
+    {
+        if (spawningManager.pauseCondition) return;
+
+        if (Input.touchCount == 1)
+        {
+            if (ManagerHandler.Instance.spawningManager.IsCreatingFloor ||
+                ManagerHandler.Instance.spawningManager.IsCreatingWall)
+                return;
+
+            Touch touch = Input.GetTouch(0);
+            var ray = Camera.main.ScreenPointToRay(touch.position);
+
+            HandleObjectSelection(touch, ray);
+            HandleObjectMovement(touch, ray);
+        }
+    }
+
+    private void HandleObjectSelection(Touch touch, Ray ray)
+    {
+        if (touch.phase == TouchPhase.Began &&
+            !IsClickOnSlider() &&
+            !IsClickOnRotationKnob() &&
+            !isFloorSelected)
+        {
+            if (IsClickOnBottomPanel()) return;
+
+            float sphereRadius = 0.5f;
+            if (Physics.SphereCast(ray, sphereRadius, out var hit, Mathf.Infinity, selectableLayer))
+            {
+                var selectedTransform = hit.transform;
+
+                if (_isObjectSelected && selectedObject == selectedTransform)
+                {
+                    _isDragging = true;
+                }
+                else
+                {
+                    if (!hit.collider.gameObject.CompareTag("Floor"))
+                    {
+                        SetSelectedObject(selectedTransform);
+                        _isObjectSelected = true;
+                        _isDragging = false;
+                    }
+                }
+            }
+            else
+            {
+                Invoke(nameof(DeselectObject), 0.3f);
+                _isObjectSelected = false;
+            }
+        }
+
+        // Handle floor selection
+        if (touch.phase == TouchPhase.Began && isFloorSelected)
+        {
+            if (Physics.Raycast(ray, out var hit) && hit.collider.gameObject.CompareTag("Floor"))
+            {
+                var selectedTransform = hit.transform;
+                SelectedObjectForFloor(selectedTransform);
+            }
+        }
+    }
+
+    private void HandleObjectMovement(Touch touch, Ray ray)
+    {
+        if (selectedObject != null)
+        {
+            removeButton.SetActive(true);
+
+            // Move object when dragging
+            if (touch.phase == TouchPhase.Moved && _isDragging)
+            {
+                if (Physics.Raycast(ray, out var hit, Mathf.Infinity, placeableLayer))
+                {
+                    var newPosition = hit.point;
+                    selectedObject.parent.position = newPosition;
+
+                    UpdateObjectParenting(hit);
+                    UpdateDistanceCalculation();
+                }
+            }
+
+            // Rotate object with arrow keys
+            HandleRotationInput();
+
+            // Stop dragging
+            if (touch.phase == TouchPhase.Ended)
+            {
+                _isDragging = false;
+            }
+        }
+        else
+        {
+            removeButton.SetActive(false);
+            _isObjectSelected = false;
+        }
+    }
+    public void SetRotation(float angle)
+    {
+        if (selectedObject != null)
+        {
+            selectedObject.parent.transform.rotation = Quaternion.Euler(0, angle, 0);
+        }
+    }
+
+
+
+    private void UpdateObjectParenting(RaycastHit hit)
+    {
+        if (hit.transform.parent?.GetComponent<SelectableObject>())
+        {
+            selectedObject.parent.transform.SetParent(hit.transform.parent);
+        }
+        else
+        {
+            selectedObject.parent.transform.parent = null;
+        }
+    }
+
+    private void UpdateDistanceCalculation()
+    {
+        if (distanceCalculator != null)
+        {
+            distanceCalculator.CalculateDistances(selectedObject.parent.gameObject);
+        }
+    }
+
+    private void HandleRotationInput()
+    {
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            RotateObject(-rotationSpeed * Time.deltaTime);
+        }
+
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            RotateObject(rotationSpeed * Time.deltaTime);
+        }
     }
 
     public void FloorSelection()
@@ -57,126 +200,6 @@ public class ObjectManipulator : MonoBehaviour
         sliderParent.SetActive(false);
     }
 
-    private void Update()
-    {
-
-        // Ensure that there's only one touch on the screen
-        if (spawningManager.pauseCondition == true) return;
-        
-        if (Input.touchCount == 1)
-        {
-            if (ManagerHandler.Instance.spawningManager.IsCreatingFloor || ManagerHandler.Instance.spawningManager.IsCreatingWall) return;
-            
-            Touch touch = Input.GetTouch(0);
-            var ray = Camera.main.ScreenPointToRay(touch.position);
-
-            // Handle touch start (equivalent to MouseButtonDown)
-            if (touch.phase == TouchPhase.Began && !IsClickOnSlider() && !IsClickOnRotationKnob() && !isFloorSelected /*&& !IsClickOnAnyRotationButton()*/)
-            {
-                if(IsClickOnBottomPanel()) return;
-                // Use Raycast with LayerMask to only interact with objects on the selectable layer
-                float sphereRadius = 0.5f; // Adjust this value based on your needs
-
-                // Perform the sphere cast
-                if (Physics.SphereCast(ray, sphereRadius, out var hit, Mathf.Infinity, selectableLayer))
-                {
-                    var selectedTransform = hit.transform;
-                    Debug.Log("Selected Transform: " + selectedTransform.name);
-
-                    // If the object is already selected and touched again, start dragging
-                    if (_isObjectSelected && selectedObject == selectedTransform)
-                    {
-                        _isDragging = true; // Enable dragging
-                    }
-                    else
-                    {
-                        // If another object is touched, select the new one
-                        if (!hit.collider.gameObject.CompareTag("Floor"))
-                        {
-                            SetSelectedObject(selectedTransform);
-                            _isObjectSelected = true; // Mark object as selected
-                            _isDragging = false; // Don't drag yet, only select
-                        }
-                    }
-                }
-                else
-                {
-                    // If touch is outside of any object or UI, deselect the object
-                    Invoke (nameof(DeselectObject), 0.3f); 
-                    _isObjectSelected = false; // Reset selection state
-                }
-            }
-
-            // Handle floor selection
-            if (touch.phase == TouchPhase.Began && isFloorSelected == true)
-            {
-                if (Physics.Raycast(ray, out var hit) && hit.collider.gameObject.CompareTag("Floor"))
-                {
-                    Debug.Log("Floor Selected");
-                    var selectedTransform = hit.transform;
-                    SelectedObjectForFloor(selectedTransform);
-                    return;
-                }
-            }
-
-            // If an object is selected, handle its movement and rotation
-            if (selectedObject != null)
-            {
-                Debug.Log("Selected Object");
-                removeButton.SetActive(true);
-
-                // Move the object with the touch when dragging
-                if (touch.phase == TouchPhase.Moved && _isDragging)
-                {
-                    if (Physics.Raycast(ray, out var hit, Mathf.Infinity, placeableLayer))
-                    {
-                        // Move object on the XZ plane (ignoring Y-axis)
-                        var newPosition = hit.point;
-                        selectedObject.parent.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
-
-                        if (hit.transform.parent?.GetComponent<SelectableObject>())
-                        {
-                            selectedObject.parent.transform.SetParent(hit.transform.parent);
-                        }
-                        else
-                        {
-                            selectedObject.parent.transform.parent = null;
-                        }
-
-                        // Update the distance calculation and line renderer
-                        if (distanceCalculator != null)
-                        {
-                            distanceCalculator.CalculateDistances(selectedObject.parent.gameObject);
-                        }
-                    }
-                }
-
-                // Rotate the object using arrow keys or other methods
-                if (Input.GetKey(KeyCode.LeftArrow))
-                {
-                    RotateObject(-rotationSpeed * Time.deltaTime); // Rotate left
-                }
-
-                if (Input.GetKey(KeyCode.RightArrow))
-                {
-                    RotateObject(rotationSpeed * Time.deltaTime); // Rotate right
-                }
-
-                // Stop dragging when the touch ends
-                if (touch.phase == TouchPhase.Ended)
-                {
-                    _isDragging = false; // Stop dragging
-                }
-            }
-            else
-            {
-                removeButton.SetActive(false);
-                _isObjectSelected = false; // Reset selection state when no object is selected
-            }
-        }
-    }
-
-    // Set the object to be manipulated
     public void SetSelectedObject(Transform obj)
     {
         if (obj != null)
@@ -184,209 +207,116 @@ public class ObjectManipulator : MonoBehaviour
             rotationKnob.gameObject.SetActive(true);
             sliderParent.SetActive(true);
         }
-        
-        // Check if the same object is clicked again to toggle selection
-        if (selectedObject == obj)
-        {
-            return; // If it's already selected, don't deselect or reselect
-        }
 
-        // Revert the material of the previously selected object
+        if (selectedObject == obj) return;
+
         if (selectedObject != null)
         {
             DeselectObject();
         }
 
-        // Set the new selected object
         selectedObject = obj;
-
         selectedObject.gameObject.layer = LayerMask.NameToLayer("Selected");
-
 
         foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
         {
             childObjects.gameObject.layer = LayerMask.NameToLayer("Selected");
         }
 
-        Debug.Log(selectedObject.tag);
+        ConfigureSliderAndUI();
+        ApplySelectedMaterial();
+        RecalculateDistance();
+    }
 
+    private void ConfigureSliderAndUI()
+    {
         if (selectedObject.CompareTag("Wall") || selectedObject.CompareTag("Floor"))
         {
-            // For Walls and Floor
             scaleSlider.transform.parent.gameObject.SetActive(false);
         }
         else
         {
-            // For other objects, show the slider
             scaleSlider.transform.parent.gameObject.SetActive(true);
+            UpdateScaleSliderValue();
         }
-       
+    }
 
-        if (selectedObject.parent != null)
+    private void UpdateScaleSliderValue()
+    {
+        if (selectedObject.parent != null && !selectedObject.CompareTag("Wall"))
         {
-            if (!selectedObject.CompareTag("Wall"))
-            {
-                SelectableObject selectableObject = selectedObject.parent.GetComponent<SelectableObject>();
+            SelectableObject selectableObject = selectedObject.parent.GetComponent<SelectableObject>();
 
-                if (selectableObject != null)
-                {
-                    Vector3 originalScale = selectableObject.OriginalScale;
-
-                    // Check for zero in OriginalScale to avoid division by zero
-                    if (originalScale.x != 0 && originalScale.y != 0 && originalScale.z != 0)
-                    {
-                        var scaleValue = selectedObject.parent.localScale.x / originalScale.x;
-                        scaleSlider.value = scaleValue;
-                        // Use scaleValue as needed
-                    }
-                    else
-                    {
-                        Debug.LogError("OriginalScale cannot be zero for any component.");
-                    }
-                }
-                else
-                {
-                    //Debug.LogError("SelectableObject component not found on the parent.");
-                }
-            }
-           
-            else
+            if (selectableObject != null)
             {
-                // Debug.LogError("Selected object's parent is null.");
+                Vector3 originalScale = selectableObject.OriginalScale;
+
+                if (originalScale.x != 0 && originalScale.y != 0 && originalScale.z != 0)
+                {
+                    var scaleValue = selectedObject.parent.localScale.x / originalScale.x;
+                    scaleSlider.value = scaleValue;
+                }
             }
         }
+    }
 
-        // Change the material of the new selected object
-        if (selectedObject == null) return;
-
+    private void ApplySelectedMaterial()
+    {
         var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-        Debug.Log("Mesh Renderer");
         if (meshRenderer != null)
         {
-            _originalMaterial = meshRenderer.material; // Store the original material
-
-            meshRenderer.material = selectedMaterial; // Apply the selected material
+            _originalMaterial = meshRenderer.material;
+            meshRenderer.material = selectedMaterial;
         }
+    }
 
-        // Recalculate distance for the selected object
+    private void RecalculateDistance()
+    {
         if (distanceCalculator != null)
         {
             distanceCalculator.RecalculateDistanceForSelectedObject(selectedObject.gameObject);
         }
     }
 
-
-    public void SelectedObjectForFloor(Transform FloorSelected)
-    {
-        if (selectedObject == FloorSelected)
-        {
-            Debug.Log("Deselect");
-            DeselectForFloor();
-            return;
-        }
-
-        selectedObject = FloorSelected;
-        selectedObject.gameObject.layer = LayerMask.NameToLayer("SelectedFloor");
-
-        foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
-        {
-            childObjects.gameObject.layer = LayerMask.NameToLayer("SelectedFloor");
-        }
-
-        if (selectedObject == null) return;
-        var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-        if (meshRenderer != null)
-        {
-            _originalMaterial = meshRenderer.material; // Store the original material
-            meshRenderer.material = selectedMaterial; // Apply the selected material
-        }
-
-        isFloorSelected = false;
-        floorButton.buttonText.color = ManagerHandler.Instance.uiManager.canvasHandler.textUnselectedColor;
-        selectedObject.gameObject.layer = LayerMask.NameToLayer("Floor");
-
-        foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
-        {
-            childObjects.gameObject.layer = LayerMask.NameToLayer("Floor");
-        }
-
-
-    }
-
-
-    
-    
-    
-    private bool IsClickOnSlider()
-    {
-        Vector2 localMousePosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(_sliderRect, Input.mousePosition, null,
-            out localMousePosition);
-        return _sliderRect.rect.Contains(localMousePosition);
-    }
-
-    private bool IsClickOnRotationKnob()
-    {
-        Vector2 localMousePosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rotationKnob, Input.mousePosition, null,
-            out localMousePosition);
-        return _sliderRect.rect.Contains(localMousePosition);
-    }
-
-
-    // Rotate the selected object by a specific angle
     public void RotateObject(float angle)
     {
         if (selectedObject != null)
         {
-            selectedObject.parent.Rotate(Vector3.up, angle, Space.Self); // Rotate around the Y-axis
+            selectedObject.parent.Rotate(Vector3.up, angle, Space.Self);
         }
     }
 
-    public void SetRotation(float angle)
-    {
-        if (selectedObject != null)
-        {
-            selectedObject.parent.transform.rotation = Quaternion.Euler(0, angle, 0);
-        }
-    }
-
-    // Scale the selected object based on the slider value
     public void ScaleObject(float scaleValue)
     {
         if (selectedObject != null)
         {
-            //temporary Fix
             selectedObject.parent.localScale =
                 selectedObject.parent.GetComponent<SelectableObject>().OriginalScale * scaleValue;
         }
     }
 
-    // Method to revert the material to the original material
+    public void DeselectObject()
+    {
+        RevertMaterial();
+        ResetObjectLayers();
+        ResetUIElements();
+    }
+
     private void RevertMaterial()
     {
         if (selectedObject == null) return;
 
         var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
-
         if (meshRenderer != null && _originalMaterial != null)
         {
-            Debug.Log("Revert Material");
-            meshRenderer.material = _originalMaterial; // Restore the original material
+            meshRenderer.material = _originalMaterial;
         }
 
-        _originalMaterial = null; // Clear the stored material
+        _originalMaterial = null;
     }
 
-    // Method to deselect the currently selected object
-    
-    public CircularRangeControl circularRangeControl;
-    public void DeselectObject()
+    private void ResetObjectLayers()
     {
-        Debug.Log("Deseleted");
-        
-
-        RevertMaterial(); // Revert the material
         if (selectedObject)
         {
             selectedObject.gameObject.layer = LayerMask.NameToLayer("Selectable");
@@ -397,32 +327,50 @@ public class ObjectManipulator : MonoBehaviour
             }
         }
 
-        selectedObject = null; // Deselect the object
-        _isDragging = false; // Stop dragging when deselected
+        selectedObject = null;
+        _isDragging = false;
+    }
+
+    private void ResetUIElements()
+    {
         scaleSlider.transform.parent.gameObject.SetActive(true);
         bottomPanel.SetActive(true);
         circularRangeControl.imageSelected.fillAmount = 0;
         circularRangeControl._currentValue = 0;
-        circularRangeControl.angle.text = "".ToString();
+        circularRangeControl.angle.text = "";
     }
-   // public GameObject bottonPanel;
+
+    // Utility methods for interaction detection
+    private bool IsClickOnSlider()
+    {
+        Vector2 localMousePosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _sliderRect, Input.mousePosition, null, out localMousePosition);
+        return _sliderRect.rect.Contains(localMousePosition);
+    }
+
+    private bool IsClickOnRotationKnob()
+    {
+        Vector2 localMousePosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rotationKnob, Input.mousePosition, null, out localMousePosition);
+        return _sliderRect.rect.Contains(localMousePosition);
+    }
+
     private bool IsClickOnBottomPanel()
     {
         Vector2 localMousePosition;
         RectTransform bottomPanelRect = bottomPanel.GetComponent<RectTransform>();
 
-        // Check if the mouse click is within the bounds of the bottomPanel
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(bottomPanelRect, Input.mousePosition, null, out localMousePosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            bottomPanelRect, Input.mousePosition, null, out localMousePosition);
         return bottomPanelRect.rect.Contains(localMousePosition);
     }
 
-    public void DeselectForFloor()
-    {
-        RevertMaterial();
-    }
-
+    // Additional methods for object removal and floor selection
     public void RemoveObject()
     {
+        // Object removal logic remains the same as in your original script
         if (selectedObject == null) return;
 
         // foreach (var line in ManagerHandler.Instance.calculateDistance.lines)
@@ -470,17 +418,45 @@ public class ObjectManipulator : MonoBehaviour
         _isDragging = false; // Stop dragging when deselected
         removeButton.SetActive(false);
         Debug.Log("Remove");
+
     }
 
-    private void TurnOffRemoveButton()
+    public void SelectedObjectForFloor(Transform FloorSelected)
     {
-        removeButton.SetActive(false);
-    }
-    
-    private bool IsMissing(GameObject obj)
-    {
-        // The object is missing if it's null or destroyed
-        return obj == null || Object.ReferenceEquals(obj, null);
+        // Floor selection logic remains the same as in your original script
+        if (selectedObject == FloorSelected)
+        {
+            Debug.Log("Deselect");
+            DeselectForFloor();
+            return;
+        }
+
+        selectedObject = FloorSelected;
+        selectedObject.gameObject.layer = LayerMask.NameToLayer("SelectedFloor");
+
+        foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
+        {
+            childObjects.gameObject.layer = LayerMask.NameToLayer("SelectedFloor");
+        }
+
+        if (selectedObject == null) return;
+        var meshRenderer = selectedObject.GetComponent<MeshRenderer>();
+        if (meshRenderer != null)
+        {
+            _originalMaterial = meshRenderer.material; // Store the original material
+            meshRenderer.material = selectedMaterial; // Apply the selected material
+        }
+
+        isFloorSelected = false;
+        floorButton.buttonText.color = ManagerHandler.Instance.uiManager.canvasHandler.textUnselectedColor;
+        selectedObject.gameObject.layer = LayerMask.NameToLayer("Floor");
+
+        foreach (var childObjects in selectedObject.parent.GetComponentsInChildren<Collider>())
+        {
+            childObjects.gameObject.layer = LayerMask.NameToLayer("Floor");
+        }
+
+
     }
 
     private void DeleteMissingSpawnedModels()
@@ -488,12 +464,17 @@ public class ObjectManipulator : MonoBehaviour
         ManagerHandler.Instance.spawningManager.modelsSpawned.RemoveAll(
             item => item == null || !item || IsMissing(item));
     }
-
-    // Method to deselect the currently selected object via button click
-    public void DeselectButton()
+    private bool IsMissing(GameObject obj)
     {
-        DeselectObject(); // Call the method to deselect the object
+        // The object is missing if it's null or destroyed
+        return obj == null || Object.ReferenceEquals(obj, null);
+    }
+    public void DeselectForFloor()
+    {
+        RevertMaterial();
     }
 
-    
+
+
+
 }

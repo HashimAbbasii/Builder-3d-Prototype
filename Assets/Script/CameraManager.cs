@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -24,11 +22,13 @@ public class CameraManager : MonoBehaviour
     [Header("Rotation Settings")]
     [SerializeField] private float rotationSmoothing = 5f;
 
-    private Vector2 lastSingleTouchPosition;
-    private float initialFieldOfView;
+    private Vector2 lastTouchPosition;
     private Quaternion targetRotation;
 
     private Vector2 lastMousePosition;
+
+    // Reference to ObjectManipulator for checking if an object is selected
+    private ObjectManipulator objectManipulator;
 
     void Start()
     {
@@ -39,16 +39,30 @@ public class CameraManager : MonoBehaviour
 
         targetRotation = parentTransform.rotation;
         lastMousePosition = Input.mousePosition;
-        initialFieldOfView = mainCamera.fieldOfView;
+
+        objectManipulator = FindObjectOfType<ObjectManipulator>();
+        if (objectManipulator == null)
+        {
+            Debug.LogError("ObjectManipulator script not found in the scene.");
+        }
     }
 
     void Update()
     {
-        HandleTouchInput();
+        // If an object is selected, allow only zooming and rotation
+        if (objectManipulator != null && objectManipulator._isObjectSelected)
+        {
+            HandleZoomAndRotation();
+        }
+        else
+        {
+            HandleFullCameraControl();
+        }
+
         SmoothRotation();
     }
 
-    void HandleTouchInput()
+    void HandleFullCameraControl()
     {
 #if UNITY_EDITOR
         HandleEditorInput();
@@ -68,36 +82,33 @@ public class CameraManager : MonoBehaviour
 #endif
     }
 
-    // Centralized method for rotation to ensure consistency
-    void ApplyRotation(Vector2 rotationDelta)
+    void HandleZoomAndRotation()
     {
-        float horizontalRotation = -rotationDelta.x * rotationSensitivity;
-        float verticalRotation = rotationDelta.y * rotationSensitivity;
-
-        Quaternion yawRotation = Quaternion.Euler(0, horizontalRotation, 0);
-        Quaternion pitchRotation = Quaternion.Euler(-verticalRotation, 0, 0);
-
-        targetRotation *= yawRotation * pitchRotation;
-
-        // Ensure rotation stays within limits
-        Vector3 currentAngles = targetRotation.eulerAngles;
-
-        // Convert 0-360 range to signed angle
-        float currentX = currentAngles.x > 180 ? currentAngles.x - 360 : currentAngles.x;
-        float currentY = currentAngles.y > 180 ? currentAngles.y - 360 : currentAngles.y;
-
-        // Clamp both X and Y rotations
-        currentX = Mathf.Clamp(currentX, minRotationAngle.x, maxRotationAngle.x);
-        currentY = Mathf.Clamp(currentY, minRotationAngle.y, maxRotationAngle.y);
-
-        // Reconstruct the rotation with clamped X and Y
-        targetRotation = Quaternion.Euler(currentX, currentY, currentAngles.z);
+#if UNITY_EDITOR
+        HandleEditorZoomAndRotation();
+#else
+        if (Input.touchCount == 2)
+        {
+            HandleTwoFingerZoom();
+        }
+        else if (Input.touchCount == 3)
+        {
+            HandleThreeFingerRotation();
+        }
+#endif
     }
 
+    // Smoothly interpolate camera rotation
+    void SmoothRotation()
+    {
+        parentTransform.rotation = Quaternion.Slerp(parentTransform.rotation, targetRotation, Time.deltaTime * rotationSmoothing);
+    }
+
+    // Handles camera movement for mouse/keyboard input in the editor
 #if UNITY_EDITOR
     void HandleEditorInput()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0)) // Move camera
         {
             Vector2 currentMousePosition = Input.mousePosition;
             Vector2 mouseDelta = currentMousePosition - lastMousePosition;
@@ -110,15 +121,19 @@ public class CameraManager : MonoBehaviour
             lastMousePosition = currentMousePosition;
         }
 
+        HandleEditorZoomAndRotation();
+    }
+
+    void HandleEditorZoomAndRotation()
+    {
         float scrollDelta = Input.GetAxis("Mouse ScrollWheel");
         if (scrollDelta != 0)
         {
             float zoomAmount = -scrollDelta * zoomSensitivity * 100f;
-            float newFieldOfView = Mathf.Clamp(mainCamera.fieldOfView + zoomAmount, minZoom, maxZoom);
-            mainCamera.fieldOfView = newFieldOfView;
+            mainCamera.fieldOfView = Mathf.Clamp(mainCamera.fieldOfView + zoomAmount, minZoom, maxZoom);
         }
 
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1)) // Rotate camera
         {
             Vector2 currentMousePosition = Input.mousePosition;
             Vector2 mouseDelta = currentMousePosition - lastMousePosition;
@@ -134,6 +149,7 @@ public class CameraManager : MonoBehaviour
     }
 #endif
 
+    // Handles single finger movement for touch input
     void HandleSingleFingerMovement()
     {
         Touch touch = Input.GetTouch(0);
@@ -141,48 +157,43 @@ public class CameraManager : MonoBehaviour
         switch (touch.phase)
         {
             case TouchPhase.Began:
-                lastSingleTouchPosition = touch.position;
+                lastTouchPosition = touch.position;
                 break;
 
             case TouchPhase.Moved:
-                Vector2 touchDelta = touch.position - lastSingleTouchPosition;
+                Vector2 touchDelta = touch.position - lastTouchPosition;
 
                 Vector3 moveDirection =
                     parentTransform.right * touchDelta.x * moveSensitivity +
                     parentTransform.up * touchDelta.y * moveSensitivity;
 
                 parentTransform.position += moveDirection * Time.deltaTime;
-                lastSingleTouchPosition = touch.position;
+                lastTouchPosition = touch.position;
                 break;
         }
     }
 
+    // Handles two-finger pinch zoom
     void HandleTwoFingerZoom()
     {
         Touch touch0 = Input.GetTouch(0);
         Touch touch1 = Input.GetTouch(1);
 
-        if (touch0.phase == TouchPhase.Began || touch1.phase == TouchPhase.Began)
-        {
-            initialFieldOfView = mainCamera.fieldOfView;
-        }
-
         if (touch0.phase == TouchPhase.Moved && touch1.phase == TouchPhase.Moved)
         {
             float currentPinchDistance = Vector2.Distance(touch0.position, touch1.position);
-            float initialPinchDistance = Vector2.Distance(
+            float previousPinchDistance = Vector2.Distance(
                 touch0.position - touch0.deltaPosition,
                 touch1.position - touch1.deltaPosition
             );
 
-            float pinchDelta = initialPinchDistance - currentPinchDistance;
+            float pinchDelta = previousPinchDistance - currentPinchDistance;
             float zoomAmount = pinchDelta * zoomSensitivity;
-            float newFieldOfView = Mathf.Clamp(mainCamera.fieldOfView + zoomAmount, minZoom, maxZoom);
-
-            mainCamera.fieldOfView = newFieldOfView;
+            mainCamera.fieldOfView = Mathf.Clamp(mainCamera.fieldOfView + zoomAmount, minZoom, maxZoom);
         }
     }
 
+    // Handles three-finger rotation
     void HandleThreeFingerRotation()
     {
         if (Input.touchCount != 3) return;
@@ -190,11 +201,6 @@ public class CameraManager : MonoBehaviour
         Touch touch0 = Input.GetTouch(0);
         Touch touch1 = Input.GetTouch(1);
         Touch touch2 = Input.GetTouch(2);
-
-        if (touch0.phase != TouchPhase.Moved &&
-            touch1.phase != TouchPhase.Moved &&
-            touch2.phase != TouchPhase.Moved)
-            return;
 
         Vector2 rotationDelta = new Vector2(
             (touch0.deltaPosition.x + touch1.deltaPosition.x + touch2.deltaPosition.x) / 3f,
@@ -204,17 +210,25 @@ public class CameraManager : MonoBehaviour
         ApplyRotation(rotationDelta);
     }
 
-    void SmoothRotation()
+    // Applies rotation to the camera
+    void ApplyRotation(Vector2 rotationDelta)
     {
-        parentTransform.rotation = Quaternion.Slerp(parentTransform.rotation, targetRotation, Time.deltaTime * rotationSmoothing);
-    }
+        float horizontalRotation = -rotationDelta.x * rotationSensitivity;
+        float verticalRotation = rotationDelta.y * rotationSensitivity;
 
-    public void ResetCamera()
-    {
-        // Optionally reset position to zero
-        parentTransform.position = Vector3.zero;
+        Quaternion yawRotation = Quaternion.Euler(0, horizontalRotation, 0);
+        Quaternion pitchRotation = Quaternion.Euler(-verticalRotation, 0, 0);
 
-        // Reset field of view
-        mainCamera.fieldOfView = initialFieldOfView;
+        targetRotation *= yawRotation * pitchRotation;
+
+        Vector3 currentAngles = targetRotation.eulerAngles;
+
+        float currentX = currentAngles.x > 180 ? currentAngles.x - 360 : currentAngles.x;
+        float currentY = currentAngles.y > 180 ? currentAngles.y - 360 : currentAngles.y;
+
+        currentX = Mathf.Clamp(currentX, minRotationAngle.x, maxRotationAngle.x);
+        currentY = Mathf.Clamp(currentY, minRotationAngle.y, maxRotationAngle.y);
+
+        targetRotation = Quaternion.Euler(currentX, currentY, currentAngles.z);
     }
 }
