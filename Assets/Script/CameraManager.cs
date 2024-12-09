@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CameraManager : MonoBehaviour
 {
@@ -49,6 +51,12 @@ public class CameraManager : MonoBehaviour
 
     void Update()
     {
+        // Check if pointer is over UI element
+        if (IsPointerOverUIElement())
+        {
+            return;
+        }
+
         // If an object is selected, allow only zooming and rotation
         if (objectManipulator != null && objectManipulator._isObjectSelected)
         {
@@ -61,6 +69,40 @@ public class CameraManager : MonoBehaviour
 
         SmoothRotation();
     }
+
+    bool IsPointerOverUIElement()
+    {
+        // Check for touch input
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            // Check if the first touch is over a UI element
+            return IsTouchOverUIElement(touch);
+        }
+
+        // Fallback to mouse check for editor/standalone
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    // Specific method to check if a touch is over a UI element
+    bool IsTouchOverUIElement(Touch touch)
+    {
+        // Create a pointer event data for the touch position
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = touch.position;
+
+        // Create a list to store raycast results
+        List<RaycastResult> results = new List<RaycastResult>();
+
+        // Raycast using the event system
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+        // Return true if any UI element was hit
+        return results.Count > 0;
+    }
+
+
 
     void HandleFullCameraControl()
     {

@@ -48,6 +48,7 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> modelsSpawned = new();
 
     public GameObject categoryButtonPrefab;   // Prefab for the category button
+    [Header("Categories Check")]
     public GameObject EvidenceButtonPrefab;   // UI panel for category selection
 
 
@@ -76,6 +77,7 @@ public class SpawningManager : MonoBehaviour
     public List <GameObject> deadBodyPrefabs = new();
     public List <GameObject> bloodPrefabs = new();
     public List <GameObject> knifePrefabs = new();
+    public List <GameObject> linePrefabs = new();
 
 
     public List<GameObject> currentCategoryModels;  // Currently selected category models
@@ -83,7 +85,20 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> currentEvidenceModels;  // Currently selected evidence models
     private int currentPage = 0;
     private int modelsPerPage = 20;
-   
+
+
+    //[Header("Floor Texture")]
+    //public List<GameObject> FloorTexture;
+    //[Header("Model Texture")]
+    //public List<GameObject> ChairTexture;
+    //public List<GameObject> TableTexture;
+    //public List<GameObject> BedTexture;
+    //public List<GameObject> WallTexture;
+    //[Header("Evidence Texture")]
+    //public List<GameObject> DeadBodyTexture;
+    //public List<GameObject> BloodTexture;
+    //public List<GameObject> KnifeTexture;
+    //public List<GameObject> LineTexture;
 
 
 
@@ -148,69 +163,6 @@ public class SpawningManager : MonoBehaviour
 
         ScriptableObjectFetch();
         DistinguishCategory();
-
-        //for (var i = 0; i < modelPrefabs.Count(); i++)
-        //{
-        //    var model = modelPrefabs[i];
-
-        //    model.GetComponent<SelectableObject>().objectID = i + 2;
-
-        //    switch (model.GetComponent<SelectableObject>().modelType)
-        //    {
-        //        case ModelType.Furniture:
-        //            furniturePrefabs.Add(model);
-        //            break;
-        //        case ModelType.Evidence:
-        //            evidencePrefabs.Add(model);
-        //            break;
-        //    }
-        //}
-
-        //foreach (var model in modelPrefabs)
-        //{
-        //    if (model.GetComponent<SelectableObject>().modelType != ModelType.Furniture || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
-
-        //    switch (model.GetComponent<SelectableObject>().furnitureType)
-        //    {
-        //        case FurnitureType.Chair:
-        //            chairModelPrefabs.Add(model);
-        //            break;
-
-        //        case FurnitureType.Table:
-        //            tableModelPrefabs.Add(model);
-        //            break;
-
-        //        case FurnitureType.Bed:
-        //            bedModelPrefabs.Add(model);
-        //            break;
-
-        //        case FurnitureType.Carpet:
-        //            carpetModelPrefabs.Add(model);
-        //            break;
-
-        //    }
-        //}
-
-        //foreach (var model in modelPrefabs)
-        //{
-        //    if (model.GetComponent<SelectableObject>().modelType != ModelType.Evidence || model.GetComponent<SelectableObject>().surfaceType != SurfaceType.Models) continue;
-
-        //    switch (model.GetComponent<SelectableObject>().evidenceType)
-        //    {
-        //        case EvidenceType.Blood:
-        //            bloodPrefabs.Add(model);
-        //            break;
-        //        case EvidenceType.DeadBody:
-        //            deadBodyPrefabs.Add(model);
-        //            break;
-
-        //        case EvidenceType.Knife:
-        //            knifePrefabs.Add(model);
-        //            break;
-
-        //    }
-        //}
-
         DistinguishEvidence();
         var fch = ManagerHandler.Instance.uiManager.canvasHandler.furnitureButtonsContentHolder;
         var ech = ManagerHandler.Instance.uiManager.canvasHandler.evidenceButtonsContentHolder;
@@ -270,6 +222,9 @@ public class SpawningManager : MonoBehaviour
                     break;
                 case EvidenceType.Knife:
                     knifePrefabs.Add(model.gameModel);
+                    break;
+                case EvidenceType.Line:
+                    linePrefabs.Add(model.gameModel);
                     break;
 
             }
@@ -378,8 +333,11 @@ public class SpawningManager : MonoBehaviour
             case "Blood":
                 currentEvidenceModels = bloodPrefabs;
                 break;
-                case "Knife":
+            case "Knife":
                 currentEvidenceModels = knifePrefabs;
+                break;
+             case "Line":
+                currentEvidenceModels = linePrefabs;
                 break;
             
         }
@@ -1016,6 +974,7 @@ public class SpawningManager : MonoBehaviour
         CreateEvidenceButton("Dead Body");
         CreateEvidenceButton("Blood");
         CreateEvidenceButton("Knife");
+        CreateEvidenceButton("Line");
         Debug.Log("Evidence created");
        
       
