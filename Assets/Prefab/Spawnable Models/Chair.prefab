@@ -61,7 +61,7 @@ MonoBehaviour:
   - {fileID: 7171533225116220120}
   - {fileID: 2906135856798290519}
   - {fileID: 8289363499103598499}
-  modelVariant: {fileID: 0}
+  modelVariantScrollContentParent: {fileID: 0}
   modelMaterials:
   - {fileID: 2100000, guid: f7cdf633ddd065a44b107771fb8ab733, type: 2}
   - {fileID: 2100000, guid: cfc9cd6cf36ce4d45b59bf4ad333d820, type: 2}
@@ -73,6 +73,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 2f9d4f98199af254e83667d875e17499, type: 3}
   - {fileID: 21300000, guid: 3d53ee4c55136194080d44142770eeb9, type: 3}
   - {fileID: 21300000, guid: dc255a5a3e53d834eb02d3fdf8899b51, type: 3}
+  manipulator: {fileID: 0}
+  selectChildForSelection: {fileID: 0}
 --- !u!1 &2906135856798290519
 GameObject:
   m_ObjectHideFlags: 0
@@ -327,7 +329,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2402936684392395817, guid: d447345e53e530e4da5a90954daee82d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2402936684392395817, guid: d447345e53e530e4da5a90954daee82d, type: 3}
       propertyPath: m_TagString

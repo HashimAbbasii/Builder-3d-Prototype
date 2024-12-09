@@ -25,6 +25,8 @@ public class SelectableObject : ObjectType
 
     [Header("Image Texture")]
     public List<Sprite> modelImages;
+    public ObjectManipulator manipulator;
+    public Transform selectChildForSelection;
 
     private void Start()
     {
@@ -32,6 +34,7 @@ public class SelectableObject : ObjectType
         Debug.Log("When its Run");
         spawningManager=FindObjectOfType<SpawningManager>();
         modelVariantScrollContentParent = spawningManager.ModelVariant;
+        manipulator = FindObjectOfType<ObjectManipulator>();
         OriginalScale = transform.localScale;
         MakeChildofScroll();
 
@@ -122,6 +125,9 @@ public class SelectableObject : ObjectType
                 Debug.LogWarning($"Material at index {i} is null. Skipping.");
             }
         }
+
+        selectChildForSelection=transform.GetChild(0);
+        manipulator.SetSelectedObject(selectChildForSelection);
     }
 }
 

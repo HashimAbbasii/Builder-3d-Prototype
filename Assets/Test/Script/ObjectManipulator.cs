@@ -224,8 +224,8 @@ public class ObjectManipulator : MonoBehaviour
         }
 
         ConfigureSliderAndUI();
-        ApplySelectedMaterial();
-        RecalculateDistance();
+      ApplySelectedMaterial();
+       RecalculateDistance();
     }
 
     private void ConfigureSliderAndUI()
