@@ -56,6 +56,7 @@ public class ObjectManipulator : MonoBehaviour
 
         if (Input.touchCount == 1)
         {
+            Debug.Log("Touch Count " +Input.touchCount);
             if (ManagerHandler.Instance.spawningManager.IsCreatingFloor ||
                 ManagerHandler.Instance.spawningManager.IsCreatingWall)
                 return;
@@ -98,6 +99,7 @@ public class ObjectManipulator : MonoBehaviour
             }
             else
             {
+                Debug.Log("No object selected");
                 Invoke(nameof(DeselectObject), 0.3f);
                 _isObjectSelected = false;
             }
