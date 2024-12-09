@@ -61,6 +61,18 @@ MonoBehaviour:
   - {fileID: 7171533225116220120}
   - {fileID: 2906135856798290519}
   - {fileID: 8289363499103598499}
+  modelVariant: {fileID: 0}
+  modelMaterials:
+  - {fileID: 2100000, guid: f7cdf633ddd065a44b107771fb8ab733, type: 2}
+  - {fileID: 2100000, guid: cfc9cd6cf36ce4d45b59bf4ad333d820, type: 2}
+  - {fileID: 2100000, guid: 5bd01246fd1aa8e489673081da9838a9, type: 2}
+  - {fileID: 2100000, guid: d852bd096d399bf41b96ce22106de7c9, type: 2}
+  spawningManager: {fileID: 0}
+  modelImages:
+  - {fileID: 21300000, guid: 3821fce2dd3bddb4f9ce229fb5f5e96c, type: 3}
+  - {fileID: 21300000, guid: 2f9d4f98199af254e83667d875e17499, type: 3}
+  - {fileID: 21300000, guid: 3d53ee4c55136194080d44142770eeb9, type: 3}
+  - {fileID: 21300000, guid: dc255a5a3e53d834eb02d3fdf8899b51, type: 3}
 --- !u!1 &2906135856798290519
 GameObject:
   m_ObjectHideFlags: 0
@@ -387,6 +399,10 @@ PrefabInstance:
     - target: {fileID: 5158865468174295055, guid: 4ae828653c7b04b408e68250a728d475, type: 3}
       propertyPath: m_Name
       value: ChairSofa
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225076163952842392, guid: 4ae828653c7b04b408e68250a728d475, type: 3}
+      propertyPath: objectID
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ae828653c7b04b408e68250a728d475, type: 3}

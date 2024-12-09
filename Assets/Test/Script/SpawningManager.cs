@@ -33,7 +33,7 @@ public class SpawningManager : MonoBehaviour
     private GameObject _currentWall;
     private GameObject _previewObject;
     private Material _originalMaterial; // To store the original material of the model
-    public  bool _isCreatingFloor = false;
+    public bool _isCreatingFloor = false;
     public bool _isCreatingWall = false;
     public bool _wallAlongZAxis = false;
     public bool pauseCondition = false;
@@ -74,10 +74,10 @@ public class SpawningManager : MonoBehaviour
 
     [Header("Evidence")]
 
-    public List <GameObject> deadBodyPrefabs = new();
-    public List <GameObject> bloodPrefabs = new();
-    public List <GameObject> knifePrefabs = new();
-    public List <GameObject> linePrefabs = new();
+    public List<GameObject> deadBodyPrefabs = new();
+    public List<GameObject> bloodPrefabs = new();
+    public List<GameObject> knifePrefabs = new();
+    public List<GameObject> linePrefabs = new();
 
 
     public List<GameObject> currentCategoryModels;  // Currently selected category models
@@ -85,7 +85,7 @@ public class SpawningManager : MonoBehaviour
     public List<GameObject> currentEvidenceModels;  // Currently selected evidence models
     private int currentPage = 0;
     private int modelsPerPage = 20;
-
+    public GameObject ModelVariant;
 
     //[Header("Floor Texture")]
     //public List<GameObject> FloorTexture;
@@ -106,7 +106,7 @@ public class SpawningManager : MonoBehaviour
     [Space(5)]
     private SelectableObject selectableObject;
 
-    
+
     public bool IsCreatingWall => _isCreatingWall;
     public bool IsCreatingFloor => _isCreatingFloor;
 
@@ -132,9 +132,9 @@ public class SpawningManager : MonoBehaviour
     public void DistinguishCategory()
     {
         var models = modelsScriptableOject.models;
-        foreach (var model in models) 
+        foreach (var model in models)
         {
-            if(model.modelType != ModelType.Furniture || model.surfaceType != SurfaceType.Models)continue;
+            if (model.modelType != ModelType.Furniture || model.surfaceType != SurfaceType.Models) continue;
 
             switch (model.furnitureType)
             {
@@ -197,7 +197,7 @@ public class SpawningManager : MonoBehaviour
         //EvidencPanel.SetActive(true);
 
         // Set initial category (for example, Chairs)
-       // SetCurrentCategory("Chair");
+        // SetCurrentCategory("Chair");
 
         CreateEvidence();
 
@@ -235,18 +235,18 @@ public class SpawningManager : MonoBehaviour
     {
         for (int i = 0; i < modelsScriptableOject.models.Count; i++)
         {
-            var modesFetch= modelsScriptableOject.models[i];
+            var modesFetch = modelsScriptableOject.models[i];
             var convertIntoGameObject = modesFetch.gameModel;
             switch (modesFetch.modelType)
             {
                 case ModelType.Furniture:
-                   // GameObject ConvertintoGameObject=GameObject(modesFetch);
+                    // GameObject ConvertintoGameObject=GameObject(modesFetch);
                     furniturePrefabs.Add(convertIntoGameObject);
                     break;
 
-                 case ModelType.Evidence:
-                 evidencePrefabs.Add(convertIntoGameObject);
-                  break;
+                case ModelType.Evidence:
+                    evidencePrefabs.Add(convertIntoGameObject);
+                    break;
             }
         }
     }
@@ -260,8 +260,8 @@ public class SpawningManager : MonoBehaviour
         button.GetComponent<Button>().onClick.AddListener(() => OnCategorySelected(categoryName));
     }
 
-   // public GameObject categoryPanelScrollView;
-   // public GameObject canvasEssential;
+    // public GameObject categoryPanelScrollView;
+    // public GameObject canvasEssential;
     private void OnCategorySelected(string category)
     {
         canvasFurniture.SetActive(false);
@@ -336,10 +336,10 @@ public class SpawningManager : MonoBehaviour
             case "Knife":
                 currentEvidenceModels = knifePrefabs;
                 break;
-             case "Line":
+            case "Line":
                 currentEvidenceModels = linePrefabs;
                 break;
-            
+
         }
 
         LoadModelEvidence(currentPage);
@@ -371,7 +371,7 @@ public class SpawningManager : MonoBehaviour
 
     private void LoadModels(int page)
     {
-      //  subPanel.SetActive(true);
+        //  subPanel.SetActive(true);
         // Clear previous buttons
         foreach (Transform child in modelListParent)
         {
@@ -436,7 +436,7 @@ public class SpawningManager : MonoBehaviour
     public Vector3 scaleTest;
     private void ProcessTouch(Touch touch)
     {
-        if(pauseCondition==true) return;
+        if (pauseCondition == true) return;
         var ray = Camera.main.ScreenPointToRay(touch.position);
 
         // Floor creation logic
@@ -472,7 +472,7 @@ public class SpawningManager : MonoBehaviour
                     if (scale.z > 0) scale.z = 1f;
                     else scale.z = -1f;
                 }
-                
+
                 _currentFloor.transform.localScale = new Vector3(scale.x, 0.01f, scale.z);
 
                 var actualScaleX = Mathf.Abs(scale.x); // Adjust scale calculation
@@ -486,7 +486,7 @@ public class SpawningManager : MonoBehaviour
             _currentFloor = null;
 
 
-             Invoke(nameof(DeleteLinesForAll), 0.5f);
+            Invoke(nameof(DeleteLinesForAll), 0.5f);
         }
 
         // Wall creation logic
@@ -553,7 +553,7 @@ public class SpawningManager : MonoBehaviour
 
         if (touch.phase == TouchPhase.Ended && _selectedObjectIndex != -1 && _previewObject != null)
         {
-          //  PlaceObjectOnSurface();
+            //  PlaceObjectOnSurface();
         }
     }
 
@@ -598,7 +598,7 @@ public class SpawningManager : MonoBehaviour
         }
     }
 #endif
-    
+
     public void Pausing()
     {
         ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
@@ -616,9 +616,9 @@ public class SpawningManager : MonoBehaviour
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
-        
+
         ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
-        
+
         _isCreatingFloor = true;
         _isCreatingWall = false; // Ensure wall creation is not active
         if (_previewObject != null)
@@ -628,21 +628,21 @@ public class SpawningManager : MonoBehaviour
         _previewObject = null;
         _selectedObjectIndex = -1;
     }
-    
-    
+
+
     // Called when the wall button is clicked
     public void OnWallButtonClick()
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 2;
-        
+
         ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
-        
+
         _isCreatingWall = true;
         _isCreatingFloor = false; // Ensure floor creation is not active
         if (_previewObject != null)
         {
-           // Destroy(_previewObject);
+            // Destroy(_previewObject);
         }
         _previewObject = null;
         _selectedObjectIndex = -1;
@@ -652,22 +652,22 @@ public class SpawningManager : MonoBehaviour
     public GameObject canvasFurniture;
     public GameObject EvidenceScrollView;
     public Transform[] RandomPointSpawn;
-    
+
     //public GameObject scrollViewFurniture;
 
     private void SelectModel(int objectIndex)
     {
         // subPanel.SetActive(true);
-       // canvasFurniture.SetActive(false);
-      //  if (_selectedObjectIndex == objectIndex)
-     //   {
-            //if (_previewObject != null)
-            //{
-            //    Destroy(_previewObject);
-            //}
-          //  _selectedObjectIndex = -1;
-          //  return;
-    //    }
+        // canvasFurniture.SetActive(false);
+        //  if (_selectedObjectIndex == objectIndex)
+        //   {
+        //if (_previewObject != null)
+        //{
+        //    Destroy(_previewObject);
+        //}
+        //  _selectedObjectIndex = -1;
+        //  return;
+        //    }
 
         _selectedObjectIndex = objectIndex;
 
@@ -675,11 +675,11 @@ public class SpawningManager : MonoBehaviour
         //{
         //    Destroy(_previewObject);
         //}
-        int RandomPoint =UnityEngine.Random.Range(0, RandomPointSpawn.Length);
+        int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
 
-        _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position,Quaternion.identity);
-      
-       // subPanel.SetActive(false);  // Hide sub-panel after selection
+        _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
+
+        // subPanel.SetActive(false);  // Hide sub-panel after selection
         //canvasEssential.gameObject.SetActive(true); 
     }
 
@@ -700,7 +700,7 @@ public class SpawningManager : MonoBehaviour
         int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
         _previewObject = Instantiate(currentEvidenceModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
 
-        
+
     }
 
 
@@ -718,7 +718,7 @@ public class SpawningManager : MonoBehaviour
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
 
         ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
-        
+
         if (objectIndex == _selectedObjectIndex)
         {
             if (_previewObject != null)
@@ -729,8 +729,8 @@ public class SpawningManager : MonoBehaviour
             _selectedObjectIndex = -1;
             return;
         }
-        
-        
+
+
         // Ensure floor creation is not active
         if (objectIndex >= 0 && objectIndex < modelPrefabs.Count)
         {
@@ -794,7 +794,7 @@ public class SpawningManager : MonoBehaviour
                         // Instantiate the object (e.g., knife) at the calculated position
                         var placedObject = Instantiate(prefab, placePosition1, Quaternion.identity);
 
-                     
+
 
                         modelsSpawned.Add(placedObject);
 
@@ -804,7 +804,7 @@ public class SpawningManager : MonoBehaviour
                         {
                             renderer.material = _originalMaterial;
                         }
-                        
+
                         // Destroy the preview object after placing the actual object
                         Destroy(_previewObject);
                         _previewObject = null; // Reset previewObject to avoid repeated placements
@@ -822,7 +822,7 @@ public class SpawningManager : MonoBehaviour
                         // Instantiate the object (e.g., knife) at the calculated position
                         var placedObject = Instantiate(prefab, placePosition2, Quaternion.identity);
 
-                       
+
                         modelsSpawned.Add(placedObject);
 
                         // Reset the material of the placed object to the original material
@@ -910,6 +910,7 @@ public class SpawningManager : MonoBehaviour
     // Method to change the floor's texture/material
     public void ChangeFloorTexture(int materialIndex)
     {
+        Debug.Log(materialIndex);
         if (materialIndex >= 0 && materialIndex < floorMaterials.Length)
         {
             // Find all objects in the scene that have the same prefab or a specific tag (e.g., "Floor")
@@ -952,35 +953,36 @@ public class SpawningManager : MonoBehaviour
     //to change the object model
     public void ChangeModel(int number)
     {
-       foreach(var models in selectableObject.ModelVariants)
-       {
+        foreach (var models in selectableObject.ModelVariants)
+        {
             models.SetActive(false);
-       }
+        }
         selectableObject.ModelVariants[number].SetActive(true);
     }
     public void DeleteLinesForAll()
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.DeleteLines();
-       
+
 
     }
 
     public bool EvidenceButtonClick = true;
-     public void CreateEvidence()
+    public void CreateEvidence()
     {
 
-     
-       
+
+
         CreateEvidenceButton("Dead Body");
         CreateEvidenceButton("Blood");
         CreateEvidenceButton("Knife");
         CreateEvidenceButton("Line");
         Debug.Log("Evidence created");
-       
-      
+
+
 
 
     }
+
     public GameObject EvidencPanel;
     private void CreateEvidenceButton(string categoryName)
     {
