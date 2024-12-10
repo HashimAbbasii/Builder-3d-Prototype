@@ -127,6 +127,7 @@ public class SelectableObject : ObjectType
         }
 
         selectChildForSelection=transform.GetChild(0);
+        Debug.Log("A");
         manipulator.SetSelectedObject(selectChildForSelection);
     }
 }

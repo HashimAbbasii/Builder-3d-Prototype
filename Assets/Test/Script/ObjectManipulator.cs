@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
 using Unity.VisualScripting;
+using UnityEngine.EventSystems;
 
 public class ObjectManipulator : MonoBehaviour
 {
@@ -71,6 +72,13 @@ public class ObjectManipulator : MonoBehaviour
 
     private void HandleObjectSelection(Touch touch, Ray ray)
     {
+        // Ensure no action is taken when interacting with UI
+        if (IsPointerOverUIElement())
+        {
+            Debug.Log("UI interaction detected, ignoring selection.");
+            return;
+        }
+
         if (touch.phase == TouchPhase.Began &&
             !IsClickOnSlider() &&
             !IsClickOnRotationKnob() &&
@@ -115,7 +123,6 @@ public class ObjectManipulator : MonoBehaviour
             }
         }
     }
-
     private void HandleObjectMovement(Touch touch, Ray ray)
     {
         if (selectedObject != null)
@@ -150,6 +157,44 @@ public class ObjectManipulator : MonoBehaviour
             _isObjectSelected = false;
         }
     }
+
+
+    private bool IsPointerOverUIElement()
+    {
+        // Check for touch input
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            // Check if the first touch is over a UI element
+            return IsTouchOverUIElement(touch);
+        }
+
+        // Fallback to mouse check for editor/standalone
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    // Specific method to check if a touch is over a UI element
+    private bool IsTouchOverUIElement(Touch touch)
+    {
+        // Create a pointer event data for the touch position
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current)
+        {
+            position = touch.position
+        };
+
+        // Create a list to store raycast results
+        List<RaycastResult> results = new List<RaycastResult>();
+
+        // Raycast using the event system
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+
+        // Return true if any UI element was hit
+        return results.Count > 0;
+    }
+
+
+
     public void SetRotation(float angle)
     {
         if (selectedObject != null)
@@ -204,6 +249,7 @@ public class ObjectManipulator : MonoBehaviour
 
     public void SetSelectedObject(Transform obj)
     {
+        Debug.Log("C");
         if (obj != null)
         {
             rotationKnob.gameObject.SetActive(true);
