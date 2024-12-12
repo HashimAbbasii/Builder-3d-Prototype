@@ -2,48 +2,136 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-//using UnityEngine.UIElements;
 
 public class SelectableObject : ObjectType
 {
+    [SerializeField] private CameraManager cameraManager;
+    [SerializeField] private SpawningManager spawningManager;
+    [SerializeField] private GameObject objectToSpawn;
+    [SerializeField] private Vector3 spawnOffset = new Vector3(0, 0, 5); // Distance from camera
+    [SerializeField] private List<Button> textureSelectionButtons; // Buttons for texture selection
+    [SerializeField] private List<Sprite> textureSprites; // Textures for objects
+
+    public int ObjectID; // Unique identifier for each object
     public ModelType modelType;
     public FurnitureType furnitureType;
     public EvidenceType evidenceType;
     public bool canPlaceObjectsOnIt;
     public bool canBePlacedOnObject;
-    public float heightOffset = 0.0f; // The height offset to place objects on this surface
+    public float heightOffset = 0.0f; // Height offset for placing objects
     public Renderer objectRenderer;
-    public List<GameObject> ModelVariants;
+    public List<Texture> modelTextures;
+
+    //public List<Texture> ModelMaterials;
+
+
     public Vector3 OriginalScale { get; private set; }
     public GameObject modelVariantScrollContentParent;
 
     [Header("Model Variants")]
     public List<Material> modelMaterials;
 
-    public SpawningManager spawningManager;
-
-
     [Header("Image Texture")]
     public List<Sprite> modelImages;
+
     public ObjectManipulator manipulator;
     public Transform selectChildForSelection;
 
-    private void Start()
+    private Vector3 originalPosition;
+    private Quaternion originalRotation;
+    private bool isTextureSelected = false;
+
+    //[Header("Focus Camera")]
+   // public FocusCameraSelection focusCameraSelection;
+
+
+
+    private void Awake()
     {
-        //modelVariant = 
-        Debug.Log("When its Run");
-        spawningManager=FindObjectOfType<SpawningManager>();
-        modelVariantScrollContentParent = spawningManager.ModelVariant;
+        // Initialize variables
+        cameraManager = FindObjectOfType<CameraManager>();
+        spawningManager = FindObjectOfType<SpawningManager>();
         manipulator = FindObjectOfType<ObjectManipulator>();
+        modelVariantScrollContentParent = spawningManager.ModelVariant;
         OriginalScale = transform.localScale;
-        MakeChildofScroll();
 
+        // Store original position and rotation
+        originalPosition = transform.position;
+        originalRotation = transform.rotation;
 
+        // Assign a unique ObjectID
+        AssignUniqueID();
+        //focusCameraSelection=FindObjectOfType<FocusCameraSelection>();
+
+        // Setup texture selection buttons
+        //if (textureSelectionButtons != null)
+        //{
+        //    for (int i = 0; i < textureSelectionButtons.Count; i++)
+        //    {
+        //        int index = i; // Prevent closure issue
+        //        textureSelectionButtons[i].onClick.AddListener(() => OnTextureSelection(index));
+        //    }
+        //}
+
+      //  MakeChildofScroll();
     }
+
+    private void AssignUniqueID()
+    {
+        ObjectID = GetInstanceID(); // Using Unity's instance ID as a unique identifier
+        Debug.Log($"ObjectID assigned: {ObjectID}");
+    }
+
+    public void OnObjectSelected()
+    {
+        // Move camera to distant position
+        cameraManager.MoveCameraToPosition(new Vector3(1000, 1000, 1000));
+
+        // Spawn object in front of camera
+        SpawnObjectInFront();
+    }
+
+    private void SpawnObjectInFront()
+    {
+        if (objectToSpawn != null)
+        {
+            GameObject spawnedObject = Instantiate(objectToSpawn, new Vector3(1000, 1000, 1000) + spawnOffset, Quaternion.identity);
+            spawnedObject.SetActive(true); // Ensure visibility
+        }
+    }
+
+    private void OnTextureSelection(int textureIndex)
+    {
+        if (!isTextureSelected && textureSprites.Count > 0 && textureIndex < textureSprites.Count)
+        {
+            // Change texture of the object
+            ChangeObjectTexture(textureSprites[textureIndex]);
+
+            // Reset object position and rotation
+            transform.position = originalPosition;
+            transform.rotation = originalRotation;
+
+            // Move camera to focus on object
+            //cameraManager.FocusOnObject(transform);
+
+            isTextureSelected = true; // Mark texture as selected
+        }
+    }
+
+    private void ChangeObjectTexture(Sprite newTexture)
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer != null && newTexture != null)
+        {
+            Material material = new Material(Shader.Find("Standard"));
+            material.mainTexture = newTexture.texture;
+            renderer.material = material;
+        }
+    }
+
     public void MakeChildofScroll()
     {
-
-
+        Debug.Log("ssdsafa");
         if (modelVariantScrollContentParent == null || modelMaterials.Count == 0)
         {
             Debug.LogWarning("Model variant or materials are not set.");
@@ -52,73 +140,29 @@ public class SelectableObject : ObjectType
 
         for (int i = modelVariantScrollContentParent.transform.childCount - 1; i >= 0; i--)
         {
+            Debug.Log("sdsdsdsd");
             Destroy(modelVariantScrollContentParent.transform.GetChild(i).gameObject);
         }
 
-        // Check if a parent Canvas exists; create one if needed
-        Canvas parentCanvas = modelVariantScrollContentParent.GetComponentInParent<Canvas>();
-        if (parentCanvas == null)
-        {
-            // If no Canvas exists, create one
-            GameObject canvasObject = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            parentCanvas = canvasObject.GetComponent<Canvas>();
-            parentCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-            // Set the Canvas as the parent of the modelVariant
-            modelVariantScrollContentParent.transform.SetParent(canvasObject.transform, false);
-        }
-
-        // Loop through the materials
         for (int i = 0; i < modelMaterials.Count; i++)
         {
             if (modelMaterials[i] != null)
             {
-                Debug.Log($"Material {i}: {modelMaterials[i]}");
-
-                // Create a new GameObject to represent the material
+                
                 GameObject materialObject = new GameObject($"Material_{i}");
-
-                // Set the material object as a child of the model variant
                 materialObject.transform.SetParent(modelVariantScrollContentParent.transform, false);
 
-                // Add a RectTransform (required for UI components)
                 RectTransform rectTransform = materialObject.AddComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(100, 100); // Set the size of the UI element
-                rectTransform.anchoredPosition = new Vector2(0, -i * 120); // Stack vertically
+                rectTransform.sizeDelta = new Vector2(100, 100);
+                rectTransform.anchoredPosition = new Vector2(0, -i * 120);
 
-                // Add an Image component for UI representation
                 Image image = materialObject.AddComponent<Image>();
-
-                // Assign a sprite to the Image component
-                image.sprite=modelImages[i];
-
-
-
-
-                Sprite exampleSprite = Resources.Load<Sprite>($"Sprites/Material_{i}"); // Adjust path as needed
+                image.sprite = modelImages[i];
 
                 Button button = materialObject.AddComponent<Button>();
-
-                // Add OnClick event listener
-                int index = i; // Local variable to avoid closure issue
-
-                // Optional: Customize the button
-                ColorBlock buttonColors = button.colors;
-                buttonColors.normalColor = Color.white;
-                buttonColors.highlightedColor = Color.gray;
-                buttonColors.pressedColor = Color.green;
-                button.colors = buttonColors;
-                button.onClick.AddListener(() => spawningManager.ChangeFloorTexture(index));
-
-
-                if (exampleSprite != null)
-                {
-                    image.sprite = exampleSprite;
-                }
-                else
-                {
-                    Debug.LogWarning($"Sprite not found for Material_{i}. Ensure the sprite is in the correct path.");
-                }
+                textureSelectionButtons.Add(button);
+                int index = i;
+                button.onClick.AddListener(() => spawningManager.TextureImplementation(index));
             }
             else
             {
@@ -126,13 +170,13 @@ public class SelectableObject : ObjectType
             }
         }
 
-        selectChildForSelection=transform.GetChild(0);
-        Debug.Log("A");
+        selectChildForSelection = transform.GetChild(0);
         manipulator.SetSelectedObject(selectChildForSelection);
+        // cameraManager.FocusOnObject(selectChildForSelection);
+        FocusCameraSelection focusCameraSelection = FindObjectOfType<FocusCameraSelection>();
+        focusCameraSelection.FocusCamera();
     }
 }
-
-
 
 public enum ModelType
 {
@@ -157,5 +201,4 @@ public enum EvidenceType
     Knife,
     Pen,
     Line
-
 }

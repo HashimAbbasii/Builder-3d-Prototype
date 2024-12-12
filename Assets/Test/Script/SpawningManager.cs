@@ -10,6 +10,7 @@ using Unity.IO.LowLevel.Unsafe;
 using System.Xml.Serialization;
 using Random = System.Random;
 using Unity.VisualScripting;
+using UnityEditor;
 
 public class SpawningManager : MonoBehaviour
 {
@@ -87,6 +88,12 @@ public class SpawningManager : MonoBehaviour
     private int modelsPerPage = 20;
     public GameObject ModelVariant;
 
+
+
+    [Header("Store the Camera Position")]
+    public Vector3 cameraTransform;
+    public Quaternion cameraRotation;
+    
     //[Header("Floor Texture")]
     //public List<GameObject> FloorTexture;
     //[Header("Model Texture")]
@@ -156,6 +163,7 @@ public class SpawningManager : MonoBehaviour
 
     private void Start()
     {
+        
         //canvasEssential.gameObject.SetActive(true);
         pauseCondition = false;
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
@@ -678,6 +686,15 @@ public class SpawningManager : MonoBehaviour
         int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
 
         _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
+        selectableObject=FindObjectOfType<SelectableObject>();
+        FocusCameraSelection focusCameraSelection   = selectableObject.GetComponent<FocusCameraSelection>();
+        cameraTransform = Camera.main.transform.position;
+        cameraRotation = Camera.main.transform.rotation;
+        focusCameraSelection.startPositionForCamera = cameraTransform;
+        focusCameraSelection.startPositionForCameraRotation = cameraRotation;
+        
+        selectableObject.MakeChildofScroll();
+       
 
         // subPanel.SetActive(false);  // Hide sub-panel after selection
         //canvasEssential.gameObject.SetActive(true); 
@@ -699,6 +716,7 @@ public class SpawningManager : MonoBehaviour
         // Instantiate the selected model at a random spawn point
         int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
         _previewObject = Instantiate(currentEvidenceModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
+        //...............
 
 
     }
@@ -950,15 +968,34 @@ public class SpawningManager : MonoBehaviour
     }
 
 
-    //to change the object model
-    public void ChangeModel(int number)
+    public void TextureImplementation(int materialIndex)
     {
-        foreach (var models in selectableObject.ModelVariants)
+        Debug.Log("material Index"+materialIndex);
+        SelectableObject selectableObject1=FindObjectOfType<SelectableObject>();
+        ObjectManipulator objectManipulate=FindObjectOfType<ObjectManipulator>();
+        if (objectManipulate.selectedObject != null)
         {
-            models.SetActive(false);
+            Debug.Log("Check Texture");
+            Material objectTexture = objectManipulate.selectedObject.GetComponent<Renderer>().material;
+            if(objectTexture != null)
+            {
+                Debug.Log("Object Texture");
+                objectTexture.mainTexture = selectableObject1.modelTextures[materialIndex]; 
+            }
         }
-        selectableObject.ModelVariants[number].SetActive(true);
+
     }
+
+
+    //to change the object model
+    //public void ChangeModel(int number)
+    //{
+    //    foreach (var models in selectableObject.ModelMaterials)
+    //    {
+    //        models.SetActive(false);
+    //    }
+    //    selectableObject.ModelMaterials[number].SetActive(true);
+    //}
     public void DeleteLinesForAll()
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.DeleteLines();
@@ -1012,5 +1049,11 @@ public class SpawningManager : MonoBehaviour
         essentialPanel.gameObject.SetActive(false);
         FurniturePanel.gameObject.SetActive(false);
         EvidencePanel.gameObject.SetActive(true);
+    }
+
+    public void objectDeselect()
+    {
+        FocusCameraSelection focusCamera = FindObjectOfType<FocusCameraSelection>();
+        focusCamera.ResetCameraAfterTextureSelection();
     }
 }

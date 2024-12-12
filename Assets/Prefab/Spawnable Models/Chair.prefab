@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1258782013648802563}
   - component: {fileID: 1258782013648802560}
+  - component: {fileID: 9157833958136094047}
   m_Layer: 0
   m_Name: Chair
   m_TagString: Untagged
@@ -50,6 +51,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectID: 0
   surfaceType: 3
+  cameraManager: {fileID: 0}
+  spawningManager: {fileID: 0}
+  objectToSpawn: {fileID: 1258782013648802562}
+  spawnOffset: {x: 100, y: 100, z: 100}
+  textureSelectionButtons: []
+  textureSprites: []
+  ObjectID: 0
   modelType: 0
   furnitureType: 1
   evidenceType: 0
@@ -57,17 +65,17 @@ MonoBehaviour:
   canBePlacedOnObject: 0
   heightOffset: 0.1
   objectRenderer: {fileID: 3468024311847672249}
-  ModelVariants:
-  - {fileID: 7171533225116220120}
-  - {fileID: 2906135856798290519}
-  - {fileID: 8289363499103598499}
+  modelTextures:
+  - {fileID: 2800000, guid: 3821fce2dd3bddb4f9ce229fb5f5e96c, type: 3}
+  - {fileID: 2800000, guid: c10d183773495b0449ef26024d83f3d2, type: 3}
+  - {fileID: 2800000, guid: 3d53ee4c55136194080d44142770eeb9, type: 3}
+  - {fileID: 2800000, guid: f5cc0b5174cb51f439cf34137586e583, type: 3}
   modelVariantScrollContentParent: {fileID: 0}
   modelMaterials:
   - {fileID: 2100000, guid: f7cdf633ddd065a44b107771fb8ab733, type: 2}
   - {fileID: 2100000, guid: cfc9cd6cf36ce4d45b59bf4ad333d820, type: 2}
   - {fileID: 2100000, guid: 5bd01246fd1aa8e489673081da9838a9, type: 2}
   - {fileID: 2100000, guid: d852bd096d399bf41b96ce22106de7c9, type: 2}
-  spawningManager: {fileID: 0}
   modelImages:
   - {fileID: 21300000, guid: 3821fce2dd3bddb4f9ce229fb5f5e96c, type: 3}
   - {fileID: 21300000, guid: 2f9d4f98199af254e83667d875e17499, type: 3}
@@ -75,6 +83,22 @@ MonoBehaviour:
   - {fileID: 21300000, guid: dc255a5a3e53d834eb02d3fdf8899b51, type: 3}
   manipulator: {fileID: 0}
   selectChildForSelection: {fileID: 0}
+--- !u!114 &9157833958136094047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1258782013648802562}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2b92b270913eea4eb63c72516f5827b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraTransform: {fileID: 0}
+  focusPosition: {x: 1000, y: 1000, z: 1000}
+  originalCameraPosition: {x: 0, y: 0, z: 0}
+  ReferenceContain: {fileID: 0}
 --- !u!1 &2906135856798290519
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,13 +430,9 @@ PrefabInstance:
       propertyPath: objectID
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7225076163952842392, guid: 4ae828653c7b04b408e68250a728d475, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4ae828653c7b04b408e68250a728d475, type: 3}
---- !u!1 &8289363499103598499 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2842643020814550752, guid: 4ae828653c7b04b408e68250a728d475, type: 3}
-  m_PrefabInstance: {fileID: 6087359174709981507}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8290092389564107589 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2843732832678771206, guid: 4ae828653c7b04b408e68250a728d475, type: 3}

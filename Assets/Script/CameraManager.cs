@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,6 +8,10 @@ public class CameraManager : MonoBehaviour
     [Header("Camera References")]
     public Camera mainCamera;
     public Transform parentTransform;
+
+    [Header("Camera Configuration")]
+    [SerializeField] private float cameraDistance = 5f; // Distance between camera and selected object
+    [SerializeField] private float cameraHeight = 2f;
 
     [Header("Touch Sensitivity")]
     [SerializeField] private float moveSensitivity = 0.5f;
@@ -24,6 +29,9 @@ public class CameraManager : MonoBehaviour
     [Header("Rotation Settings")]
     [SerializeField] private float rotationSmoothing = 5f;
 
+    [Header("Transition Settings")]
+    [SerializeField] private float transitionDuration = 1f; // Time to complete the transition
+
     private Vector2 lastTouchPosition;
     private Quaternion targetRotation;
 
@@ -31,6 +39,14 @@ public class CameraManager : MonoBehaviour
 
     // Reference to ObjectManipulator for checking if an object is selected
     private ObjectManipulator objectManipulator;
+
+    private Vector3 originalPosition;
+    private Quaternion originalRotation;
+    private bool isTransitioning = false;
+
+    // New fields to track the "Spawn" camera position
+    private Vector3 spawnPosition = new Vector3(1000f, 1000f, 1000f);
+    private bool isAtSpawnPosition = false;
 
     void Start()
     {
@@ -41,6 +57,9 @@ public class CameraManager : MonoBehaviour
 
         targetRotation = parentTransform.rotation;
         lastMousePosition = Input.mousePosition;
+
+        originalPosition = parentTransform.position;
+        originalRotation = parentTransform.rotation;
 
         objectManipulator = FindObjectOfType<ObjectManipulator>();
         if (objectManipulator == null)
@@ -102,8 +121,6 @@ public class CameraManager : MonoBehaviour
         return results.Count > 0;
     }
 
-
-
     void HandleFullCameraControl()
     {
 #if UNITY_EDITOR
@@ -143,7 +160,7 @@ public class CameraManager : MonoBehaviour
     // Smoothly interpolate camera rotation
     void SmoothRotation()
     {
-        parentTransform.rotation = Quaternion.Slerp(parentTransform.rotation, targetRotation, Time.deltaTime * rotationSmoothing);
+        parentTransform.rotation = Quaternion.Slerp(parentTransform.rotation, targetRotation, Time.deltaTime * 5f);
     }
 
     // Handles camera movement for mouse/keyboard input in the editor
@@ -235,6 +252,27 @@ public class CameraManager : MonoBehaviour
         }
     }
 
+
+    public void MoveCameraToPosition(Vector3 targetPosition, float duration = 1.0f)
+    {
+        StartCoroutine(SmoothMoveCamera(targetPosition, duration));
+    }
+
+    private IEnumerator SmoothMoveCamera(Vector3 targetPosition, float duration)
+    {
+        Vector3 startingPosition = mainCamera.transform.position;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            mainCamera.transform.position = Vector3.Lerp(startingPosition, targetPosition, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        mainCamera.transform.position = targetPosition; // Ensure the camera ends at the exact position
+    }
+
     // Handles three-finger rotation
     void HandleThreeFingerRotation()
     {
@@ -272,5 +310,74 @@ public class CameraManager : MonoBehaviour
         currentY = Mathf.Clamp(currentY, minRotationAngle.y, maxRotationAngle.y);
 
         targetRotation = Quaternion.Euler(currentX, currentY, currentAngles.z);
+    }
+
+    // Public method to focus on a specific object with smooth transition
+    // Move the camera to focus on the selected object
+    public void FocusOnObject(Transform target)
+    {
+        if (isTransitioning) return;
+
+        StartCoroutine(SmoothMoveCamera(
+            parentTransform.position,
+            parentTransform.rotation,
+            target.position + Vector3.back * cameraDistance + Vector3.up * cameraHeight,
+            Quaternion.LookRotation(target.position - parentTransform.position),
+            transitionDuration
+        ));
+    }
+
+    // Public method to return camera to its original position
+    public void ReturnToOriginalPosition()
+    {
+        if (isTransitioning) return;
+
+        StartCoroutine(SmoothMoveCamera(
+            parentTransform.position,
+            parentTransform.rotation,
+            originalPosition,
+            originalRotation,
+            transitionDuration
+        ));
+    }
+
+    // Public method to move camera to spawn position when the "Spawn" button is clicked
+    public void MoveToSpawnPosition()
+    {
+        if (isTransitioning) return;
+
+        isAtSpawnPosition = true;
+        StartCoroutine(SmoothMoveCamera(
+            parentTransform.position,
+            parentTransform.rotation,
+            spawnPosition,
+            Quaternion.LookRotation(Vector3.zero),
+            transitionDuration
+        ));
+    }
+
+    // Coroutine to smoothly move the camera
+    private IEnumerator SmoothMoveCamera(Vector3 startPosition, Quaternion startRotation, Vector3 endPosition, Quaternion endRotation, float duration)
+    {
+        isTransitioning = true;
+        float timeElapsed = 0f;
+
+        while (timeElapsed < duration)
+        {
+            parentTransform.position = Vector3.Lerp(startPosition, endPosition, timeElapsed / duration);
+            parentTransform.rotation = Quaternion.Slerp(startRotation, endRotation, timeElapsed / duration);
+            timeElapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        parentTransform.position = endPosition;
+        parentTransform.rotation = endRotation;
+
+        if (isAtSpawnPosition)
+        {
+            // Optionally, you can trigger an action after moving to spawn position
+        }
+
+        isTransitioning = false;
     }
 }
