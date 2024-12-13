@@ -19,7 +19,7 @@ public class FocusCameraSelection : MonoBehaviour
     void Start()
     {
         ReferenceContain = FindObjectOfType<ReferenceContain>();
-        startPositionForCamera = ReferenceContain.cameraReference.position;
+        //startPositionForCamera = ReferenceContain.cameraReference.position;
         // Find the main camera in the scene at runtime
         Camera mainCamera = Camera.main;
 
@@ -27,8 +27,9 @@ public class FocusCameraSelection : MonoBehaviour
         {
             ReferenceContain.cameraReference = mainCamera.transform;
             // Save the original position and rotation of the camera
-            originalCameraPosition = ReferenceContain.cameraReference.position; // Save this in Start()
-            originalCameraRotation = ReferenceContain.cameraReference.rotation;
+            originalCameraPosition = ReferenceContain.parentTransform.position; // Save this in Start()
+            originalCameraRotation = ReferenceContain.parentTransform.rotation;
+           
         }
         else
         {
@@ -42,17 +43,17 @@ public class FocusCameraSelection : MonoBehaviour
         ReferenceContain = FindObjectOfType<ReferenceContain>();
         if (!isFocused)
         {
-            Debug.Log("Focusing Camera");
+          
 
             // Save the current camera position and rotation
-            originalCameraPosition = ReferenceContain.cameraReference.position;
-            originalCameraRotation = ReferenceContain.cameraReference.rotation;
+            originalCameraPosition = ReferenceContain.parentTransform.position;
+            originalCameraRotation = ReferenceContain.parentTransform.rotation;
 
             // Move the camera to the focus position
-            ReferenceContain.cameraReference.position = focusPosition;
+            ReferenceContain.parentTransform.position = focusPosition;
 
             // Position the object in front of the camera
-            Vector3 objectPosition = ReferenceContain.cameraReference.position + ReferenceContain.cameraReference.forward * 5f; // Adjust the distance as needed
+            Vector3 objectPosition = ReferenceContain.parentTransform.position + ReferenceContain.parentTransform.forward * 5f; // Adjust the distance as needed
             transform.position = objectPosition;
 
             // Rotate the camera to look at the object
@@ -61,42 +62,94 @@ public class FocusCameraSelection : MonoBehaviour
         }
     }
 
-    public void ResetCameraAfterTextureSelection()
+    public void ResetCameraPosition()
     {
         if (isFocused)
         {
-            Debug.Log("Resetting Camera");
+            SpawningManager spawningManager = FindObjectOfType<SpawningManager>();
+            spawningManager._previewObject.transform.position = spawningManager.objectOriginalPos;
+          Debug.Log("hmmm");
+             SpawningManager spawnManager = FindObjectOfType<SpawningManager>();
+           originalCameraPosition = spawnManager.cameraTransform;
+            Debug.Log("CAMERA RESET"+originalCameraPosition);
+            originalCameraRotation = spawnManager.cameraRotation;
             StartCoroutine(SmoothTransitionBack());
+            
         }
     }
 
-    private IEnumerator SmoothTransitionBack()
+    IEnumerator SmoothTransitionBack()
     {
-        float duration = 1.5f; // Duration of the transition
+        float duration = 0.5f; // Duration of the transition
         float elapsedTime = 0f;
-
-        Vector3 startPosition = startPositionForCamera;
-        Quaternion startRotation = startPositionForCameraRotation;
+        Vector3 startPos =ReferenceContain.parentTransform.position;
+        Quaternion startRotation = ReferenceContain.parentTransform.rotation;
+        Debug.Log("startPos"+startPos);
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / duration;
 
-            // Interpolate position and rotation
-            ReferenceContain.cameraReference.position = Vector3.Lerp(startPosition, originalCameraPosition, t);
-            ReferenceContain.cameraReference.rotation = Quaternion.Slerp(startRotation, originalCameraRotation, t);
-
-            Debug.Log($"Camera Position: {ReferenceContain.cameraReference.position}"); // Debug camera position
-            Debug.Log($"Camera Rotation: {ReferenceContain.cameraReference.rotation}"); // Debug camera rotation
+            //         Interpolate position and rotation
+                    ReferenceContain.parentTransform.position = Vector3.Lerp(startPos, originalCameraPosition, t);
+                    ReferenceContain.parentTransform.rotation = Quaternion.Slerp(startRotation, originalCameraRotation, t);
 
             yield return null;
         }
 
-        ReferenceContain.cameraReference.position = originalCameraPosition;
-        ReferenceContain.cameraReference.rotation = originalCameraRotation;
+
+            ReferenceContain.parentTransform.position = originalCameraPosition;
+            ReferenceContain.parentTransform.rotation = originalCameraRotation;
+          Transform firstChild =ReferenceContain.parentTransform.GetChild(0);
+            Debug.Log(firstChild.name);
+        firstChild.localRotation = Quaternion.Euler(0, 0, 0);
+
         isFocused = false;
-        Debug.Log("Camera reset complete");
+        //    Debug.Log("Camera reset complete");
     }
+
+    public void ResetCameraAfterTextureSelection()
+    {
+
+        
+        //if (isFocused)
+        //{
+            originalCameraPosition = startPositionForCamera;
+        //    originalCameraRotation = startPositionForCameraRotation;
+        //    Debug.Log("Resetting Camera");
+           // StartCoroutine(SmoothTransitionBack());
+       // }
+    }
+
+    //private IEnumerator SmoothTransitionBack()
+    //{
+    //    Debug.Log("originalCameraPosition"+originalCameraPosition);
+    //    float duration = 0.5f; // Duration of the transition
+    //    float elapsedTime = 0f;
+
+    //    Vector3 startPosition = ReferenceContain.cameraReference.position;
+    //    Quaternion startRotation = ReferenceContain.cameraReference.rotation;
+
+    //    while (elapsedTime < duration)
+    //    {
+    //        elapsedTime += Time.deltaTime;
+    //        float t = elapsedTime / duration;
+
+    //        // Interpolate position and rotation
+    //        ReferenceContain.cameraReference.position = Vector3.Lerp(startPosition, originalCameraPosition, t);
+    //        ReferenceContain.cameraReference.rotation = Quaternion.Slerp(startRotation, originalCameraRotation, t);
+
+    //        Debug.Log($"Camera Position: {ReferenceContain.cameraReference.position}"); // Debug camera position
+    //        Debug.Log($"Camera Rotation: {ReferenceContain.cameraReference.rotation}"); // Debug camera rotation
+
+    //        yield return null;
+    //    }
+
+    //    ReferenceContain.cameraReference.position = originalCameraPosition;
+    //    ReferenceContain.cameraReference.rotation = originalCameraRotation;
+    //    isFocused = false;
+    //    Debug.Log("Camera reset complete");
+    //}
 
 }

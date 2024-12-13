@@ -32,7 +32,7 @@ public class SpawningManager : MonoBehaviour
     private Vector3 _finalMousePos;
     public GameObject _currentFloor;
     private GameObject _currentWall;
-    private GameObject _previewObject;
+    public GameObject _previewObject;
     private Material _originalMaterial; // To store the original material of the model
     public bool _isCreatingFloor = false;
     public bool _isCreatingWall = false;
@@ -93,24 +93,27 @@ public class SpawningManager : MonoBehaviour
     [Header("Store the Camera Position")]
     public Vector3 cameraTransform;
     public Quaternion cameraRotation;
-    
-    //[Header("Floor Texture")]
-    //public List<GameObject> FloorTexture;
-    //[Header("Model Texture")]
-    //public List<GameObject> ChairTexture;
-    //public List<GameObject> TableTexture;
-    //public List<GameObject> BedTexture;
-    //public List<GameObject> WallTexture;
-    //[Header("Evidence Texture")]
-    //public List<GameObject> DeadBodyTexture;
-    //public List<GameObject> BloodTexture;
-    //public List<GameObject> KnifeTexture;
-    //public List<GameObject> LineTexture;
+
+
+    public Vector3 objectOriginalPos;
+
+   //[Header("Floor Texture")]
+   //public List<GameObject> FloorTexture;
+   //[Header("Model Texture")]
+   //public List<GameObject> ChairTexture;
+   //public List<GameObject> TableTexture;
+   //public List<GameObject> BedTexture;
+   //public List<GameObject> WallTexture;
+   //[Header("Evidence Texture")]
+   //public List<GameObject> DeadBodyTexture;
+   //public List<GameObject> BloodTexture;
+   //public List<GameObject> KnifeTexture;
+   //public List<GameObject> LineTexture;
 
 
 
 
-    [Space(5)]
+   [Space(5)]
     private SelectableObject selectableObject;
 
 
@@ -686,12 +689,29 @@ public class SpawningManager : MonoBehaviour
         int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
 
         _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
+
+        // i added a model on the Dictionary in this line 
+        //ReferenceContain referenceContains = FindObjectOfType<ReferenceContain>();
+        //Transform spawned=referenceContains.spawnModel.Add(_previewObject.transform);
+
+       // ObjectManipulator selectedObjectManipulator = FindObjectOfType<ObjectManipulator>();
+        objectOriginalPos= _previewObject.transform.position;
+        Debug.Log("Intiation spawn"+ objectOriginalPos);// FOR LATER YOUR MUST BE UPDATE THE POSITION OF THE OBJECT MANIPULATOR
         selectableObject=FindObjectOfType<SelectableObject>();
+
+
         FocusCameraSelection focusCameraSelection   = selectableObject.GetComponent<FocusCameraSelection>();
-        cameraTransform = Camera.main.transform.position;
-        cameraRotation = Camera.main.transform.rotation;
-        focusCameraSelection.startPositionForCamera = cameraTransform;
-        focusCameraSelection.startPositionForCameraRotation = cameraRotation;
+        ReferenceContain referenceContain = FindObjectOfType<ReferenceContain>();
+        cameraTransform = referenceContain.parentTransform.position;
+        cameraRotation = referenceContain.parentTransform.rotation;
+        Debug.Log("cameraTransform" + cameraTransform);
+        Debug.Log("cameraRotate" + cameraRotation);
+
+
+       
+       
+        
+        //cameraTransform = Camera.main.transform.position.parent;
         
         selectableObject.MakeChildofScroll();
        
@@ -1054,6 +1074,6 @@ public class SpawningManager : MonoBehaviour
     public void objectDeselect()
     {
         FocusCameraSelection focusCamera = FindObjectOfType<FocusCameraSelection>();
-        focusCamera.ResetCameraAfterTextureSelection();
+        focusCamera.ResetCameraPosition();
     }
 }

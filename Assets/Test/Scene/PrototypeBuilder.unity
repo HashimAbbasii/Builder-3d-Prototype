@@ -9160,6 +9160,8 @@ MonoBehaviour:
   currentCategoryModels: []
   currentEvidenceModels: []
   ModelVariant: {fileID: 219335072}
+  cameraTransform: {x: 0, y: 0, z: 0}
+  cameraRotation: {x: 0, y: 0, z: 0, w: 0}
   scaleTest: {x: 0, y: 0, z: 0}
   canvasFurniture: {fileID: 966719439}
   EvidenceScrollView: {fileID: 128284639}
@@ -22310,7 +22312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1482c8ca82bd574b97276de709c1307, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraReference: {fileID: 1726211687}
+  cameraReference: {fileID: 1344682282}
 --- !u!1 &1950698944
 GameObject:
   m_ObjectHideFlags: 0
