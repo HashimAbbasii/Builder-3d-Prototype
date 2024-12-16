@@ -11,6 +11,7 @@ using System.Xml.Serialization;
 using Random = System.Random;
 using Unity.VisualScripting;
 using UnityEditor;
+//using UnityEngine.UIElements;
 
 public class SpawningManager : MonoBehaviour
 {
@@ -679,16 +680,17 @@ public class SpawningManager : MonoBehaviour
         //  _selectedObjectIndex = -1;
         //  return;
         //    }
+        ObjectManipulator objectManipulator = FindObjectOfType<ObjectManipulator>();
+        if(objectManipulator.selectedObject != null)
+        {
 
-        _selectedObjectIndex = objectIndex;
+            objectManipulator.SetSelectedObject(selectableObject.transform);
+            _selectedObjectIndex = objectIndex;
+     
 
-        //if (_previewObject != null)
-        //{
-        //    Destroy(_previewObject);
-        //}
-        int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
+        ReferenceContain referenceContains = FindObjectOfType<ReferenceContain>();
+        referenceContains.spawnModel.Add(_previewObject.transform);
 
-        _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
 
         // i added a model on the Dictionary in this line 
         //ReferenceContain referenceContains = FindObjectOfType<ReferenceContain>();
@@ -714,6 +716,17 @@ public class SpawningManager : MonoBehaviour
         //cameraTransform = Camera.main.transform.position.parent;
         
         selectableObject.MakeChildofScroll();
+        }
+
+        //if (_previewObject != null)
+        //{
+        //    Destroy(_previewObject);
+        //}
+        //..........its must be selected First ..............//
+        int RandomPoint = UnityEngine.Random.Range(0, RandomPointSpawn.Length);
+
+        _previewObject = Instantiate(currentCategoryModels[objectIndex], RandomPointSpawn[RandomPoint].position, Quaternion.identity);
+
        
 
         // subPanel.SetActive(false);  // Hide sub-panel after selection
@@ -1075,5 +1088,108 @@ public class SpawningManager : MonoBehaviour
     {
         FocusCameraSelection focusCamera = FindObjectOfType<FocusCameraSelection>();
         focusCamera.ResetCameraPosition();
+    }
+
+
+    [ContextMenu("Create Canvas")]
+    public void CreateDynamicCanvas()
+    {
+        // Create the Canvas GameObject
+        GameObject canvasObj = new GameObject("DynamicCanvas");
+        ObjectManipulator gameObjectReference = FindObjectOfType<ObjectManipulator>();
+        canvasObj.transform.parent = gameObjectReference.selectedObject.transform.parent;
+
+        Canvas canvas = canvasObj.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+
+        // Adjust Canvas RectTransform
+        RectTransform canvasRectTransform = canvasObj.GetComponent<RectTransform>();
+        canvasRectTransform.rotation = Quaternion.Euler(50, 0, 0);
+        if (gameObjectReference.selectedObject != null)
+        {
+            canvasRectTransform.position = gameObjectReference.selectedObject.transform.position + new Vector3(0f, 1.5f, 0.5f);
+        }
+
+        canvasRectTransform.sizeDelta = new Vector2(5, 1); // Set width and height
+        canvasObj.AddComponent<CanvasScaler>();
+        canvasObj.AddComponent<GraphicRaycaster>();
+
+        // Panel Creation
+        GameObject panelObj = new GameObject("Panel");
+        panelObj.transform.SetParent(canvasObj.transform, false);
+        RectTransform panelRect = panelObj.AddComponent<RectTransform>();
+        panelRect.sizeDelta = new Vector2(5, 1); // Match canvas size
+        panelObj.AddComponent<Image>().color = Color.gray; // Set background color
+        panelRect.anchoredPosition = Vector2.zero; // Centered panel in canvas
+
+        // Texture Button Creation
+        GameObject textureButtonObj = new GameObject("TextureButton");
+        textureButtonObj.transform.SetParent(panelObj.transform, false);
+
+        RectTransform textureButtonRect = textureButtonObj.AddComponent<RectTransform>();
+        textureButtonRect.sizeDelta = new Vector2(2, 0.5f); // Width and height of the button
+        textureButtonRect.anchoredPosition = new Vector2(-1.4f, 0f); // Positioned on the left
+
+        Button textureButton = textureButtonObj.AddComponent<Button>();
+        Image buttonImage = textureButtonObj.AddComponent<Image>();
+        buttonImage.color = Color.white;
+
+        // Add Text to Texture Button
+        GameObject textureButtonTextObj = new GameObject("Text");
+        textureButtonTextObj.transform.SetParent(textureButtonObj.transform, false);
+        TextMeshProUGUI textureButtonText = textureButtonTextObj.AddComponent<TextMeshProUGUI>();
+        textureButtonText.text = "Texture";
+        textureButtonText.fontSize = 0.4f;
+        textureButtonText.alignment = TextAlignmentOptions.Center;
+        textureButtonText.color = Color.black;
+
+        RectTransform textRect = textureButtonText.GetComponent<RectTransform>();
+        textRect.sizeDelta = textureButtonRect.sizeDelta;
+        textRect.anchoredPosition = Vector2.zero; // Center the text within the button
+
+        // Add Listener to Texture Button
+        textureButton.onClick.AddListener(OnTextureButtonClick);
+
+        // OK Button Creation
+        GameObject okButtonObj = new GameObject("OKButton");
+        okButtonObj.transform.SetParent(panelObj.transform, false);
+
+        RectTransform okButtonRect = okButtonObj.AddComponent<RectTransform>();
+        okButtonRect.sizeDelta = new Vector2(2, 0.5f); // Match the size of the texture button
+        okButtonRect.anchoredPosition = new Vector2(1.3f, 0f); // Positioned on the right
+
+        Button okButton = okButtonObj.AddComponent<Button>();
+        Image okButtonImage = okButtonObj.AddComponent<Image>();
+        okButtonImage.color = Color.white;
+
+        // Add Text to OK Button
+        GameObject okButtonTextObj = new GameObject("Text");
+        okButtonTextObj.transform.SetParent(okButtonObj.transform, false);
+        TextMeshProUGUI okButtonText = okButtonTextObj.AddComponent<TextMeshProUGUI>();
+        okButtonText.text = "OK";
+        okButtonText.fontSize = 0.4f;
+        okButtonText.alignment = TextAlignmentOptions.Center;
+        okButtonText.color = Color.black;
+
+        RectTransform okTextRect = okButtonText.GetComponent<RectTransform>();
+        okTextRect.sizeDelta = okButtonRect.sizeDelta;
+        okTextRect.anchoredPosition = Vector2.zero; // Center the text within the button
+
+        // Add Listener to OK Button
+        okButton.onClick.AddListener(OnOKButtonClick);
+    }
+
+    // Listener for Texture Button
+    private void OnTextureButtonClick()
+    {
+        Debug.Log("Texture Button Clicked!");
+        // Add functionality for texture button here
+    }
+
+    // Listener for OK Button
+    private void OnOKButtonClick()
+    {
+        Debug.Log("OK Button Clicked!");
+        // Add functionality for OK button here
     }
 }

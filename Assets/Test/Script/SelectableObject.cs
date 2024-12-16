@@ -40,7 +40,8 @@ public class SelectableObject : ObjectType
     private Vector3 originalPosition;
     private Quaternion originalRotation;
     private bool isTextureSelected = false;
-
+    public Transform parentReference;
+    public Transform parentAcheivedReference;
     //[Header("Focus Camera")]
    // public FocusCameraSelection focusCameraSelection;
 
@@ -150,6 +151,10 @@ public class SelectableObject : ObjectType
             {
                 
                 GameObject materialObject = new GameObject($"Material_{i}");
+               // parentReference = materialObject;
+               // parentAcheivedReference=materialObject.transform;
+               // parentReference = parentAcheivedReference.parent;
+                // transform.SetParent(parentReference);
                 materialObject.transform.SetParent(modelVariantScrollContentParent.transform, false);
 
                 RectTransform rectTransform = materialObject.AddComponent<RectTransform>();
@@ -169,13 +174,33 @@ public class SelectableObject : ObjectType
                 Debug.LogWarning($"Material at index {i} is null. Skipping.");
             }
         }
-
+      
         selectChildForSelection = transform.GetChild(0);
-        manipulator.SetSelectedObject(selectChildForSelection);
+       // manipulator.SetSelectedObject(selectChildForSelection);
         // cameraManager.FocusOnObject(selectChildForSelection);
         FocusCameraSelection focusCameraSelection = FindObjectOfType<FocusCameraSelection>();
         focusCameraSelection.FocusCamera();
+       
+        
     }
+
+   public void ClearChildren(Transform parent)
+    {
+        if (parent == null)
+        {
+            Debug.LogError("Parent is null! Cannot clear children.");
+            return;
+        }
+
+        // Loop through all children and destroy them
+        foreach (Transform child in parent)
+        {
+            GameObject.Destroy(child.gameObject); // Destroy the child GameObject
+        }
+
+        Debug.Log("All children of " + parent.name + " have been deleted.");
+    }
+
 }
 
 public enum ModelType

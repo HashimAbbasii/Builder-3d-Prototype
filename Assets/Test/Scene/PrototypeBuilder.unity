@@ -9125,6 +9125,7 @@ MonoBehaviour:
   validPlacementMaterial: {fileID: 0}
   invalidPlacementMaterial: {fileID: 0}
   _currentFloor: {fileID: 0}
+  _previewObject: {fileID: 0}
   _isCreatingFloor: 0
   _isCreatingWall: 0
   _wallAlongZAxis: 0
@@ -9162,6 +9163,7 @@ MonoBehaviour:
   ModelVariant: {fileID: 219335072}
   cameraTransform: {x: 0, y: 0, z: 0}
   cameraRotation: {x: 0, y: 0, z: 0, w: 0}
+  objectOriginalPos: {x: 0, y: 0, z: 0}
   scaleTest: {x: 0, y: 0, z: 0}
   canvasFurniture: {fileID: 966719439}
   EvidenceScrollView: {fileID: 128284639}
@@ -22313,6 +22315,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraReference: {fileID: 1344682282}
+  parentTransform: {fileID: 0}
+  spawnModel: []
 --- !u!1 &1950698944
 GameObject:
   m_ObjectHideFlags: 0

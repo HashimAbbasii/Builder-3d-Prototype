@@ -73,6 +73,7 @@ public class FocusCameraSelection : MonoBehaviour
            originalCameraPosition = spawnManager.cameraTransform;
             Debug.Log("CAMERA RESET"+originalCameraPosition);
             originalCameraRotation = spawnManager.cameraRotation;
+           
             StartCoroutine(SmoothTransitionBack());
             
         }
@@ -82,9 +83,9 @@ public class FocusCameraSelection : MonoBehaviour
     {
         float duration = 0.5f; // Duration of the transition
         float elapsedTime = 0f;
-        Vector3 startPos =ReferenceContain.parentTransform.position;
+        Vector3 startPos = ReferenceContain.parentTransform.position;
         Quaternion startRotation = ReferenceContain.parentTransform.rotation;
-        Debug.Log("startPos"+startPos);
+        Debug.Log("startPos" + startPos);
 
         while (elapsedTime < duration)
         {
@@ -92,18 +93,22 @@ public class FocusCameraSelection : MonoBehaviour
             float t = elapsedTime / duration;
 
             //         Interpolate position and rotation
-                    ReferenceContain.parentTransform.position = Vector3.Lerp(startPos, originalCameraPosition, t);
-                    ReferenceContain.parentTransform.rotation = Quaternion.Slerp(startRotation, originalCameraRotation, t);
+            ReferenceContain.parentTransform.position = Vector3.Lerp(startPos, originalCameraPosition, t);
+            ReferenceContain.parentTransform.rotation = Quaternion.Slerp(startRotation, originalCameraRotation, t);
 
             yield return null;
         }
 
 
-            ReferenceContain.parentTransform.position = originalCameraPosition;
-            ReferenceContain.parentTransform.rotation = originalCameraRotation;
-          Transform firstChild =ReferenceContain.parentTransform.GetChild(0);
-            Debug.Log(firstChild.name);
+        ReferenceContain.parentTransform.position = originalCameraPosition;
+        ReferenceContain.parentTransform.rotation = originalCameraRotation;
+        Transform firstChild = ReferenceContain.parentTransform.GetChild(0);
+        Debug.Log(firstChild.name);
         firstChild.localRotation = Quaternion.Euler(0, 0, 0);
+        ReferenceContain referenceContain = FindObjectOfType<ReferenceContain>();
+        referenceContain.spawnModel.Clear();
+        SelectableObject selectableObject = FindObjectOfType<SelectableObject>();
+        selectableObject.ClearChildren(selectableObject.modelVariantScrollContentParent.transform);
 
         isFocused = false;
         //    Debug.Log("Camera reset complete");

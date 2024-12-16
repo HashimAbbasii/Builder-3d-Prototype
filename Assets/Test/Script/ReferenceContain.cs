@@ -6,7 +6,9 @@ public class ReferenceContain : MonoBehaviour
 {
     public Transform cameraReference; // Reference to the camera transform
     public Transform parentTransform; // Reference to the parent transform of the camera
-    public List <Transform> spawnModel = new List<Transform>(); // List of child transforms>
+    public List<Transform> spawnModel = new List<Transform>(); // List of child transforms
+
+    private Dictionary<Transform, Vector3> modelPositions = new Dictionary<Transform, Vector3>();
 
     // Start is called before the first frame update
     void Start()
@@ -29,24 +31,41 @@ public class ReferenceContain : MonoBehaviour
         {
             Debug.LogError("Camera reference is not assigned in the Inspector.");
         }
+
+        // Initialize the position dictionary
+        foreach (var model in spawnModel)
+        {
+            if (model != null)
+            {
+                modelPositions[model] = model.position;
+            }
+        }
+
+        // Start monitoring positions in a coroutine
+        StartCoroutine(MonitorModelPositions());
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator MonitorModelPositions()
     {
-        if (parentTransform != null)
+        while (true)
         {
-            // Continuously monitor and log the parent's position and rotation
-            Vector3 parentPosition = parentTransform.position;
-            Quaternion parentRotation = parentTransform.rotation;
+            foreach (var model in spawnModel)
+            {
+                if (model != null)
+                {
+                    Vector3 currentPosition = model.position;
 
-            //Debug.Log($"Parent Position: {parentPosition}");
-            //Debug.Log($"Parent Rotation: {parentRotation}");
+                    // Check if the position has changed
+                    if (modelPositions.ContainsKey(model) && modelPositions[model] != currentPosition)
+                    {
+                        Debug.Log($"Model {model.name} moved to {currentPosition}");
+                        modelPositions[model] = currentPosition; // Update the last known position
+                    }
+                }
+            }
+
+            // Yield to spread processing over multiple frames
+            yield return null;
         }
-        if(spawnModel.Count > 0 && spawnModel != null)
-        {
-
-        }
-
     }
 }
