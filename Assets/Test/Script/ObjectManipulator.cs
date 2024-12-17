@@ -99,6 +99,7 @@ public class ObjectManipulator : MonoBehaviour
                 {
                     if (!hit.collider.gameObject.CompareTag("Floor"))
                     {
+                        Debug.Log("Selected object: " + selectedTransform.name);
                         SetSelectedObject(selectedTransform);
                         _isObjectSelected = true;
                         _isDragging = false;
@@ -272,8 +273,12 @@ public class ObjectManipulator : MonoBehaviour
         }
 
         ConfigureSliderAndUI();
-      ApplySelectedMaterial();
+        ApplySelectedMaterial();
        RecalculateDistance();
+        SpawningManager spawningManager=FindObjectOfType<SpawningManager>();
+        spawningManager.CreateDynamicCanvas();
+        CameraManager cameraManager = FindObjectOfType<CameraManager>();
+        cameraManager.enabled = false;
     }
 
     private void ConfigureSliderAndUI()
@@ -345,9 +350,14 @@ public class ObjectManipulator : MonoBehaviour
 
     public void DeselectObject()
     {
+        CameraManager cameraManager = FindObjectOfType<CameraManager>();
+        cameraManager.enabled = true;
         RevertMaterial();
         ResetObjectLayers();
         ResetUIElements();
+        SpawningManager spawningManager=FindObjectOfType<SpawningManager>();
+        spawningManager.DeleteCanvas();
+
     }
 
     private void RevertMaterial()

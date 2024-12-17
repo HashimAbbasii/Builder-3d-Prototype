@@ -66,13 +66,16 @@ public class FocusCameraSelection : MonoBehaviour
     {
         if (isFocused)
         {
+
             SpawningManager spawningManager = FindObjectOfType<SpawningManager>();
+           
             spawningManager._previewObject.transform.position = spawningManager.objectOriginalPos;
           Debug.Log("hmmm");
              SpawningManager spawnManager = FindObjectOfType<SpawningManager>();
            originalCameraPosition = spawnManager.cameraTransform;
             Debug.Log("CAMERA RESET"+originalCameraPosition);
             originalCameraRotation = spawnManager.cameraRotation;
+           
            
             StartCoroutine(SmoothTransitionBack());
             
@@ -112,6 +115,9 @@ public class FocusCameraSelection : MonoBehaviour
 
         isFocused = false;
         //    Debug.Log("Camera reset complete");
+        ObjectManipulator objectManipulator = FindObjectOfType<ObjectManipulator>();
+        objectManipulator.DeselectObject();
+        
     }
 
     public void ResetCameraAfterTextureSelection()

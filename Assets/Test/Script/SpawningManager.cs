@@ -11,6 +11,7 @@ using System.Xml.Serialization;
 using Random = System.Random;
 using Unity.VisualScripting;
 using UnityEditor;
+using DG.Tweening;
 //using UnityEngine.UIElements;
 
 public class SpawningManager : MonoBehaviour
@@ -98,23 +99,30 @@ public class SpawningManager : MonoBehaviour
 
     public Vector3 objectOriginalPos;
 
-   //[Header("Floor Texture")]
-   //public List<GameObject> FloorTexture;
-   //[Header("Model Texture")]
-   //public List<GameObject> ChairTexture;
-   //public List<GameObject> TableTexture;
-   //public List<GameObject> BedTexture;
-   //public List<GameObject> WallTexture;
-   //[Header("Evidence Texture")]
-   //public List<GameObject> DeadBodyTexture;
-   //public List<GameObject> BloodTexture;
-   //public List<GameObject> KnifeTexture;
-   //public List<GameObject> LineTexture;
+    [Header("Camera Adjustment on Canvas")]
+
+    public Camera mainCamera; // Assign the main camera in the Inspector
+    //public Camera mainCamera; // Reference to the main camera
+    public GameObject canvasObj; // The dynamically spawned canvas
+    public GameObject targetObject; // The object with the canvas
+    private RectTransform canvasRectTransform;
+    //[Header("Floor Texture")]
+    //public List<GameObject> FloorTexture;
+    //[Header("Model Texture")]
+    //public List<GameObject> ChairTexture;
+    //public List<GameObject> TableTexture;
+    //public List<GameObject> BedTexture;
+    //public List<GameObject> WallTexture;
+    //[Header("Evidence Texture")]
+    //public List<GameObject> DeadBodyTexture;
+    //public List<GameObject> BloodTexture;
+    //public List<GameObject> KnifeTexture;
+    //public List<GameObject> LineTexture;
 
 
 
 
-   [Space(5)]
+    [Space(5)]
     private SelectableObject selectableObject;
 
 
@@ -167,7 +175,8 @@ public class SpawningManager : MonoBehaviour
 
     private void Start()
     {
-        
+
+       
         //canvasEssential.gameObject.SetActive(true);
         pauseCondition = false;
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
@@ -263,6 +272,20 @@ public class SpawningManager : MonoBehaviour
         }
     }
 
+    //private IEnumerator AnimateCanvasScale(RectTransform canvasRect, Vector3 targetScale, float duration)
+    //{
+    //    float elapsedTime = 0f;
+    //    Vector3 initialScale = canvasRect.localScale;
+
+    //    while (elapsedTime < duration)
+    //    {
+    //        elapsedTime += Time.deltaTime;
+    //        canvasRect.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / duration);
+    //        yield return null;
+    //    }
+
+    //    canvasRect.localScale = targetScale; // Ensure final scale is set
+    //}
 
     private void CreateCategoryButton(string categoryName)
     {
@@ -331,6 +354,9 @@ public class SpawningManager : MonoBehaviour
 
         LoadModels(currentPage);
     }
+
+
+
 
     private void SetEvidenceCategory(string category)
     {
@@ -440,6 +466,12 @@ public class SpawningManager : MonoBehaviour
         ProcessTouch(touch);
     }
 #endif
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+
+        //    Debug.Log("Space was pressed");
+        //   StartCoroutine(AnimateCanvasScale(canvasRectTransform, Vector3.one, 1.5f));
+        //}
     }
 
     // Called when the floor button is clicked
@@ -1020,15 +1052,7 @@ public class SpawningManager : MonoBehaviour
     }
 
 
-    //to change the object model
-    //public void ChangeModel(int number)
-    //{
-    //    foreach (var models in selectableObject.ModelMaterials)
-    //    {
-    //        models.SetActive(false);
-    //    }
-    //    selectableObject.ModelMaterials[number].SetActive(true);
-    //}
+   
     public void DeleteLinesForAll()
     {
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.DeleteLines();
@@ -1096,6 +1120,7 @@ public class SpawningManager : MonoBehaviour
     {
         // Create the Canvas GameObject
         GameObject canvasObj = new GameObject("DynamicCanvas");
+        canvasObj.tag = "Canvas"; // Add tag here
         ObjectManipulator gameObjectReference = FindObjectOfType<ObjectManipulator>();
         canvasObj.transform.parent = gameObjectReference.selectedObject.transform.parent;
 
@@ -1105,12 +1130,16 @@ public class SpawningManager : MonoBehaviour
         // Adjust Canvas RectTransform
         RectTransform canvasRectTransform = canvasObj.GetComponent<RectTransform>();
         canvasRectTransform.rotation = Quaternion.Euler(50, 0, 0);
-        if (gameObjectReference.selectedObject != null)
-        {
-            canvasRectTransform.position = gameObjectReference.selectedObject.transform.position + new Vector3(0f, 1.5f, 0.5f);
-        }
 
+        // Set the initial position
+        Vector3 canvasPosition = gameObjectReference.selectedObject.transform.position + new Vector3(0f, 1.5f, 0.5f);
+
+        // Adjust the position to stay within the camera view
+        canvasPosition = AdjustCanvasPositionToStayInCamera(canvasPosition, canvasRectTransform);
+
+        canvasRectTransform.position = canvasPosition;
         canvasRectTransform.sizeDelta = new Vector2(5, 1); // Set width and height
+
         canvasObj.AddComponent<CanvasScaler>();
         canvasObj.AddComponent<GraphicRaycaster>();
 
@@ -1128,7 +1157,7 @@ public class SpawningManager : MonoBehaviour
 
         RectTransform textureButtonRect = textureButtonObj.AddComponent<RectTransform>();
         textureButtonRect.sizeDelta = new Vector2(2, 0.5f); // Width and height of the button
-        textureButtonRect.anchoredPosition = new Vector2(-1.4f, 0f); // Positioned on the left
+        textureButtonRect.anchoredPosition = new Vector2(-1.3f, 0f); // Positioned on the left
 
         Button textureButton = textureButtonObj.AddComponent<Button>();
         Image buttonImage = textureButtonObj.AddComponent<Image>();
@@ -1156,7 +1185,7 @@ public class SpawningManager : MonoBehaviour
 
         RectTransform okButtonRect = okButtonObj.AddComponent<RectTransform>();
         okButtonRect.sizeDelta = new Vector2(2, 0.5f); // Match the size of the texture button
-        okButtonRect.anchoredPosition = new Vector2(1.3f, 0f); // Positioned on the right
+        okButtonRect.anchoredPosition = new Vector2(1.4f, 0f); // Positioned on the right
 
         Button okButton = okButtonObj.AddComponent<Button>();
         Image okButtonImage = okButtonObj.AddComponent<Image>();
@@ -1177,19 +1206,116 @@ public class SpawningManager : MonoBehaviour
 
         // Add Listener to OK Button
         okButton.onClick.AddListener(OnOKButtonClick);
+
+        Debug.Log("canvas Rect Transform" + canvasRectTransform.localScale.ToString());
+
+        // Start scaling animation
+        StartCoroutine(AnimateCanvasScale(canvasRectTransform, new Vector3(1.2f, 1.2f, 1.2f), 1.0f));
+    }
+
+    private IEnumerator AnimateCanvasScale(RectTransform canvasRect, Vector3 targetScale, float duration)
+    {
+        Debug.Log("Canvas scale animation started.");
+        float elapsedTime = 0f;
+        Vector3 initialScale = Vector3.zero;
+
+        while (elapsedTime < duration)
+        {
+            Debug.Log("Animating scale...");
+            elapsedTime += Time.deltaTime;
+            canvasRect.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / duration);
+            yield return null;
+        }
+
+        canvasRect.localScale = targetScale; // Ensure final scale is set
+
+        // Apply fancy animation using DOTween
+        canvasRect.DOScale(targetScale, duration)
+            .SetEase(Ease.OutElastic) // Elastic bounce effect
+            .OnComplete(() => Debug.Log("Animation complete!"));
+    }
+
+
+
+    // Example listener methods
+    private void OnTextureButtonClick()
+    {
+        CameraManager cameraManager = FindObjectOfType<CameraManager>();
+        cameraManager.enabled = true;
+        Debug.Log("Texture button clicked.");
+        ObjectManipulator objectManipulator = FindObjectOfType<ObjectManipulator>();
+        if(objectManipulator.selectedObject != null)
+        {
+            ReferenceContain referenceContains = FindObjectOfType<ReferenceContain>();
+            referenceContains.spawnModel.Add(_previewObject.transform);
+            objectOriginalPos = _previewObject.transform.position;
+            Debug.Log("Intiation spawn" + objectOriginalPos);// FOR LATER YOUR MUST BE UPDATE THE POSITION OF THE OBJECT 
+            selectableObject = FindObjectOfType<SelectableObject>();
+            FocusCameraSelection focusCameraSelection = selectableObject.GetComponent<FocusCameraSelection>();
+            ReferenceContain referenceContain = FindObjectOfType<ReferenceContain>();
+            cameraTransform = referenceContain.parentTransform.position;
+            cameraRotation = referenceContain.parentTransform.rotation;
+            Debug.Log("cameraTransform" + cameraTransform);
+            Debug.Log("cameraRotate" + cameraRotation);
+            selectableObject.MakeChildofScroll();
+            DeleteCanvas();
+          
+
+
+
+
+
+        }
+
+    }
+
+    private void OnOKButtonClick()
+    {
+        Debug.Log("OK button clicked.");
+    }
+
+    // Adjust the Canvas Position to Stay Within Camera View
+    private Vector3 AdjustCanvasPositionToStayInCamera(Vector3 originalPosition, RectTransform canvasRect)
+    {
+        if (mainCamera == null)
+        {
+            Debug.LogWarning("Main camera is not assigned.");
+            return originalPosition;
+        }
+
+        // Convert Canvas position to Screen Space
+        Vector3 screenPoint = mainCamera.WorldToScreenPoint(originalPosition);
+
+        if (screenPoint.y > Screen.height) // Out of top bound
+        {
+            originalPosition -= new Vector3(0, 0, 2.5f); // Move canvas closer to the camera
+        }
+        else if (screenPoint.y < 0) // Out of bottom bound
+        {
+            originalPosition += new Vector3(0, 0, 2.5f); // Move canvas farther from the camera
+        }
+
+        return originalPosition;
+    }
+
+    [ContextMenu("Delete Canvas")]
+
+    public void DeleteCanvas()
+    {
+        // Find all GameObjects with the tag "Canvas"
+        GameObject[] canvasObjects = GameObject.FindGameObjectsWithTag("Canvas");
+
+        // Loop through and destroy each GameObject
+        foreach (GameObject canvas in canvasObjects)
+        {
+            Destroy(canvas);
+            Debug.Log("Destroyed GameObject with tag 'Canvas': " + canvas.name);
+        }
     }
 
     // Listener for Texture Button
-    private void OnTextureButtonClick()
-    {
-        Debug.Log("Texture Button Clicked!");
-        // Add functionality for texture button here
-    }
+   
 
-    // Listener for OK Button
-    private void OnOKButtonClick()
-    {
-        Debug.Log("OK Button Clicked!");
-        // Add functionality for OK button here
-    }
+  
+   
 }

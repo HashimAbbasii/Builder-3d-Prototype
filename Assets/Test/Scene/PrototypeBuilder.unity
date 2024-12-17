@@ -9164,6 +9164,7 @@ MonoBehaviour:
   cameraTransform: {x: 0, y: 0, z: 0}
   cameraRotation: {x: 0, y: 0, z: 0, w: 0}
   objectOriginalPos: {x: 0, y: 0, z: 0}
+  mainCamera: {fileID: 1344682281}
   scaleTest: {x: 0, y: 0, z: 0}
   canvasFurniture: {fileID: 966719439}
   EvidenceScrollView: {fileID: 128284639}
