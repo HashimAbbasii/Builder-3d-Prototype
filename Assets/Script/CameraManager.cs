@@ -1,5 +1,7 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,6 +10,9 @@ public class CameraManager : MonoBehaviour
     [Header("Camera References")]
     public Camera mainCamera;
     public Transform parentTransform;
+
+
+
 
     [Header("Camera Configuration")]
     [SerializeField] private float cameraDistance = 5f; // Distance between camera and selected object
@@ -47,6 +52,10 @@ public class CameraManager : MonoBehaviour
     // New fields to track the "Spawn" camera position
     private Vector3 spawnPosition = new Vector3(1000f, 1000f, 1000f);
     private bool isAtSpawnPosition = false;
+
+
+  
+    private Vector3 targetPosition;
 
     void Start()
     {
@@ -173,8 +182,8 @@ public class CameraManager : MonoBehaviour
             Vector2 mouseDelta = currentMousePosition - lastMousePosition;
 
             Vector3 moveDirection =
-                parentTransform.right * mouseDelta.x * moveSensitivity +
-                parentTransform.up * mouseDelta.y * moveSensitivity;
+                -parentTransform.right * mouseDelta.x * moveSensitivity +
+                -parentTransform.up * mouseDelta.y * moveSensitivity;
 
             parentTransform.position += moveDirection * Time.deltaTime;
             lastMousePosition = currentMousePosition;
@@ -182,6 +191,7 @@ public class CameraManager : MonoBehaviour
 
         HandleEditorZoomAndRotation();
     }
+
 
     void HandleEditorZoomAndRotation()
     {
@@ -222,9 +232,10 @@ public class CameraManager : MonoBehaviour
             case TouchPhase.Moved:
                 Vector2 touchDelta = touch.position - lastTouchPosition;
 
+                // Invert movement direction to make it intuitive
                 Vector3 moveDirection =
-                    parentTransform.right * touchDelta.x * moveSensitivity +
-                    parentTransform.up * touchDelta.y * moveSensitivity;
+                    -parentTransform.right * touchDelta.x * moveSensitivity +
+                    -parentTransform.up * touchDelta.y * moveSensitivity;
 
                 parentTransform.position += moveDirection * Time.deltaTime;
                 lastTouchPosition = touch.position;
@@ -318,13 +329,7 @@ public class CameraManager : MonoBehaviour
     {
         if (isTransitioning) return;
 
-        StartCoroutine(SmoothMoveCamera(
-            parentTransform.position,
-            parentTransform.rotation,
-            target.position + Vector3.back * cameraDistance + Vector3.up * cameraHeight,
-            Quaternion.LookRotation(target.position - parentTransform.position),
-            transitionDuration
-        ));
+        StartCoroutine(SmoothMoveToTarget(targetPosition, transitionDuration));
     }
 
     // Public method to return camera to its original position
@@ -332,13 +337,7 @@ public class CameraManager : MonoBehaviour
     {
         if (isTransitioning) return;
 
-        StartCoroutine(SmoothMoveCamera(
-            parentTransform.position,
-            parentTransform.rotation,
-            originalPosition,
-            originalRotation,
-            transitionDuration
-        ));
+        StartCoroutine(SmoothMoveToTarget(targetPosition, transitionDuration));
     }
 
     // Public method to move camera to spawn position when the "Spawn" button is clicked
@@ -347,37 +346,58 @@ public class CameraManager : MonoBehaviour
         if (isTransitioning) return;
 
         isAtSpawnPosition = true;
-        StartCoroutine(SmoothMoveCamera(
-            parentTransform.position,
-            parentTransform.rotation,
-            spawnPosition,
-            Quaternion.LookRotation(Vector3.zero),
-            transitionDuration
-        ));
+        StartCoroutine(SmoothMoveToTarget(targetPosition, transitionDuration));
     }
 
     // Coroutine to smoothly move the camera
-    private IEnumerator SmoothMoveCamera(Vector3 startPosition, Quaternion startRotation, Vector3 endPosition, Quaternion endRotation, float duration)
+    private IEnumerator SmoothMoveToTarget(Vector3 target, float duration)
     {
+        if (isTransitioning) yield break; // Prevent overlapping transitions
         isTransitioning = true;
-        float timeElapsed = 0f;
 
-        while (timeElapsed < duration)
+        Vector3 startingPosition = parentTransform.position;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
         {
-            parentTransform.position = Vector3.Lerp(startPosition, endPosition, timeElapsed / duration);
-            parentTransform.rotation = Quaternion.Slerp(startRotation, endRotation, timeElapsed / duration);
-            timeElapsed += Time.deltaTime;
+            parentTransform.position = Vector3.Lerp(startingPosition, target, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        parentTransform.position = endPosition;
-        parentTransform.rotation = endRotation;
-
-        if (isAtSpawnPosition)
-        {
-            // Optionally, you can trigger an action after moving to spawn position
-        }
-
+        parentTransform.position = target; // Snap to target to avoid precision errors
         isTransitioning = false;
     }
+
+
+
+    //..............Use If Necessary ..............................//
+    //................Tweening....................................//
+    private void MoveCamera(Vector3 target, float duration)
+    {
+        // Smoothly move to the target using DOTween
+        parentTransform.DOMove(target, duration)
+                       .SetEase(Ease.OutQuad) // Optional easing function for smooth animation
+                       .OnComplete(() =>
+                       {
+                           // Callback once the movement is completed
+                           Debug.Log("Transition Complete!");
+                       });
+    }
+
+    //...................How to Use...............................//
+
+    //void Update()
+    //{
+    //    if (Input.GetMouseButtonDown(0))
+    //    {
+    //        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+    //        if (Physics.Raycast(ray, out RaycastHit hit))
+    //        {
+    //            MoveCamera(hit.point, transitionDuration); // Call DOTween-based transition
+    //        }
+    //    }
+    //}
+
+
 }

@@ -119,6 +119,7 @@ public class ObjectManipulator : MonoBehaviour
         {
             if (Physics.Raycast(ray, out var hit) && hit.collider.gameObject.CompareTag("Floor"))
             {
+                Debug.Log("Floor selected: ");
                 var selectedTransform = hit.transform;
                 SelectedObjectForFloor(selectedTransform);
             }
@@ -246,6 +247,7 @@ public class ObjectManipulator : MonoBehaviour
         floorButton.buttonText.color = ManagerHandler.Instance.uiManager.canvasHandler.textSelectedColor;
         rotationKnob.gameObject.SetActive(false);
         sliderParent.SetActive(false);
+        scaleSlider.gameObject.SetActive(false);
     }
 
     public void SetSelectedObject(Transform obj)
@@ -350,6 +352,8 @@ public class ObjectManipulator : MonoBehaviour
 
     public void DeselectObject()
     {
+        scaleSlider.gameObject.SetActive(true);
+        rotationKnob.gameObject.SetActive(true);
         CameraManager cameraManager = FindObjectOfType<CameraManager>();
         cameraManager.enabled = true;
         RevertMaterial();

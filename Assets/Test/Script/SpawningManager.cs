@@ -106,6 +106,10 @@ public class SpawningManager : MonoBehaviour
     public GameObject canvasObj; // The dynamically spawned canvas
     public GameObject targetObject; // The object with the canvas
     private RectTransform canvasRectTransform;
+
+
+    [SerializeField] private CameraManager cameraManager;
+
     //[Header("Floor Texture")]
     //public List<GameObject> FloorTexture;
     //[Header("Model Texture")]
@@ -176,7 +180,9 @@ public class SpawningManager : MonoBehaviour
     private void Start()
     {
 
-       
+        cameraManager = FindObjectOfType<CameraManager>();
+
+
         //canvasEssential.gameObject.SetActive(true);
         pauseCondition = false;
         ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(false);
@@ -289,6 +295,8 @@ public class SpawningManager : MonoBehaviour
 
     private void CreateCategoryButton(string categoryName)
     {
+        //ObjectManipulator objectManipulator = FindObjectOfType<ObjectManipulator>();
+        //objectManipulator.DeselectObject();
         GameObject button = Instantiate(categoryButtonPrefab, categoryListParent);
         button.name = categoryName;
         button.GetComponentInChildren<TextMeshProUGUI>().text = categoryName;
@@ -307,6 +315,7 @@ public class SpawningManager : MonoBehaviour
     }
     private void OnEvidenceSelected(string category)
     {
+       
         Debug.Log("Evidence Selected: " + category);
         EvidenceScrollView.SetActive(false);
         SetEvidenceCategory(category);
@@ -432,10 +441,14 @@ public class SpawningManager : MonoBehaviour
 
     public void LoadModelEvidence(int page)
     {
+
+
         foreach (Transform child in EvidenceModelListParent)
         {
             Destroy(child.gameObject);
         }
+
+
 
         // Calculate the range of models to display on this page
         int startIndex = page * modelsPerPage;
@@ -488,6 +501,7 @@ public class SpawningManager : MonoBehaviour
         {
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, floorPlacementMask))
             {
+                cameraManager.enabled = false;
                 _initialMousePos = hit.point;
                 _initialMousePos.y = 0f;
                 _currentFloor = Instantiate(floorPrefab, _initialMousePos, Quaternion.identity);
@@ -522,15 +536,17 @@ public class SpawningManager : MonoBehaviour
                 var actualScaleX = Mathf.Abs(scale.x); // Adjust scale calculation
                 var actualScaleZ = Mathf.Abs(scale.z);
             }
+
         }
 
         if (_isCreatingFloor && touch.phase == TouchPhase.Ended && _currentFloor != null)
         {
             _isCreatingFloor = false;
             _currentFloor = null;
-
+          
 
             Invoke(nameof(DeleteLinesForAll), 0.5f);
+            cameraManager.enabled = true;
         }
 
         // Wall creation logic
@@ -538,6 +554,8 @@ public class SpawningManager : MonoBehaviour
         {
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
+                Debug.Log("Creating wall");
+                 cameraManager.enabled = false;
                 _initialMousePos = hit.point;
                 _initialMousePos.y = 0f;
                 _currentWall = Instantiate(wallPrefab, _initialMousePos, Quaternion.identity);
@@ -577,7 +595,7 @@ public class SpawningManager : MonoBehaviour
         {
             _isCreatingWall = false;
             _currentWall = null;
-
+            cameraManager.enabled = true;
             Invoke(nameof(DeleteLinesForAll), 0.5f);
         }
 
@@ -715,7 +733,7 @@ public class SpawningManager : MonoBehaviour
         ObjectManipulator objectManipulator = FindObjectOfType<ObjectManipulator>();
         if(objectManipulator.selectedObject != null)
         {
-
+            Debug.Log("Selectable Object"+selectableObject);
             objectManipulator.SetSelectedObject(selectableObject.transform);
             _selectedObjectIndex = objectIndex;
      
@@ -1124,12 +1142,25 @@ public class SpawningManager : MonoBehaviour
         ObjectManipulator gameObjectReference = FindObjectOfType<ObjectManipulator>();
         canvasObj.transform.parent = gameObjectReference.selectedObject.transform.parent;
 
+
+        //Debug.Log("Deterince Parent Rotation"+ canvasObj.transform.parent.rotation);
+
+
         Canvas canvas = canvasObj.AddComponent<Canvas>();
         canvas.renderMode = RenderMode.WorldSpace;
-
+       
         // Adjust Canvas RectTransform
         RectTransform canvasRectTransform = canvasObj.GetComponent<RectTransform>();
-        canvasRectTransform.rotation = Quaternion.Euler(50, 0, 0);
+        if (canvasRectTransform.rotation.y >= 90)
+        {
+            canvasRectTransform.rotation = Quaternion.Euler(0, -90, 0);
+        }
+        else
+        {
+
+           canvasRectTransform.rotation = Quaternion.Euler(0, 0, 0);
+
+        }
 
         // Set the initial position
         Vector3 canvasPosition = gameObjectReference.selectedObject.transform.position + new Vector3(0f, 1.5f, 0.5f);
