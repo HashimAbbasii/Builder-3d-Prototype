@@ -43,85 +43,12 @@ public class EssentialDistanceManager : MonoBehaviour
 		//Add Line
 		if (Input.GetKeyDown(KeyCode.Mouse0))
 		{
-			for (var i = 0; i < lines; i++)
-			{
-				_isDrawLine = true;
-				if (_prevIsDrawLine != _isDrawLine)
-				{
-					_lastHitTransform = null;
-					_prevIsDrawLine = _isDrawLine;
-				}
-
-				var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out _hitPos, floorLayer);
-
-				if (hitObj != null)
-				{
-					if (_isDrawLine)
-					{
-						if (!onSurface)
-						{
-							MeasureLine_WorldCanvas.DrawLine(hitObj.transform, false, false, onSurface, 6f);
-							if (_lastHitTransform != null)
-							{
-								MeasureLine_WorldCanvas.EndDrawLine();
-								_lastHitTransform = null;
-							}
-							else
-							{
-								_lastHitTransform = hitObj.transform;
-							}
-						}
-						else
-						{
-							var hitDummy = new GameObject("SurfaceLineDummy")
-							{
-								transform =
-								{
-									position = _hitPos
-								}
-							};
-
-							switch (i)
-							{
-								case 0:
-									_startPointx = hitDummy.transform;
-									break;
-								case 1:
-									_endPointx = hitDummy.transform;
-									break;
-								case 2:
-									_startPointz = hitDummy.transform;
-									break;
-								case 3:
-									_endPointz = hitDummy.transform;
-									break;
-							}
-							
-							hitDummy.transform.SetParent(hitObj.transform);
-							MeasureLine_WorldCanvas.DrawLine(hitDummy.transform, false, false, onSurface, 6f, showSubAxis);
-
-							if (_lastHitTransform != null)
-							{
-								MeasureLine_WorldCanvas.EndDrawLine();
-								//Hashim Here
-								_lastHitTransform = null;
-                              //  Invoke(nameof(DeleteLines), 0.5f); // Or adjust the time as per your needs
-                                          
-                            }
-							else
-							{
-								_lastHitTransform = hitObj.transform;
-							}
-						}
-					}
-				}
-			}
-		}
+			//LinesCreation();
+        }
 
 		if (Input.GetKey(KeyCode.Mouse0))
 		{
-
-			if (lines == 4)
+            if (lines == 4)
 			{
 				if (_endPointx != null && _endPointz != null)
 				{
@@ -176,6 +103,83 @@ public class EssentialDistanceManager : MonoBehaviour
 	public Vector3 lDis;
 	public Vector3 wDis;
 	
+	public void LinesCreation()
+	{
+        for (var i = 0; i < lines; i++)
+        {
+            _isDrawLine = true;
+            if (_prevIsDrawLine != _isDrawLine)
+            {
+                _lastHitTransform = null;
+                _prevIsDrawLine = _isDrawLine;
+            }
+
+            var hitObj = MouseRayer.GetMouseRayHit(Camera.main, out _hitPos, floorLayer);
+
+            if (hitObj != null)
+            {
+                if (_isDrawLine)
+                {
+                    if (!onSurface)
+                    {
+                        MeasureLine_WorldCanvas.DrawLine(hitObj.transform, false, false, onSurface, 6f);
+                        if (_lastHitTransform != null)
+                        {
+                            MeasureLine_WorldCanvas.EndDrawLine();
+                            _lastHitTransform = null;
+                        }
+                        else
+                        {
+                            _lastHitTransform = hitObj.transform;
+                        }
+                    }
+                    else
+                    {
+                        var hitDummy = new GameObject("SurfaceLineDummy")
+                        {
+                            transform =
+                                {
+                                    position = _hitPos
+                                }
+                        };
+
+                        switch (i)
+                        {
+                            case 0:
+                                _startPointx = hitDummy.transform;
+                                break;
+                            case 1:
+                                _endPointx = hitDummy.transform;
+                                break;
+                            case 2:
+                                _startPointz = hitDummy.transform;
+                                break;
+                            case 3:
+                                _endPointz = hitDummy.transform;
+                                break;
+                        }
+
+                        hitDummy.transform.SetParent(hitObj.transform);
+                        MeasureLine_WorldCanvas.DrawLine(hitDummy.transform, false, false, onSurface, 6f, showSubAxis);
+
+                        if (_lastHitTransform != null)
+                        {
+                            MeasureLine_WorldCanvas.EndDrawLine();
+                            //Hashim Here
+                            _lastHitTransform = null;
+                            //  Invoke(nameof(DeleteLines), 0.5f); // Or adjust the time as per your needs
+
+                        }
+                        else
+                        {
+                            _lastHitTransform = hitObj.transform;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 	public void DeleteLines()
 	{
 		MeasureLine_WorldCanvas.DeleteAllLines();

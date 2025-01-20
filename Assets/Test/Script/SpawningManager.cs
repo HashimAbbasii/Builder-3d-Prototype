@@ -491,6 +491,7 @@ public class SpawningManager : MonoBehaviour
 
     //.........Procrss Touch ....//
     public Vector3 scaleTest;
+    public bool isLineRun = true;
     private void ProcessTouch(Touch touch)
     {
         if (pauseCondition == true) return;
@@ -501,6 +502,17 @@ public class SpawningManager : MonoBehaviour
         {
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, floorPlacementMask))
             {
+                if (isLineRun == true)
+                {
+                    ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
+
+                    ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
+                    ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
+                    isLineRun = false;
+                    ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.LinesCreation();
+                    //chal jayi...
+                    Debug.Log("chal jayi...");
+                }
                 cameraManager.enabled = false;
                 _initialMousePos = hit.point;
                 _initialMousePos.y = 0f;
@@ -514,6 +526,7 @@ public class SpawningManager : MonoBehaviour
         {
             if (Physics.Raycast(ray, out var hit, Mathf.Infinity, floorPlacementMask))
             {
+                
                 _finalMousePos = hit.point;
                 _finalMousePos.y = 0f;
 
@@ -676,10 +689,11 @@ public class SpawningManager : MonoBehaviour
 
     public void OnFloorButtonClick()
     {
-        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
-        ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
+        isLineRun = true;
+        //ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.gameObject.SetActive(true);
+        //ManagerHandler.Instance.collectiveDistanceManager.essentialDistanceManager.lines = 4;
 
-        ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
+        //ManagerHandler.Instance.collectiveDistanceManager.ToggleObjectDistanceHandlerScript(false);
 
         _isCreatingFloor = true;
         _isCreatingWall = false; // Ensure wall creation is not active
@@ -690,7 +704,11 @@ public class SpawningManager : MonoBehaviour
         _previewObject = null;
         _selectedObjectIndex = -1;
     }
-
+    //public bool SetLineForAll(bool setLines)
+    //{
+       
+       
+    //}
 
     // Called when the wall button is clicked
     public void OnWallButtonClick()
